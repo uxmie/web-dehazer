@@ -1,0 +1,71 @@
+<html>
+  <head>
+    <title>Image quantization</title>
+    <meta charset="UTF-8">
+    <script type="text/javascript">
+
+      function imgresize(canvas, img, maxsize) {
+        var ratio = 1;
+        if(img.width > maxsize) {
+          ratio = maxsize / img.width;
+        }
+        if(img.height*ratio > maxsize) {
+          ratio = maxsize / img.height;
+        }
+
+        var origCanvas = document.createElement("canvas");
+        var origContext = origCanvas.getContext("2d");
+        origCanvas.width = img.width;
+        origCanvas.height = img.height;
+        origContext.drawImage(img, 0, 0);
+        
+        canvas.width = img.width*ratio;
+        canvas.height = img.height*ratio;
+        var context = canvas.getContext("2d");
+        context.drawImage(origCanvas, 0, 0, origCanvas.width, origCanvas.height,
+         0, 0, canvas.width, canvas.height);
+      }
+      window.onload = function() {
+        var fileInput = document.getElementById('fileInput');
+        var fileDisplayArea = document.getElementById('fileDisplayArea');
+
+        fileInput.addEventListener('change', function(e) {
+          var file = fileInput.files[0];
+          var imageType = /image.*/;
+
+          if (file.type.match(imageType)) {
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+              fileDisplayArea.innerHTML = "";
+
+              var canvas = document.getElementById('origFile');
+              var context = canvas.getContext('2d');
+              var img = new Image();
+              img.src = reader.result;
+              //img.width = 600;
+              canvas.width = img.width;
+              canvas.height = img.height;
+              img.onload = function(){
+                context.drawImage(img, 0, 0);
+              }
+              imgresize(canvas, img, 640);
+            }
+
+            reader.readAsDataURL(file);	
+          } else {
+            fileDisplayArea.innerHTML = "File not supported!"
+          }
+        });
+      }
+    </script>
+    <style></style>
+  </head>
+  <body>
+    <h1>Image quantization</h1>
+    <input type="file" id="fileInput">
+    <div id="fileDisplayArea">
+    </div>
+    <canvas id="origFile"></canvas>
+  </body>
+</html>
