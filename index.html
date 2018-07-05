@@ -2,29 +2,18 @@
   <head>
     <title>Image quantization</title>
     <meta charset="UTF-8">
+    <script type="text/javascript" src="Hermite-resize/dist/hermite.js"></script>
+    <script type="text/javascript" src="js-priority-queue/priority-queue.min.js"></script>
+    <script type="text/javascript" src="kd-tree-javascript/kdTree.js"></script>
+    <!--<script type="module" src="almost-equal/almost_equal.js"></script>
+    <script type="module" src="dup/dup.js"></script>
+    <script type="module" src="csr-matrix/csr.js"></script>
+    <script type="module" src="conjugate-gradient/pcg.js"></script>-->
+    <script src="utils.js"></script>
+    <script src="min-variance-quantization.js"></script>
+    <script src="airlight.js"></script>
+    <script src="sample_points_1000.js"></script>
     <script type="text/javascript">
-
-      function imgresize(canvas, img, maxsize) {
-        var ratio = 1;
-        if(img.width > maxsize) {
-          ratio = maxsize / img.width;
-        }
-        if(img.height*ratio > maxsize) {
-          ratio = maxsize / img.height;
-        }
-
-        var origCanvas = document.createElement("canvas");
-        var origContext = origCanvas.getContext("2d");
-        origCanvas.width = img.width;
-        origCanvas.height = img.height;
-        origContext.drawImage(img, 0, 0);
-        
-        canvas.width = img.width*ratio;
-        canvas.height = img.height*ratio;
-        var context = canvas.getContext("2d");
-        context.drawImage(origCanvas, 0, 0, origCanvas.width, origCanvas.height,
-         0, 0, canvas.width, canvas.height);
-      }
       window.onload = function() {
         var fileInput = document.getElementById('fileInput');
         var fileDisplayArea = document.getElementById('fileDisplayArea');
@@ -35,28 +24,206 @@
 
           if (file.type.match(imageType)) {
             var reader = new FileReader();
-
+            reader.readAsDataURL(file);	
             reader.onload = function(e) {
               fileDisplayArea.innerHTML = "";
 
-              var canvas = document.getElementById('origFile');
-              var context = canvas.getContext('2d');
               var img = new Image();
               img.src = reader.result;
-              //img.width = 600;
-              canvas.width = img.width;
-              canvas.height = img.height;
-              img.onload = function(){
-                context.drawImage(img, 0, 0);
-              }
-              imgresize(canvas, img, 640);
+              img.onload = function() {
+                processImage(img);
+              };
             }
-
-            reader.readAsDataURL(file);	
           } else {
             fileDisplayArea.innerHTML = "File not supported!"
           }
         });
+      }
+
+      function processImage(img) {
+        var parentDOM = document.getElementById('fileDisplayArea');
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        context.drawImage(img, 0, 0);
+
+        var ratio = 1, maxsize = 600;
+        if(img.width > maxsize) {
+          ratio = maxsize / img.width;
+        }
+        if(img.height*ratio > maxsize) {
+          ratio = maxsize / img.height;
+        }
+        var resizer = new Hermite_class();
+        resizer.resample(canvas,
+                          Math.round(img.width*ratio),
+                          Math.round(img.height*ratio),
+                          true,
+                          function() { 
+                            parentDOM.appendChild(canvas);
+                            dehazing(canvas, 1000);
+                          }
+        );
+      }
+      
+      function dehazing(canvas, colorNo) {
+        //var quantStruct = quantizeImage(canvas, colorNo);
+        var startTime = new Date();
+        var colorArray = makeColorArray(canvas);
+        var quantStruct = new QuantKDTree(colorArray.slice(0), colorNo);
+        var airLight = estimateAirLight(colorArray, quantStruct);
+        var transmittance = transmittanceMap(colorArray, airLight, canvas.width, canvas.height);
+        drawTransmittance(canvas, transmittance);
+        var endTime = new Date();
+        alert("Finished in " + (endTime - startTime)/1000 + " secs.");
+      }
+
+      function transmittanceMap(colorArray, airLight, picWidth, picHeight) {
+        var ballPointCount = kd_tree_points_with_index.length;
+        var colorArrayCentered = colorArray.map(data => {
+          return data.map((e, idx) => e/255 - airLight[idx]);
+        });
+        var colorArrayDict = list2dict3D(colorArrayCentered);
+        var origin = {x: 0, y: 0, z: 0}
+        var colorNorm = colorArrayDict.map(point => euclideanDist(point, origin));
+        var colorNormalized = colorArrayDict.map((point, idx) => {
+          return {
+            x: point.x/colorNorm[idx],
+            y: point.y/colorNorm[idx],
+            z: point.z/colorNorm[idx],
+          }
+        });
+        var hazeTree = new kdTree(kd_tree_points_with_index, euclideanDist, ['x', 'y', 'z']);
+        console.log("Finished kdtree construction");
+        var nearestQuery = colorNormalized.map(point => {
+          return hazeTree.nearest(point, 1, 0.1)[0][0].index;
+        });
+        var furthestDist = Array(ballPointCount).fill(0);
+        nearestQuery.forEach((qidx, idx) => {
+          furthestDist[qidx] = Math.max(furthestDist[qidx], colorNorm[idx]);
+        });
+        var transmittanceRaw = Array(colorArray.length).fill().map((_, idx) => {
+          return colorNorm[idx] / furthestDist[nearestQuery[idx]];
+        })
+        transmittanceRaw = transmittanceRaw.map((t, idx) => {
+          var lbRatio = colorArray[idx].map((val, ch) => (val/255) / airLight[ch])
+                        .reduce((a, b) => Math.min(a, b));
+          return Math.max(t, 1 - lbRatio);
+        });
+
+        // Standard deviation of each pixel
+        var sum = Array(ballPointCount).fill(0);
+        var sum2 = Array(ballPointCount).fill(0);
+        var pCount = Array(ballPointCount).fill(0);
+        transmittanceRaw.forEach((t,idx) => {
+          var pointIdx = nearestQuery[idx];
+          sum[pointIdx] += t;
+          sum2[pointIdx] += t*t;
+          pCount[pointIdx]++;
+        });
+        var varPoints = Array(ballPointCount).fill().map((_, idx) => {
+          var avg = sum[idx]/pCount[idx];
+          return (sum2[idx]/(pCount[idx]-1) - sum[idx]*sum[idx]/(pCount[idx]*(pCount[idx]-1)));
+        });
+        var one_varPix = Array(colorArray.length).fill().map((_,idx) => {
+          var val = varPoints[nearestQuery[idx]];
+          if (val === 0) {
+            return 0;
+          } else {
+            return 1/val;
+          }
+        });
+
+        // Solve sparse system to smooth transmittance map.
+        spMatTriplet = []
+        spRHS = Array(colorArray.length).fill(0);
+        var lambda = 0.05;
+        transmittanceRaw.forEach((t, idx) => {
+          // Decode to width and height
+          var x = idx % picWidth;
+          var y = Math.floor(idx /picWidth);
+          var idxSum = one_varPix[idx];
+
+          if (x > 0) {
+            var leftIdx = y*picWidth + x - 1;
+            var colorNorm = colorArray[idx].map((ch, j) =>
+              (ch - colorArray[leftIdx][j])/255
+            ).reduce((a, b) => a + b*b, 0);
+            var coeff = lambda*2/colorNorm;
+            spMatTriplet.push([idx, leftIdx, -coeff]);
+            idxSum += coeff;
+          }
+          if (x < picWidth - 1) {
+            var rightIdx = y*picWidth + x + 1;
+            var colorNorm = colorArray[idx].map((ch, j) =>
+              (ch - colorArray[rightIdx][j])/255
+            ).reduce((a, b) => a + b*b, 0);
+            var coeff = lambda*2/colorNorm;
+            spMatTriplet.push([idx, rightIdx, -coeff]);
+            idxSum += coeff;
+          }
+          if (y > 0) {
+            var upIdx = (y-1)*picWidth + x;
+            var colorNorm = colorArray[idx].map((ch, j) =>
+              (ch - colorArray[upIdx][j])/255
+            ).reduce((a, b) => a + b*b, 0);
+            var coeff = lambda*2/colorNorm;
+            spMatTriplet.push([idx, upIdx, -coeff]);
+            idxSum += coeff;
+          }
+          if (y < picHeight - 1) {
+            var downIdx = (y+1)*picWidth + x;
+            var colorNorm = colorArray[idx].map((ch, j) =>
+              (ch - colorArray[downIdx][j])/255
+            ).reduce((a, b) => a + b*b, 0);
+            var coeff = lambda*2/colorNorm;
+            spMatTriplet.push([idx, downIdx, -coeff]);
+            idxSum += coeff;
+          }
+
+          //Diagonal elements
+          spMatTriplet.push([idx, idx, idxSum]);
+          spRHS[idx] = one_varPix[idx]*t;
+        });
+
+        console.log(spMatTriplet, spRHS)
+
+        return transmittanceRaw;
+      }
+
+
+      function quantizeImage(canvas, colorNo) {
+        var colorArray = makeColorArray(canvas);
+        var q = new QuantKDTree(colorArray, colorNo);
+        
+        var parentDOM = document.getElementById('fileDisplayArea');
+        var canvas2 = document.createElement('canvas');
+        var context2 = canvas2.getContext('2d');
+        q.quantizeImage(canvas, canvas2);
+
+        canvas2.style.paddingLeft = 2;
+        parentDOM.appendChild(canvas2);
+
+        return q;
+      }
+
+      function drawTransmittance(canvas, transmittance) {
+        var parentDOM = document.getElementById('fileDisplayArea');
+        var canvas2 = document.createElement('canvas');
+        var context2 = canvas2.getContext('2d');
+
+        var trans256 = transmittance.map(data => {
+          var color = Math.round(data*255);
+          return [color, color, color, 255];
+        });
+        var transFlat = new Uint8ClampedArray([].concat.apply([], trans256));
+        canvas2.width = canvas.width;
+        canvas2.height = canvas.height;
+        var imageData = context2.createImageData(canvas.width, canvas.height);
+        imageData.data.set(transFlat);
+        context2.putImageData(imageData, 0, 0);
+        parentDOM.appendChild(canvas2);
       }
     </script>
     <style></style>
@@ -64,8 +231,13 @@
   <body>
     <h1>Image quantization</h1>
     <input type="file" id="fileInput">
+    <input id="slide" type="range" min="5" max="200" step="1" value="16"
+     onchange="this.innerHTML = this.value" >hello</input>
+    <button onclick="quantizeImage()">Quantize!</button>
+    <span class="slidename"></span>
     <div id="fileDisplayArea">
+      <canvas id="origFile"></canvas>
+      <canvas id="quantized"></canvas>
     </div>
-    <canvas id="origFile"></canvas>
   </body>
 </html>
