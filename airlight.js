@@ -1,3 +1,9 @@
+var utils = require('./utils.js');
+var arange = utils.arange,
+		linRange = utils.linRange,
+		cartesian = utils.cartesian,
+		range = utils.range;
+
 function estimateAirLight(colorArray, quantStruct, minEst, maxEst) {
 	var diff = maxEst - minEst;
 	var step = 0;
@@ -140,3 +146,5 @@ function vote2D(colors, ch1, ch2, A1, A2, dirTrig, weights) {
 	var y = (returnMat.indexOf(Math.max(...returnMat)));
 	return returnMat;
 }
+
+module.exports = estimateAirLight;

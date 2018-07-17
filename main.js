@@ -1,3 +1,13 @@
+var gui_utils = require('./gui_utils.js');
+var processImage = gui_utils.processImage,
+    sliderChange = gui_utils.sliderChange,
+    changeGamma = gui_utils.changeGamma,
+    findAirLight = gui_utils.findAirLight,
+    findAndDrawResults = gui_utils.findAndDrawResults,
+    drawDehazed = gui_utils.drawDehazed,
+    mixHaze = gui_utils.mixHaze,
+    calculateOriginal = gui_utils.calculateOriginal;
+
 window.onload = function() {
 	var fileInput = document.getElementById('fileInput');
 	var fileDisplayArea = document.getElementById('fileDisplayArea');
@@ -96,5 +106,4 @@ window.onload = function() {
 	originalButton.addEventListener('click', function(e){
 		calculateOriginal();
 	});
-	
 }

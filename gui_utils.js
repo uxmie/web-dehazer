@@ -1,5 +1,13 @@
+var QuantKDTree = require('./min-variance-quantization');
+var Hermite_class = require('./Hermite-resize/dist/hermite.npm.js');
+var transmittanceMap = require('./transmittance_sci.js');
+var estimateAirLight = require('./airlight.js');
+
+var utils = require('./utils.js');
+var makeColorArray = utils.makeColorArray,
+		cloneCanvas = utils.cloneCanvas;
+
 function processImage(img) {
-	var parentDOM = document.getElementById('fileDisplayArea');
 	var gamma = new Number(document.getElementById('gammaSlide').value);
 	var canvas = document.getElementById('originalPic');
 	var context = canvas.getContext('2d');
@@ -85,7 +93,6 @@ function drawDehazed(canvas, destCanvas, transmittance, airLight) {
 }
 
 function hazeArray(canvas, transmittance, airLight, fac) {
-	var colorArray = makeColorArray(canvas);
 	var colorFlat = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
 	var dehazeFlat = new Uint8ClampedArray(4*transmittance.length).fill(255);
 	transmittance.forEach((t,i) => {
@@ -175,8 +182,36 @@ function calculateOriginal() {
 
 	var finalCanvas = document.createElement('canvas');
 	drawDehazed(window.origNonResize, finalCanvas, transmittance, window.airLight);
-	var img = finalCanvas.toDataURL('image/png');
+	//var img = finalCanvas.toDataURL('image/png');//.replace("image/png", "image/octet-stream");
+
+	console.log(finalCanvas.width);
 	var db = document.getElementById('downloadLink');
-	db.href = img;
+	finalCanvas.toBlob(function(blob) {
+		db.href = URL.createObjectURL(blob);
+	});
+	var revokeURL = function() {
+		requestAnimationFrame(function() {
+			URL.revokeObjectURL(this.href);
+			this.href = null;
+		});
+		this.removeEventListener('click', revokeURL);
+	};
+	db.addEventListener('click', revokeURL);
 	db.download = "dehazed.png";
+	/*var clickEvent = new MouseEvent("click", {
+    "view": window,
+    "bubbles": true,
+    "cancelable": false
+	});
+
+	db.dispatchEvent(clickEvent);*/
 }
+
+module.exports.processImage = processImage;
+module.exports.sliderChange = sliderChange;
+module.exports.changeGamma = changeGamma;
+module.exports.findAirLight = findAirLight;
+module.exports.findAndDrawResults = findAndDrawResults;
+module.exports.drawDehazed = drawDehazed;
+module.exports.mixHaze = mixHaze;
+module.exports.calculateOriginal = calculateOriginal;

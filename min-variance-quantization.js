@@ -1,3 +1,5 @@
+var PriorityQueue = require('./js-priority-queue/priority-queue.js');
+
 function QuantKDTreeNode(colorArray, startIdx, endIdx, minVal, maxVal, parent) {
 	this.minVal = minVal.slice(0);
 	this.maxVal = maxVal.slice(0);
@@ -186,3 +188,5 @@ QuantKDTree.prototype.quantizeImage = function(canvas, destCanvas) {
 QuantKDTree.prototype.quantizeID = function(colorArray) {
 	return colorArray.map(data => this.lookupID(data));
 }
+
+module.exports = QuantKDTree;

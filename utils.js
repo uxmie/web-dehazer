@@ -12,9 +12,6 @@ function makeColorArray(canvas, normalize = false) {
 		];
 	}
 	return retArray;
-	/*return Array(Math.ceil(colorArrayFlat.length/4)).fill()
-			.map((_,idx) => colorArrayFlat.slice(idx*4, idx*4 + 4))
-			.map(data => data.slice(0, 3));*/
 }
 
 function arange(start, step, end) {
@@ -88,3 +85,15 @@ function cloneCanvas(oldCanvas) {
 	context.drawImage(oldCanvas, 0, 0);
 	return newCanvas;
 }
+ module.exports.makeColorArray = makeColorArray;
+ module.exports.arange = arange;
+ module.exports.linRange = linRange;
+ module.exports.cartesian = cartesian;
+ module.exports.range = range;
+ module.exports.list2dict3D = list2dict3D;
+ module.exports.dict2list3D = dict2list3D;
+ module.exports.euclideanDist = euclideanDist;
+ module.exports.angleDist = angleDist;
+ module.exports.flatten = flatten;
+ module.exports.cloneCanvas = cloneCanvas;
+ 

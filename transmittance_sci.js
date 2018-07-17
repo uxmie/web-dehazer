@@ -1,7 +1,8 @@
 var ndarray = require('ndarray');
 var cwise = require('cwise');
+var hazeTree = require('./sample_1000.js');
 
-window.transmittanceMap = function(canvas, airLight) {
+transmittanceMap = function(canvas, airLight) {
 	var context = canvas.getContext('2d');
 	var picWidth = canvas.width,
 		picHeight = canvas.height,
@@ -10,9 +11,9 @@ window.transmittanceMap = function(canvas, airLight) {
 	var colorArray = ndarray(context.getImageData(0, 0, picWidth, picHeight).data,
 	                 [picHeight, picWidth, 4]);
 	var ballPointCount = window.kd_tree_points_with_index.length;
-	var hazeTree = new window.kdTree(
+	/*var hazeTree = new window.kdTree(
 		window.kd_tree_points_with_index, window.euclideanDist, ['x', 'y', 'z']
-	);
+	);*/
 	var nearestQuery = ndarray(new Uint16Array(pixCount), picDim);
 	var furthestDist = ndarray(new Float32Array(ballPointCount), [ballPointCount]);
 	var colorNorm = ndarray(new Float32Array(pixCount), picDim);
@@ -80,7 +81,7 @@ window.transmittanceMap = function(canvas, airLight) {
 			o = (v !== 0)? 1/v: 0;
 		}
 	})(one_var, sum, sum2, pCount);
-	var lambda = 5;
+	var lambda = 0.5;
 	var epsilon = 1e-6;
 	var coeffs = ndarray(new Float32Array(pixCount*5), picDim.concat(5));
 	var one_varPix = ndarray(new Float32Array(pixCount), picDim);
@@ -132,7 +133,7 @@ window.transmittanceMap = function(canvas, airLight) {
 	mprod(RHS, one_varPix, transmittanceRaw);
 	
 	//Conjugate gradients
-	smoothTransmittance(coeffs, RHS, transmittanceRaw, 150);
+	smoothTransmittance(coeffs, RHS, transmittanceRaw, 75);
 	
 	return transmittanceRaw.data;
 }
@@ -207,3 +208,5 @@ function smoothTransmittance(A, rhs, x, max_iter) {
 		zTrOld = zTr;
 	}
 }
+
+module.exports = transmittanceMap;

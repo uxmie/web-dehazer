@@ -1,5 +1,774 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 /**
+ * hermite-resize - Canvas image resize/resample using Hermite filter with JavaScript.
+ * @version v2.2.4
+ * @link https://github.com/viliusle/miniPaint
+ * @license MIT
+ */
+function Hermite_class(){var t,a,e=[];this.init=void(t=navigator.hardwareConcurrency||4),this.getCores=function(){return t},this.resample_auto=function(t,a,e,r,i){var h=this.getCores();window.Worker&&h>1?this.resample(t,a,e,r,i):(this.resample_single(t,a,e,!0),void 0!=i&&i())},this.resize_image=function(t,a,e,r,i){var h=document.getElementById(t),o=document.createElement("canvas");if(o.width=h.width,o.height=h.height,o.getContext("2d").drawImage(h,0,0),void 0==a&&void 0==e&&void 0!=r&&(a=h.width/100*r,e=h.height/100*r),void 0==e){var n=h.width/a;e=h.height/n}a=Math.round(a),e=Math.round(e);var s=function(){var t=o.toDataURL();h.width=a,h.height=e,h.src=t,t=null,o=null};void 0==i||1==i?this.resample(o,a,e,!0,s):(this.resample_single(o,a,e,!0),s())},this.resample=function(r,i,h,o,n){var s=r.width,d=r.height;i=Math.round(i);var c=d/(h=Math.round(h));if(e.length>0)for(u=0;u<t;u++)void 0!=e[u]&&(e[u].terminate(),delete e[u]);e=new Array(t);for(var g=r.getContext("2d"),v=[],l=2*Math.ceil(d/t/2),f=-1,u=0;u<t;u++){var M=f+1;if(!(M>=d)){f=M+l-1,f=Math.min(f,d-1);var m=l;m=Math.min(l,d-M),v[u]={},v[u].source=g.getImageData(0,M,s,l),v[u].target=!0,v[u].start_y=Math.ceil(M/c),v[u].height=m}}!0===o?(r.width=i,r.height=h):g.clearRect(0,0,s,d);for(var w=0,u=0;u<t;u++)if(void 0!=v[u].target){w++;var p=new Worker(a);e[u]=p,p.onmessage=function(t){w--;var a=t.data.core;e[a].terminate(),delete e[a];var r=Math.ceil(v[a].height/c);v[a].target=g.createImageData(i,r),v[a].target.data.set(t.data.target),g.putImageData(v[a].target,0,v[a].start_y),w<=0&&void 0!=n&&n()};var _={width_source:s,height_source:v[u].height,width:i,height:Math.ceil(v[u].height/c),core:u,source:v[u].source.data.buffer};p.postMessage(_,[_.source])}},a=window.URL.createObjectURL(new Blob(["(",function(){onmessage=function(t){for(var a=t.data.core,e=t.data.width_source,r=t.data.height_source,i=t.data.width,h=t.data.height,o=e/i,n=r/h,s=Math.ceil(o/2),d=Math.ceil(n/2),c=new Uint8ClampedArray(t.data.source),g=(c.length,i*h*4),v=new ArrayBuffer(g),l=new Uint8ClampedArray(v,0,g),f=0;f<h;f++)for(var u=0;u<i;u++){var M=4*(u+f*i),m=0,w=0,p=0,_=0,y=0,b=0,C=0,I=f*n,D=Math.floor(u*o),R=Math.ceil((u+1)*o),U=Math.floor(f*n),A=Math.ceil((f+1)*n);R=Math.min(R,e),A=Math.min(A,r);for(var x=U;x<A;x++)for(var B=Math.abs(I-x)/d,L=u*o,j=B*B,k=D;k<R;k++){var q=Math.abs(L-k)/s,E=Math.sqrt(j+q*q);if(!(E>=1)){var W=4*(k+x*e);C+=(m=2*E*E*E-3*E*E+1)*c[W+3],p+=m,c[W+3]<255&&(m=m*c[W+3]/250),_+=m*c[W],y+=m*c[W+1],b+=m*c[W+2],w+=m}}l[M]=_/w,l[M+1]=y/w,l[M+2]=b/w,l[M+3]=C/p}var z={core:a,target:l};postMessage(z,[l.buffer])}}.toString(),")()"],{type:"application/javascript"})),this.resample_single=function(t,a,e,r){for(var i=t.width,h=t.height,o=i/(a=Math.round(a)),n=h/(e=Math.round(e)),s=Math.ceil(o/2),d=Math.ceil(n/2),c=t.getContext("2d"),g=c.getImageData(0,0,i,h),v=c.createImageData(a,e),l=g.data,f=v.data,u=0;u<e;u++)for(var M=0;M<a;M++){var m=4*(M+u*a),w=0,p=0,_=0,y=0,b=0,C=0,I=0,D=u*n,R=Math.floor(M*o),U=Math.ceil((M+1)*o),A=Math.floor(u*n),x=Math.ceil((u+1)*n);U=Math.min(U,i),x=Math.min(x,h);for(var B=A;B<x;B++)for(var L=Math.abs(D-B)/d,j=M*o,k=L*L,q=R;q<U;q++){var E=Math.abs(j-q)/s,W=Math.sqrt(k+E*E);if(!(W>=1)){var z=4*(q+B*i);I+=(w=2*W*W*W-3*W*W+1)*l[z+3],_+=w,l[z+3]<255&&(w=w*l[z+3]/250),y+=w*l[z],b+=w*l[z+1],C+=w*l[z+2],p+=w}}f[m]=y/p,f[m+1]=b/p,f[m+2]=C/p,f[m+3]=I/_}!0===r?(t.width=a,t.height=e):c.clearRect(0,0,i,h),c.putImageData(v,0,0)}}
+module.exports = Hermite_class;
+
+},{}],2:[function(require,module,exports){
+var utils = require('./utils.js');
+var arange = utils.arange,
+		linRange = utils.linRange,
+		cartesian = utils.cartesian,
+		range = utils.range;
+
+function estimateAirLight(colorArray, quantStruct, minEst, maxEst) {
+	var diff = maxEst - minEst;
+	var step = 0;
+	if(diff > 0.6) {step = 0.08;}
+	else if (diff > 0.2) {step = 0.05;}
+	else {step = 0.02;}
+	var quantWithIds = quantStruct.quantizeID(colorArray);
+	var weights = Array(quantStruct.centroids.length).fill(0);
+	quantWithIds.forEach(element => {
+		weights[element]++;
+	});
+	var weightsum = weights.reduce((a, b) => a+b);
+	weights = weights.map(d => d/weightsum);
+
+	var colors = quantStruct.centroids.map(d => d.map(e => e / 255));
+
+	var AvalsR = arange(minEst, step, maxEst);
+	var AvalsG = arange(minEst, step, maxEst);
+	var AvalsB = arange(minEst, step, maxEst);
+
+	var directions = linRange(0, 25, Math.PI/2);
+	var dirTrig = directions.map((d) => [Math.cos(d), Math.sin(d)]);
+
+	/* Vote for each two channels */
+	var VotesRG = vote2D(colors, 0, 1, AvalsR, AvalsG, dirTrig, weights);
+	var VotesGB = vote2D(colors, 1, 2, AvalsG, AvalsB, dirTrig, weights);
+	var VotesRB = vote2D(colors, 0, 2, AvalsR, AvalsB, dirTrig, weights);
+
+	var vote3D = Array(AvalsR.length*AvalsG.length*AvalsB.length).fill()
+			.map(function(_, idx) {
+				var Ri = Math.floor(idx / (AvalsG.length*AvalsB.length));
+				var Gi = Math.floor(idx / AvalsB.length) % AvalsG.length;
+				var Bi = idx % AvalsB.length;
+				var RGi = Ri*AvalsG.length + Gi;
+				var GBi = Gi*AvalsB.length + Bi;
+				var RBi = Ri*AvalsB.length + Bi;
+				return VotesRG[RGi]*VotesGB[GBi]*VotesRB[RBi];
+			});
+	var idx = (vote3D.indexOf(Math.max(...vote3D)));
+	var Ri = Math.floor(idx / (AvalsG.length*AvalsB.length));
+	var Gi = Math.floor(idx / AvalsB.length) % AvalsG.length;
+	var Bi = idx % AvalsB.length;
+
+	var retColor = Array(3).fill(0);
+	var normWeight = 0;
+	for(var i = Math.max(Ri-1, 0); i < Math.min(Ri+2, AvalsR.length); ++i) {
+		for(var j = Math.max(Gi-1, 0); j < Math.min(Gi+2, AvalsG.length); ++j) {
+			for(var k = Math.max(Bi-1, 0); k < Math.min(Bi+2, AvalsB.length); ++k) {
+				var idx = i*AvalsG.length*AvalsB.length + j*AvalsB.length + k;
+				var w = vote3D[idx];
+				normWeight += w;
+				retColor[0] += AvalsR[i]*w;
+				retColor[1] += AvalsG[j]*w;
+				retColor[2] += AvalsB[k]*w;
+			}
+		}
+	}
+	retColor = retColor.map(d => d/normWeight);
+	return retColor;
+}
+
+function vote2D(colors, ch1, ch2, A1, A2, dirTrig, weights) {
+	var nBins = dirTrig.length;
+	var thresh = 0.01;
+	var votesTotal = [];
+
+	colors.forEach(color => {
+		var A1start = A1.findIndex(p => p > color[ch1]);
+		var A2start = A2.findIndex(p => p > color[ch2]);
+
+		if (A1start < 0 || A2start < 0) return;
+
+		var Aranges = cartesian(A1.slice(A1start), A2.slice(A2start));
+		var Aidxs = cartesian(range(A1start, A1.length), range(A2start, A2.length))
+								.map(d => d[0]*A2.length + d[1]);
+		var votes = Array(A1.length*A2.length*nBins).fill(0);
+		Aranges.forEach((Ac, idx) => {
+			//Get Angle
+			var xcomp = Ac[0] - color[ch1],
+					ycomp = Ac[1] - color[ch2],
+					dist = Math.sqrt(xcomp*xcomp + ycomp*ycomp),
+					xn = xcomp / dist,
+					//yn = ycomp / dist,
+					angle = Math.acos(xn),
+					bin = Math.round(angle/Math.PI*2 * nBins);
+			if(bin == nBins) {bin--;}
+			
+			var voteIdx = Aidxs[idx]*nBins + bin;
+			votes[voteIdx] = 1;
+			var lineDist = Array(nBins).fill().map(function(_, idx2) {
+				return Math.abs(
+					(Ac[0] - color[ch1])*dirTrig[idx2][0]
+						- (Ac[1] - color[ch2])*dirTrig[idx2][1]);
+			});
+			var tempVotes = Array(nBins).fill().map(function(_, idx2) {
+				return (lineDist[idx2] < 2*thresh*(dist*Math.SQRT1_2 + 1))?1:0;
+			});
+			tempVotes.forEach((data, idx2) => {
+				var voteIdx = Aidxs[idx]*nBins + idx2;
+				votes[voteIdx] = data;
+			});
+		});
+		votesTotal.push(votes);
+	});
+
+	var varCount = votesTotal.reduce((a, b) => 
+		a.map((d, i) => d + b[i])  
+	);
+	var candFlag = varCount.map(d => d >= 2);
+	var candIdx = [];
+	var ind = -1;
+	while((ind = candFlag.indexOf(true, ind + 1)) != -1) {
+		candIdx.push(ind);
+	}
+	var candDecode = candIdx.map(d => [
+		Math.floor(d / (A2.length*nBins)),
+		Math.floor(d / nBins) % A2.length,
+		d % nBins
+	]);
+
+	/* Cast vote. */
+	var finalVote = Array(A1.length*A2.length*nBins).fill(0);
+	var Aranges = cartesian(A1, A2);
+	candIdx.forEach((param, idx) => {
+		var Aidx = Math.floor(param / nBins),
+				Ac = Aranges[Aidx];
+		colors.forEach((color, coloridx) => {
+			var xcomp = Ac[0] - color[ch1],
+					ycomp = Ac[1] - color[ch2],
+					dist = Math.sqrt(xcomp*xcomp + ycomp*ycomp),
+					distweight = weights[coloridx]*Math.exp(5*-dist + 1);
+			finalVote[param] += distweight;
+		});
+	});
+
+	var returnMat = Array(A1.length*A2.length).fill()
+		.map((_, idx) => finalVote.slice(idx*nBins, idx*nBins + nBins))
+		.map(data => data.reduce((a, b) => a+b));
+	
+	var y = (returnMat.indexOf(Math.max(...returnMat)));
+	return returnMat;
+}
+
+module.exports = estimateAirLight;
+},{"./utils.js":20}],3:[function(require,module,exports){
+var QuantKDTree = require('./min-variance-quantization');
+var Hermite_class = require('./Hermite-resize/dist/hermite.npm.js');
+var transmittanceMap = require('./transmittance_sci.js');
+var estimateAirLight = require('./airlight.js');
+
+var utils = require('./utils.js');
+var makeColorArray = utils.makeColorArray,
+		cloneCanvas = utils.cloneCanvas;
+
+function processImage(img) {
+	var gamma = new Number(document.getElementById('gammaSlide').value);
+	var canvas = document.getElementById('originalPic');
+	var context = canvas.getContext('2d');
+	canvas.width = img.width;
+	canvas.height = img.height;
+	context.drawImage(img, 0, 0);
+
+	window.origNonResize = cloneCanvas(canvas);
+
+	var ratio = 1, maxsize = 600;
+	if(img.width > maxsize) {
+		ratio = maxsize / img.width;
+	}
+	if(img.height*ratio > maxsize) {
+		ratio = maxsize / img.height;
+	}
+	var resizer = new Hermite_class();
+	resizer.resample(canvas,
+										Math.round(img.width*ratio),
+										Math.round(img.height*ratio),
+										true,
+										function() { 
+											window.origCanvas = cloneCanvas(canvas);
+											changeGamma(window.origCanvas, canvas, gamma);
+										}
+	);
+}
+
+function findAirLight() {
+	var canvas = document.getElementById('originalPic');
+	var startTime = new Date();
+	window.colorArray = makeColorArray(canvas);
+	var quantStruct = new QuantKDTree(colorArray.slice(0), 1000);
+	var endTime = new Date();
+	console.log("Finished quantization in " + (endTime - startTime)/1000 + " secs.");
+
+	startTime = new Date();
+	var minEst = new Number(document.getElementById('minAirSlide').value);
+	var maxEst = new Number(document.getElementById('maxAirSlide').value);
+	window.airLight = estimateAirLight(
+		window.colorArray, quantStruct, minEst, maxEst);
+	endTime = new Date();
+	console.log("Finished air light in " + (endTime - startTime)/1000 + " secs.");
+
+	//Update Color
+	var airLightPreview = document.getElementById('airLightPreview');
+	var airLightRGB = window.airLight.map(d => Math.round(d*255));
+	var airLightString = 'rgb(' + airLightRGB[0] + ',' + airLightRGB[1] + ',' + airLightRGB[2] + ')';
+	airLightPreview.style.backgroundColor = airLightString;
+}
+
+function findAndDrawResults() {
+	var canvas = document.getElementById('originalPic');
+	var startTime = new Date();
+	window.transmittance = transmittanceMap(canvas, window.airLight);
+	var endTime = new Date();
+	console.log("Finished transmittance map in " + (endTime - startTime)/1000 + " secs.");
+
+	var transCanvas = document.getElementById('transmittanceResultsPic');
+	drawTransmittance(transCanvas, window.transmittance, canvas.width, canvas.height);
+
+	var dehazePreview = document.getElementById('dehazeResult');
+	drawDehazed(canvas, dehazePreview, window.transmittance, window.airLight);
+}
+
+function drawDehazed(canvas, destCanvas, transmittance, airLight) {
+	var dehazeAmount = new Number(
+		document.getElementById("hazeAmountSlide").value
+	);
+	var distance = new Number(
+		document.getElementById("distSlide").value
+	);
+	var gamma = new Number(
+		document.getElementById("gammaOutSlide").value
+	);
+	var fac = Math.pow(2, distance);
+
+	window.dehazeFlat = hazeArray(canvas, transmittance, airLight, fac);
+	mixHaze(window.dehazeFlat, canvas.width, canvas.height,
+					destCanvas, transmittance, airLight, dehazeAmount);
+	window.dehazedCanvas = cloneCanvas(destCanvas);
+	changeGamma(window.dehazedCanvas, destCanvas, 1/gamma);
+}
+
+function hazeArray(canvas, transmittance, airLight, fac) {
+	var colorFlat = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
+	var dehazeFlat = new Uint8ClampedArray(4*transmittance.length).fill(255);
+	transmittance.forEach((t,i) => {
+		var tp = t*fac;
+		dehazeFlat[4*i] = (colorFlat[4*i] - (1-tp)*airLight[0]*255) / (tp+1e-4);
+		dehazeFlat[4*i + 1] = (colorFlat[4*i + 1] - (1-tp)*airLight[1]*255) / (tp+1e-4);
+		dehazeFlat[4*i + 2] = (colorFlat[4*i + 2] - (1-tp)*airLight[2]*255) / (tp+1e-4);
+	});
+	return dehazeFlat;
+}
+
+function mixHaze(origData, width, height, destCanvas,
+									transmittance, airLight, mixVal) {
+	var destData = new Uint8ClampedArray(origData.length).fill(255);
+	for(var i = 0; i < transmittance.length; i++) {
+		var tp = Math.pow(transmittance[i], mixVal);
+		destData[4*i] = tp*origData[4*i] + (1-tp)*airLight[0]*255;
+		destData[4*i+1] = tp*origData[4*i+1] + (1-tp)*airLight[1]*255;
+		destData[4*i+2] = tp*origData[4*i+2] + (1-tp)*airLight[2]*255;
+	}
+	destCanvas.width = width;
+	destCanvas.height = height;
+	var destContext = destCanvas.getContext('2d');
+	var imageData = destContext.createImageData(width, height);
+	imageData.data.set(destData);
+	destContext.putImageData(imageData, 0, 0);
+}
+
+function quantizeImage(canvas, colorNo) {
+	var colorArray = makeColorArray(canvas);
+	var q = new QuantKDTree(colorArray, colorNo);
+	
+	var parentDOM = document.getElementById('fileDisplayArea');
+	var canvas2 = document.createElement('canvas');
+	var context2 = canvas2.getContext('2d');
+	q.quantizeImage(canvas, canvas2);
+
+	canvas2.style.paddingLeft = 2;
+	parentDOM.appendChild(canvas2);
+
+	return q;
+}
+
+function drawTransmittance(canvas, transmittance, width, height) {
+	var context = canvas.getContext('2d');
+
+	var transFlat = new Uint8ClampedArray(transmittance.length*4);
+	transmittance.forEach((d, i) => {
+		transFlat[i*4] = d*255;
+		transFlat[i*4 + 1] = d*255;
+		transFlat[i*4 + 2] = d*255;
+		transFlat[i*4 + 3] = 255;
+	});
+	canvas.width = width;
+	canvas.height = height;
+	var imageData = context.createImageData(canvas.width, canvas.height);
+	imageData.data.set(transFlat);
+	context.putImageData(imageData, 0, 0);
+}
+
+function sliderChange(slider, target) {
+	target.innerHTML = slider.value;
+}
+
+function changeGamma(origCanvas, canvas, gamma) {
+	var context = canvas.getContext('2d');
+	var origData = origCanvas.getContext('2d')
+	.getImageData(0, 0, canvas.width, canvas.height).data;
+	var destData = new Uint8ClampedArray(origData.length).fill(255);
+	for(var i = 0; i < origData.length; i += 4) {
+		destData[i] = Math.pow(origData[i]/255, gamma)*255;
+		destData[i+1] = Math.pow(origData[i+1]/255, gamma)*255;
+		destData[i+2] = Math.pow(origData[i+2]/255, gamma)*255;
+	}
+	var imageData = context.createImageData(canvas.width, canvas.height);
+	imageData.data.set(destData);
+	context.putImageData(imageData, 0, 0);
+}
+
+function calculateOriginal() {
+	var gamma = document.getElementById('gammaSlide').value;
+	changeGamma(window.origNonResize, window.origNonResize, gamma);
+	var startTime = new Date();
+	var transmittance = transmittanceMap(window.origNonResize, window.airLight);
+	var endTime = new Date();
+	console.log("Finished transmittance map in " + (endTime - startTime)/1000 + " secs.");
+
+	var finalCanvas = document.createElement('canvas');
+	drawDehazed(window.origNonResize, finalCanvas, transmittance, window.airLight);
+	//var img = finalCanvas.toDataURL('image/png');//.replace("image/png", "image/octet-stream");
+
+	console.log(finalCanvas.width);
+	var db = document.getElementById('downloadLink');
+	finalCanvas.toBlob(function(blob) {
+		db.href = URL.createObjectURL(blob);
+	});
+	var revokeURL = function() {
+		requestAnimationFrame(function() {
+			URL.revokeObjectURL(this.href);
+			this.href = null;
+		});
+		this.removeEventListener('click', revokeURL);
+	};
+	db.addEventListener('click', revokeURL);
+	db.download = "dehazed.png";
+	var clickEvent = new MouseEvent("click", {
+    "view": window,
+    "bubbles": true,
+    "cancelable": false
+	});
+
+	db.dispatchEvent(clickEvent);
+}
+
+module.exports.processImage = processImage;
+module.exports.sliderChange = sliderChange;
+module.exports.changeGamma = changeGamma;
+module.exports.findAirLight = findAirLight;
+module.exports.findAndDrawResults = findAndDrawResults;
+module.exports.drawDehazed = drawDehazed;
+module.exports.mixHaze = mixHaze;
+module.exports.calculateOriginal = calculateOriginal;
+},{"./Hermite-resize/dist/hermite.npm.js":1,"./airlight.js":2,"./min-variance-quantization":7,"./transmittance_sci.js":19,"./utils.js":20}],4:[function(require,module,exports){
+(function (global){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.PriorityQueue = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+var AbstractPriorityQueue, ArrayStrategy, BHeapStrategy, BinaryHeapStrategy, PriorityQueue,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+AbstractPriorityQueue = _dereq_('./PriorityQueue/AbstractPriorityQueue');
+
+ArrayStrategy = _dereq_('./PriorityQueue/ArrayStrategy');
+
+BinaryHeapStrategy = _dereq_('./PriorityQueue/BinaryHeapStrategy');
+
+BHeapStrategy = _dereq_('./PriorityQueue/BHeapStrategy');
+
+PriorityQueue = (function(superClass) {
+  extend(PriorityQueue, superClass);
+
+  function PriorityQueue(options) {
+    options || (options = {});
+    options.strategy || (options.strategy = BinaryHeapStrategy);
+    options.comparator || (options.comparator = function(a, b) {
+      return (a || 0) - (b || 0);
+    });
+    PriorityQueue.__super__.constructor.call(this, options);
+  }
+
+  return PriorityQueue;
+
+})(AbstractPriorityQueue);
+
+PriorityQueue.ArrayStrategy = ArrayStrategy;
+
+PriorityQueue.BinaryHeapStrategy = BinaryHeapStrategy;
+
+PriorityQueue.BHeapStrategy = BHeapStrategy;
+
+module.exports = PriorityQueue;
+
+
+},{"./PriorityQueue/AbstractPriorityQueue":2,"./PriorityQueue/ArrayStrategy":3,"./PriorityQueue/BHeapStrategy":4,"./PriorityQueue/BinaryHeapStrategy":5}],2:[function(_dereq_,module,exports){
+var AbstractPriorityQueue;
+
+module.exports = AbstractPriorityQueue = (function() {
+  function AbstractPriorityQueue(options) {
+    var ref;
+    if ((options != null ? options.strategy : void 0) == null) {
+      throw 'Must pass options.strategy, a strategy';
+    }
+    if ((options != null ? options.comparator : void 0) == null) {
+      throw 'Must pass options.comparator, a comparator';
+    }
+    this.priv = new options.strategy(options);
+    this.length = (options != null ? (ref = options.initialValues) != null ? ref.length : void 0 : void 0) || 0;
+  }
+
+  AbstractPriorityQueue.prototype.queue = function(value) {
+    this.length++;
+    this.priv.queue(value);
+    return void 0;
+  };
+
+  AbstractPriorityQueue.prototype.dequeue = function(value) {
+    if (!this.length) {
+      throw 'Empty queue';
+    }
+    this.length--;
+    return this.priv.dequeue();
+  };
+
+  AbstractPriorityQueue.prototype.peek = function(value) {
+    if (!this.length) {
+      throw 'Empty queue';
+    }
+    return this.priv.peek();
+  };
+
+  AbstractPriorityQueue.prototype.clear = function() {
+    this.length = 0;
+    return this.priv.clear();
+  };
+
+  return AbstractPriorityQueue;
+
+})();
+
+
+},{}],3:[function(_dereq_,module,exports){
+var ArrayStrategy, binarySearchForIndexReversed;
+
+binarySearchForIndexReversed = function(array, value, comparator) {
+  var high, low, mid;
+  low = 0;
+  high = array.length;
+  while (low < high) {
+    mid = (low + high) >>> 1;
+    if (comparator(array[mid], value) >= 0) {
+      low = mid + 1;
+    } else {
+      high = mid;
+    }
+  }
+  return low;
+};
+
+module.exports = ArrayStrategy = (function() {
+  function ArrayStrategy(options) {
+    var ref;
+    this.options = options;
+    this.comparator = this.options.comparator;
+    this.data = ((ref = this.options.initialValues) != null ? ref.slice(0) : void 0) || [];
+    this.data.sort(this.comparator).reverse();
+  }
+
+  ArrayStrategy.prototype.queue = function(value) {
+    var pos;
+    pos = binarySearchForIndexReversed(this.data, value, this.comparator);
+    this.data.splice(pos, 0, value);
+    return void 0;
+  };
+
+  ArrayStrategy.prototype.dequeue = function() {
+    return this.data.pop();
+  };
+
+  ArrayStrategy.prototype.peek = function() {
+    return this.data[this.data.length - 1];
+  };
+
+  ArrayStrategy.prototype.clear = function() {
+    this.data.length = 0;
+    return void 0;
+  };
+
+  return ArrayStrategy;
+
+})();
+
+
+},{}],4:[function(_dereq_,module,exports){
+var BHeapStrategy;
+
+module.exports = BHeapStrategy = (function() {
+  function BHeapStrategy(options) {
+    var arr, i, j, k, len, ref, ref1, shift, value;
+    this.comparator = (options != null ? options.comparator : void 0) || function(a, b) {
+      return a - b;
+    };
+    this.pageSize = (options != null ? options.pageSize : void 0) || 512;
+    this.length = 0;
+    shift = 0;
+    while ((1 << shift) < this.pageSize) {
+      shift += 1;
+    }
+    if (1 << shift !== this.pageSize) {
+      throw 'pageSize must be a power of two';
+    }
+    this._shift = shift;
+    this._emptyMemoryPageTemplate = arr = [];
+    for (i = j = 0, ref = this.pageSize; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+      arr.push(null);
+    }
+    this._memory = [];
+    this._mask = this.pageSize - 1;
+    if (options.initialValues) {
+      ref1 = options.initialValues;
+      for (k = 0, len = ref1.length; k < len; k++) {
+        value = ref1[k];
+        this.queue(value);
+      }
+    }
+  }
+
+  BHeapStrategy.prototype.queue = function(value) {
+    this.length += 1;
+    this._write(this.length, value);
+    this._bubbleUp(this.length, value);
+    return void 0;
+  };
+
+  BHeapStrategy.prototype.dequeue = function() {
+    var ret, val;
+    ret = this._read(1);
+    val = this._read(this.length);
+    this.length -= 1;
+    if (this.length > 0) {
+      this._write(1, val);
+      this._bubbleDown(1, val);
+    }
+    return ret;
+  };
+
+  BHeapStrategy.prototype.peek = function() {
+    return this._read(1);
+  };
+
+  BHeapStrategy.prototype.clear = function() {
+    this.length = 0;
+    this._memory.length = 0;
+    return void 0;
+  };
+
+  BHeapStrategy.prototype._write = function(index, value) {
+    var page;
+    page = index >> this._shift;
+    while (page >= this._memory.length) {
+      this._memory.push(this._emptyMemoryPageTemplate.slice(0));
+    }
+    return this._memory[page][index & this._mask] = value;
+  };
+
+  BHeapStrategy.prototype._read = function(index) {
+    return this._memory[index >> this._shift][index & this._mask];
+  };
+
+  BHeapStrategy.prototype._bubbleUp = function(index, value) {
+    var compare, indexInPage, parentIndex, parentValue;
+    compare = this.comparator;
+    while (index > 1) {
+      indexInPage = index & this._mask;
+      if (index < this.pageSize || indexInPage > 3) {
+        parentIndex = (index & ~this._mask) | (indexInPage >> 1);
+      } else if (indexInPage < 2) {
+        parentIndex = (index - this.pageSize) >> this._shift;
+        parentIndex += parentIndex & ~(this._mask >> 1);
+        parentIndex |= this.pageSize >> 1;
+      } else {
+        parentIndex = index - 2;
+      }
+      parentValue = this._read(parentIndex);
+      if (compare(parentValue, value) < 0) {
+        break;
+      }
+      this._write(parentIndex, value);
+      this._write(index, parentValue);
+      index = parentIndex;
+    }
+    return void 0;
+  };
+
+  BHeapStrategy.prototype._bubbleDown = function(index, value) {
+    var childIndex1, childIndex2, childValue1, childValue2, compare;
+    compare = this.comparator;
+    while (index < this.length) {
+      if (index > this._mask && !(index & (this._mask - 1))) {
+        childIndex1 = childIndex2 = index + 2;
+      } else if (index & (this.pageSize >> 1)) {
+        childIndex1 = (index & ~this._mask) >> 1;
+        childIndex1 |= index & (this._mask >> 1);
+        childIndex1 = (childIndex1 + 1) << this._shift;
+        childIndex2 = childIndex1 + 1;
+      } else {
+        childIndex1 = index + (index & this._mask);
+        childIndex2 = childIndex1 + 1;
+      }
+      if (childIndex1 !== childIndex2 && childIndex2 <= this.length) {
+        childValue1 = this._read(childIndex1);
+        childValue2 = this._read(childIndex2);
+        if (compare(childValue1, value) < 0 && compare(childValue1, childValue2) <= 0) {
+          this._write(childIndex1, value);
+          this._write(index, childValue1);
+          index = childIndex1;
+        } else if (compare(childValue2, value) < 0) {
+          this._write(childIndex2, value);
+          this._write(index, childValue2);
+          index = childIndex2;
+        } else {
+          break;
+        }
+      } else if (childIndex1 <= this.length) {
+        childValue1 = this._read(childIndex1);
+        if (compare(childValue1, value) < 0) {
+          this._write(childIndex1, value);
+          this._write(index, childValue1);
+          index = childIndex1;
+        } else {
+          break;
+        }
+      } else {
+        break;
+      }
+    }
+    return void 0;
+  };
+
+  return BHeapStrategy;
+
+})();
+
+
+},{}],5:[function(_dereq_,module,exports){
+var BinaryHeapStrategy;
+
+module.exports = BinaryHeapStrategy = (function() {
+  function BinaryHeapStrategy(options) {
+    var ref;
+    this.comparator = (options != null ? options.comparator : void 0) || function(a, b) {
+      return a - b;
+    };
+    this.length = 0;
+    this.data = ((ref = options.initialValues) != null ? ref.slice(0) : void 0) || [];
+    this._heapify();
+  }
+
+  BinaryHeapStrategy.prototype._heapify = function() {
+    var i, j, ref;
+    if (this.data.length > 0) {
+      for (i = j = 1, ref = this.data.length; 1 <= ref ? j < ref : j > ref; i = 1 <= ref ? ++j : --j) {
+        this._bubbleUp(i);
+      }
+    }
+    return void 0;
+  };
+
+  BinaryHeapStrategy.prototype.queue = function(value) {
+    this.data.push(value);
+    this._bubbleUp(this.data.length - 1);
+    return void 0;
+  };
+
+  BinaryHeapStrategy.prototype.dequeue = function() {
+    var last, ret;
+    ret = this.data[0];
+    last = this.data.pop();
+    if (this.data.length > 0) {
+      this.data[0] = last;
+      this._bubbleDown(0);
+    }
+    return ret;
+  };
+
+  BinaryHeapStrategy.prototype.peek = function() {
+    return this.data[0];
+  };
+
+  BinaryHeapStrategy.prototype.clear = function() {
+    this.length = 0;
+    this.data.length = 0;
+    return void 0;
+  };
+
+  BinaryHeapStrategy.prototype._bubbleUp = function(pos) {
+    var parent, x;
+    while (pos > 0) {
+      parent = (pos - 1) >>> 1;
+      if (this.comparator(this.data[pos], this.data[parent]) < 0) {
+        x = this.data[parent];
+        this.data[parent] = this.data[pos];
+        this.data[pos] = x;
+        pos = parent;
+      } else {
+        break;
+      }
+    }
+    return void 0;
+  };
+
+  BinaryHeapStrategy.prototype._bubbleDown = function(pos) {
+    var last, left, minIndex, right, x;
+    last = this.data.length - 1;
+    while (true) {
+      left = (pos << 1) + 1;
+      right = left + 1;
+      minIndex = pos;
+      if (left <= last && this.comparator(this.data[left], this.data[minIndex]) < 0) {
+        minIndex = left;
+      }
+      if (right <= last && this.comparator(this.data[right], this.data[minIndex]) < 0) {
+        minIndex = right;
+      }
+      if (minIndex !== pos) {
+        x = this.data[minIndex];
+        this.data[minIndex] = this.data[pos];
+        this.data[pos] = x;
+        pos = minIndex;
+      } else {
+        break;
+      }
+    }
+    return void 0;
+  };
+
+  return BinaryHeapStrategy;
+
+})();
+
+
+},{}]},{},[1])(1)
+});
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],5:[function(require,module,exports){
+/**
  * k-d Tree JavaScript - V 1.01
  *
  * https://github.com/ubilabs/kd-tree-javascript
@@ -465,7 +1234,311 @@
   exports.BinaryHeap = BinaryHeap;
 }));
 
-},{}],2:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
+var gui_utils = require('./gui_utils.js');
+var processImage = gui_utils.processImage,
+    sliderChange = gui_utils.sliderChange,
+    changeGamma = gui_utils.changeGamma,
+    findAirLight = gui_utils.findAirLight,
+    findAndDrawResults = gui_utils.findAndDrawResults,
+    drawDehazed = gui_utils.drawDehazed,
+    mixHaze = gui_utils.mixHaze,
+    calculateOriginal = gui_utils.calculateOriginal;
+
+window.onload = function() {
+	var fileInput = document.getElementById('fileInput');
+	var fileDisplayArea = document.getElementById('fileDisplayArea');
+
+	fileInput.addEventListener('change', function(e) {
+		var file = fileInput.files[0];
+		var imageType = /image.*/;
+
+		if (file.type.match(imageType)) {
+			var reader = new FileReader();
+			reader.readAsDataURL(file);	
+			reader.onload = function(e) {
+				fileDisplayArea.innerHTML = "";
+
+				var img = new Image();
+				img.src = reader.result;
+				img.onload = function() {
+					processImage(img);
+				};
+			}
+		} else {
+			fileDisplayArea.innerHTML = "File not supported!"
+		}
+	});
+
+	var gammaSlide = document.getElementById('gammaSlide'),
+			gammaVal = document.getElementById('gammaVal');
+	gammaSlide.addEventListener('input', function(e){
+		sliderChange(this, gammaVal);
+		var canvas = document.getElementById('originalPic');
+		changeGamma(window.origCanvas, canvas, new Number(this.value))
+	});
+	gammaVal.innerHTML = gammaSlide.value;
+
+	var minAirSlide = document.getElementById('minAirSlide'),
+			minAirVal = document.getElementById('minAirVal'),
+			maxAirSlide = document.getElementById('maxAirSlide'),
+			maxAirVal = document.getElementById('maxAirVal');
+	minAirSlide.addEventListener('input', function(e){
+		if(maxAirSlide.value - 0.05 < this.value) {
+			this.value = maxAirSlide.value - 0.05;
+		}
+		sliderChange(this, minAirVal);
+	});
+	minAirVal.innerHTML = minAirSlide.value;
+	maxAirSlide.addEventListener('input', function(e){
+		if(minAirSlide.value > this.value - 0.05) {
+			this.value = new Number(minAirSlide.value) + 0.05;
+		}
+		sliderChange(this, maxAirVal);
+	});
+	maxAirVal.innerHTML = maxAirSlide.value;
+
+	var airLightButton = document.getElementById('airLightButton');
+	airLightButton.addEventListener('click', function(e){
+		findAirLight();
+	});
+	var transmittanceButton = document.getElementById('transmittanceButton');
+	transmittanceButton.addEventListener('click', function(e){
+		findAndDrawResults();
+	});
+
+	var distSlide = document.getElementById('distSlide'),
+	    distVal = document.getElementById('distVal'),
+	    hazeAmountSlide = document.getElementById('hazeAmountSlide'),
+	    hazeAmountVal = document.getElementById('hazeAmountVal'),
+	    gammaOutSlide = document.getElementById('gammaOutSlide'),
+			gammaOutVal = document.getElementById('gammaOutVal');
+
+	distSlide.addEventListener('input', function(e){
+		oninput=sliderChange(this, distVal);
+		var canvas = document.getElementById('originalPic');
+		var destCanvas = document.getElementById('dehazeResult');
+		drawDehazed(canvas, destCanvas, window.transmittance, window.airLight);
+	});
+	distVal.innerHTML = distSlide.value;
+	hazeAmountSlide.addEventListener('input', function(e){
+		sliderChange(this, hazeAmountVal);
+		var canvas = window.origCanvas;
+		mixHaze(window.dehazeFlat, canvas.width, canvas.height,
+						window.dehazedCanvas, window.transmittance, window.airLight,
+						new Number(this.value));
+		var gammaVal = new Number(document.getElementById('gammaOutSlide').value);
+		canvas = document.getElementById('dehazeResult');
+		changeGamma(window.dehazedCanvas, canvas, 1/gammaVal)
+	});
+	hazeAmountVal.innerHTML = hazeAmountSlide.value;
+	gammaOutSlide.addEventListener('input', function(e){
+		sliderChange(this, gammaOutVal);
+		var canvas = document.getElementById('dehazeResult');
+		changeGamma(window.dehazedCanvas, canvas, 1/new Number(this.value))
+	});
+	gammaOutVal.innerHTML = gammaOutSlide.value;
+
+	var originalButton = document.getElementById("originalButton");
+	originalButton.addEventListener('click', function(e){
+		calculateOriginal();
+	});
+}
+
+},{"./gui_utils.js":3}],7:[function(require,module,exports){
+var PriorityQueue = require('./js-priority-queue/priority-queue.js');
+
+function QuantKDTreeNode(colorArray, startIdx, endIdx, minVal, maxVal, parent) {
+	this.minVal = minVal.slice(0);
+	this.maxVal = maxVal.slice(0);
+	
+	this.startIdx = startIdx;
+	this.endIdx = endIdx;
+	this.splitChannel = -1; // must be integer;
+	this.splitThreshold = -1;
+	this.splitVariance = -1;
+	this.left = -1;
+	this.right = -1;
+	this.parent = parent;
+	this.isLeaf = true;
+	this.index = -1;
+
+	/* TODO: Find optimal split */
+	for(var i = 0; i < 3; i++) {
+		var histo = Array(256).fill(0);
+		colorArray.slice(this.startIdx, this.endIdx).forEach(element => {
+			histo[element[i]]++;
+		});
+
+		/* Find split with Otsu's Algorithm */
+		var sumB = 0, wB = 0;
+		var sum1 = histo.map((data, idx) => data*idx)
+		                .reduce((a, b) => a+b, 0);
+		var total = histo.reduce((a, b) => a+b, 0);
+		for(var j = 0; j < 256; ++j) {
+			wB += histo[j];
+			var wF = total - wB;
+			if(wB == 0 || wF == 0) {
+				continue;
+			}
+			sumB += j*histo[j];
+			var mF = (sum1 - sumB) / wF;
+			var tempRat = sumB / wB - mF;
+			var between = wB*wF*tempRat*tempRat;
+
+			if(between >= this.splitVariance) {
+				this.splitChannel = i;
+				this.splitThreshold = j;
+				this.splitVariance = between;
+			}
+		}
+	}
+} 
+
+function QuantKDTree(colorArray, clusters) {
+	//var colorArray = makeColorArray(canvas);
+	var pq = new PriorityQueue({
+		comparator: function(a, b) {
+			return b.splitVariance - a.splitVariance;
+		}
+	});
+
+	pq.queue(new QuantKDTreeNode(
+		colorArray, 0, colorArray.length,
+		[0, 0, 0], [255, 255, 255],
+		-1)
+	);
+
+	this.kdtree = Array(2*clusters - 1);
+	var idx = 0, currLeaves = 0;
+
+	while(pq.length > 0 && currLeaves + pq.length < clusters) {
+		var front = pq.dequeue();
+		if(front.parent >= 0) {
+			var parent = this.kdtree[front.parent];
+			if (parent.minVal.every(
+				(v, i) => v === front.minVal[i])) {
+				parent.left = idx;
+			} else {
+				parent.right = idx;
+			}
+		}
+
+		this.kdtree[idx] = front;
+
+		if(front.splitChannel == -1) {
+			idx++;
+			currLeaves++;
+			continue;
+		}
+
+		var sc = front.splitChannel, st = front.splitThreshold;
+
+		// Split colorArray
+		var colorslice = colorArray.slice(front.startIdx, front.endIdx);
+		var left = colorslice.filter(color => color[sc] < st);
+		var right = colorslice.filter(color => color[sc] >= st);
+		var pivot = front.startIdx + left.length;
+		if(pivot == front.startIdx || pivot == front.endIdx) {
+			idx++;
+			currLeaves++;
+			continue;
+		}
+		var partition = left.concat(right);
+		partition.forEach((data, idx) => {
+			colorArray[front.startIdx + idx] = data;
+		});
+
+		var thresh = front.maxVal.slice(0);
+		thresh[sc] = st;
+		pq.queue(new QuantKDTreeNode(
+			colorArray, front.startIdx, pivot,
+			front.minVal, thresh, idx
+		));
+		thresh = front.minVal.slice(0);
+		thresh[sc] = st+1;
+		pq.queue(new QuantKDTreeNode(
+			colorArray, pivot, front.endIdx,
+			thresh, front.maxVal, idx
+		));
+
+		this.kdtree[idx].isLeaf = false;
+		idx++;
+	}
+	while(pq.length > 0) {
+		var front = pq.dequeue();
+		if(front.parent >= 0) {
+			var parent = this.kdtree[front.parent];
+			if (parent.minVal.every(
+				(v, i) => v === front.minVal[i])) {
+				parent.left = idx;
+			} else {
+				parent.right = idx;
+			}
+		}
+		this.kdtree[idx] = front;
+		idx++;
+	}
+	var leafindex = 0;
+	this.centroids = [];
+	for(var i = 0; i < idx; ++i) {
+		if(this.kdtree[i].isLeaf) {
+			this.kdtree[i].index = leafindex;
+			leafindex++;
+
+			//Calculate centroid
+			var leaf = this.kdtree[i];
+			var colorslice = colorArray.slice(leaf.startIdx, leaf.endIdx);
+			var elems = leaf.endIdx - leaf.startIdx;
+			leaf.centroid = colorslice.reduce((a, b) => [a[0]+b[0], a[1]+b[1], a[2]+b[2]])
+																.map(data => Math.round(data/elems));
+			this.centroids.push(leaf.centroid);
+		}
+	}
+}
+
+QuantKDTree.prototype.lookupColor = function(color) {
+	var currNode = this.kdtree[0];
+	while(!currNode.isLeaf) {
+		var chan = currNode.splitChannel;
+		currNode = (color[chan] < currNode.splitThreshold)?
+			        this.kdtree[currNode.left]:
+			        this.kdtree[currNode.right];
+	}
+	return currNode.centroid.slice(0);
+}
+
+QuantKDTree.prototype.lookupID = function(color) {
+	var currNode = this.kdtree[0];
+	while(!currNode.isLeaf) {
+		var chan = currNode.splitChannel;
+		currNode = (color[chan] < currNode.splitThreshold)?
+			        this.kdtree[currNode.left]:
+			        this.kdtree[currNode.right];
+	}
+	return currNode.index;
+}
+
+QuantKDTree.prototype.quantizeImage = function(canvas, destCanvas) {
+	var colorArray = makeColorArray(canvas);
+
+	var destColorArray = colorArray.map(data => this.lookupColor(data).concat(255));
+	var destFlat = new Uint8ClampedArray([].concat.apply([], destColorArray));
+	
+	destCanvas.width = canvas.width;
+	destCanvas.height = canvas.height;
+	var dContext = destCanvas.getContext("2d");
+	var imageData = dContext.createImageData(canvas.width, canvas.height);
+	imageData.data.set(destFlat);
+	dContext.putImageData(imageData, 0, 0);
+}
+
+QuantKDTree.prototype.quantizeID = function(colorArray) {
+	return colorArray.map(data => this.lookupID(data));
+}
+
+module.exports = QuantKDTree;
+},{"./js-priority-queue/priority-queue.js":4}],8:[function(require,module,exports){
 "use strict"
 
 var createThunk = require("./lib/thunk.js")
@@ -576,7 +1649,7 @@ function compileCwise(user_args) {
 
 module.exports = compileCwise
 
-},{"./lib/thunk.js":4}],3:[function(require,module,exports){
+},{"./lib/thunk.js":10}],9:[function(require,module,exports){
 "use strict"
 
 var uniq = require("uniq")
@@ -936,7 +2009,7 @@ function generateCWiseOp(proc, typesig) {
 }
 module.exports = generateCWiseOp
 
-},{"uniq":11}],4:[function(require,module,exports){
+},{"uniq":17}],10:[function(require,module,exports){
 "use strict"
 
 // The function below is called when constructing a cwise function object, and does the following:
@@ -1024,7 +2097,7 @@ function createThunk(proc) {
 
 module.exports = createThunk
 
-},{"./compile.js":3}],5:[function(require,module,exports){
+},{"./compile.js":9}],11:[function(require,module,exports){
 (function (global){
 "use strict"
 
@@ -1222,7 +2295,7 @@ function preprocess(func) {
 
 module.exports = preprocess
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"esprima":7,"uniq":11}],6:[function(require,module,exports){
+},{"esprima":13,"uniq":17}],12:[function(require,module,exports){
 "use strict"
 
 var parse   = require("cwise-parser")
@@ -1259,7 +2332,7 @@ function createCWise(user_args) {
 
 module.exports = createCWise
 
-},{"cwise-compiler":2,"cwise-parser":5}],7:[function(require,module,exports){
+},{"cwise-compiler":8,"cwise-parser":11}],13:[function(require,module,exports){
 /*
   Copyright (C) 2013 Ariya Hidayat <ariya.hidayat@gmail.com>
   Copyright (C) 2013 Thaddee Tyl <thaddee.tyl@gmail.com>
@@ -5033,7 +6106,7 @@ parseStatement: true, parseSourceElement: true */
 }));
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{}],8:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 "use strict"
 
 function iota(n) {
@@ -5045,7 +6118,7 @@ function iota(n) {
 }
 
 module.exports = iota
-},{}],9:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -5068,7 +6141,7 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],10:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var iota = require("iota-array")
 var isBuffer = require("is-buffer")
 
@@ -5413,7 +6486,7 @@ function wrappedNDArrayCtor(data, shape, stride, offset) {
 
 module.exports = wrappedNDArrayCtor
 
-},{"iota-array":8,"is-buffer":9}],11:[function(require,module,exports){
+},{"iota-array":14,"is-buffer":15}],17:[function(require,module,exports){
 "use strict"
 
 function unique_pred(list, compare) {
@@ -5472,7 +6545,10 @@ function unique(list, compare, sorted) {
 
 module.exports = unique
 
-},{}],12:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
+var utils = require('./utils.js');
+var kdTree = require('./kd-tree-javascript/kdTree.js');
+
 kd_tree_sample_points = [
 	{x: -0.9425, y: -0.2041, z: -0.2648},
 	{x: 0.5224, y: 0.7539, z: 0.3985},
@@ -6481,20 +7557,18 @@ kd_tree_points_with_index = kd_tree_sample_points.map((point, idx) => {
 	return point;
 });
 
-var utils = require('./utils.js');
-var kdTree = require('./kd-tree-javascript/kdTree.js');
-module.exports.hazeTree = new kdTree.kdTree(
+module.exports = new kdTree.kdTree(
 	kd_tree_points_with_index,
 	utils.euclideanDist,
 	['x', 'y', 'z']
 );
 	
-},{"./kd-tree-javascript/kdTree.js":1,"./utils.js":14}],13:[function(require,module,exports){
+},{"./kd-tree-javascript/kdTree.js":5,"./utils.js":20}],19:[function(require,module,exports){
 var ndarray = require('ndarray');
 var cwise = require('cwise');
-var hazeTree = require('./sample_1000.js').hazeTree;
+var hazeTree = require('./sample_1000.js');
 
-window.transmittanceMap = function(canvas, airLight) {
+transmittanceMap = function(canvas, airLight) {
 	var context = canvas.getContext('2d');
 	var picWidth = canvas.width,
 		picHeight = canvas.height,
@@ -6573,7 +7647,7 @@ window.transmittanceMap = function(canvas, airLight) {
 			o = (v !== 0)? 1/v: 0;
 		}
 	})(one_var, sum, sum2, pCount);
-	var lambda = 5;
+	var lambda = 0.5;
 	var epsilon = 1e-6;
 	var coeffs = ndarray(new Float32Array(pixCount*5), picDim.concat(5));
 	var one_varPix = ndarray(new Float32Array(pixCount), picDim);
@@ -6625,7 +7699,7 @@ window.transmittanceMap = function(canvas, airLight) {
 	mprod(RHS, one_varPix, transmittanceRaw);
 	
 	//Conjugate gradients
-	smoothTransmittance(coeffs, RHS, transmittanceRaw, 150);
+	smoothTransmittance(coeffs, RHS, transmittanceRaw, 75);
 	
 	return transmittanceRaw.data;
 }
@@ -6700,7 +7774,9 @@ function smoothTransmittance(A, rhs, x, max_iter) {
 		zTrOld = zTr;
 	}
 }
-},{"./sample_1000.js":12,"cwise":6,"ndarray":10}],14:[function(require,module,exports){
+
+module.exports = transmittanceMap;
+},{"./sample_1000.js":18,"cwise":12,"ndarray":16}],20:[function(require,module,exports){
 function makeColorArray(canvas, normalize = false) {
 	var context = canvas.getContext('2d');
 	var colorArrayFlat = Array.from(context.getImageData(
@@ -6715,9 +7791,6 @@ function makeColorArray(canvas, normalize = false) {
 		];
 	}
 	return retArray;
-	/*return Array(Math.ceil(colorArrayFlat.length/4)).fill()
-			.map((_,idx) => colorArrayFlat.slice(idx*4, idx*4 + 4))
-			.map(data => data.slice(0, 3));*/
 }
 
 function arange(start, step, end) {
@@ -6803,4 +7876,4 @@ function cloneCanvas(oldCanvas) {
  module.exports.flatten = flatten;
  module.exports.cloneCanvas = cloneCanvas;
  
-},{}]},{},[13]);
+},{}]},{},[6]);
