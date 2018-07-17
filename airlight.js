@@ -1,5 +1,9 @@
-function estimateAirLight(colorArray, quantStruct) {
-	step = 0.05;
+function estimateAirLight(colorArray, quantStruct, minEst, maxEst) {
+	var diff = maxEst - minEst;
+	var step = 0;
+	if(diff > 0.6) {step = 0.08;}
+	else if (diff > 0.2) {step = 0.05;}
+	else {step = 0.02;}
 	var quantWithIds = quantStruct.quantizeID(colorArray);
 	var weights = Array(quantStruct.centroids.length).fill(0);
 	quantWithIds.forEach(element => {
@@ -9,15 +13,12 @@ function estimateAirLight(colorArray, quantStruct) {
 	weights = weights.map(d => d/weightsum);
 
 	var colors = quantStruct.centroids.map(d => d.map(e => e / 255));
-	var colorsR = colors.map(data => data[0]);
-	var colorsG = colors.map(data => data[1]);
-	var colorsB = colors.map(data => data[2]);
 
-	var AvalsR = arange(0.2, 0.05, 1.0);
-	var AvalsG = arange(0.25, 0.05, 1.0);
-	var AvalsB = arange(0.3, 0.05, 1.0);
+	var AvalsR = arange(minEst, step, maxEst);
+	var AvalsG = arange(minEst, step, maxEst);
+	var AvalsB = arange(minEst, step, maxEst);
 
-	var directions = linRange(0, 15, Math.PI/2);
+	var directions = linRange(0, 25, Math.PI/2);
 	var dirTrig = directions.map((d) => [Math.cos(d), Math.sin(d)]);
 
 	/* Vote for each two channels */
@@ -55,13 +56,10 @@ function estimateAirLight(colorArray, quantStruct) {
 		}
 	}
 	retColor = retColor.map(d => d/normWeight);
-	//var retColor = [AvalsR[Ri], AvalsG[Gi], AvalsB[Bi]];
-	console.log(retColor.map(d => d*255));
 	return retColor;
 }
 
 function vote2D(colors, ch1, ch2, A1, A2, dirTrig, weights) {
-	var colorNo = colors.length;
 	var nBins = dirTrig.length;
 	var thresh = 0.01;
 	var votesTotal = [];
@@ -82,7 +80,7 @@ function vote2D(colors, ch1, ch2, A1, A2, dirTrig, weights) {
 					ycomp = Ac[1] - color[ch2],
 					dist = Math.sqrt(xcomp*xcomp + ycomp*ycomp),
 					xn = xcomp / dist,
-					yn = ycomp / dist,
+					//yn = ycomp / dist,
 					angle = Math.acos(xn),
 					bin = Math.round(angle/Math.PI*2 * nBins);
 			if(bin == nBins) {bin--;}

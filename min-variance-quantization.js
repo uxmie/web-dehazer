@@ -79,7 +79,6 @@ function QuantKDTree(colorArray, clusters) {
 		if(front.splitChannel == -1) {
 			idx++;
 			currLeaves++;
-			//console.log(pq.length)
 			continue;
 		}
 
@@ -99,8 +98,6 @@ function QuantKDTree(colorArray, clusters) {
 		partition.forEach((data, idx) => {
 			colorArray[front.startIdx + idx] = data;
 		});
-		//Array.prototype.splice.apply(
-		//	colorArray, [front.startIdx, partition.length].concat(partition));
 
 		var thresh = front.maxVal.slice(0);
 		thresh[sc] = st;
@@ -187,6 +184,5 @@ QuantKDTree.prototype.quantizeImage = function(canvas, destCanvas) {
 }
 
 QuantKDTree.prototype.quantizeID = function(colorArray) {
-	//var colorArray = makeColorArray(canvas);
 	return colorArray.map(data => this.lookupID(data));
 }

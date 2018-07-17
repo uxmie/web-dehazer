@@ -5,9 +5,16 @@ function makeColorArray(canvas, normalize = false) {
 	if(normalize) {
 		colorArrayFlat.map(d => d/255);
 	}
-	return Array(Math.ceil(colorArrayFlat.length/4)).fill()
+	var retArray = Array(Math.ceil(colorArrayFlat.length/4)).fill();
+	for(var i = 0; i < retArray.length; ++i) {
+		retArray[i] = [
+			colorArrayFlat[4*i], colorArrayFlat[4*i+1], colorArrayFlat[4*i+2]
+		];
+	}
+	return retArray;
+	/*return Array(Math.ceil(colorArrayFlat.length/4)).fill()
 			.map((_,idx) => colorArrayFlat.slice(idx*4, idx*4 + 4))
-			.map(data => data.slice(0, 3));
+			.map(data => data.slice(0, 3));*/
 }
 
 function arange(start, step, end) {
@@ -51,4 +58,33 @@ function euclideanDist(a, b) {
 		z: a.z - b.z
 	};
 	return Math.sqrt(diff.x*diff.x + diff.y*diff.y + diff.z*diff.z);
+}
+
+function angleDist(a, b) {
+	var innerProd = a.x*b.x + a.y*b.y + a.z*b.z;
+	innerProd = Math.max(-1.0, Math.min(innerProd, 1.0));
+	return Math.acos(innerProd) / Math.PI * 2;
+}
+
+flatten = function(arr, result = []) {
+  for (let i = 0, length = arr.length; i < length; i++) {
+    const value = arr[i];
+    if (Array.isArray(value)) {
+      flatten(value, result);
+    } else {
+      result.push(value);
+    }
+  }
+  return result;
+};
+
+function cloneCanvas(oldCanvas) {
+	var newCanvas = document.createElement('canvas');
+	var context = newCanvas.getContext('2d');
+
+	newCanvas.width = oldCanvas.width;
+	newCanvas.height = oldCanvas.height;
+
+	context.drawImage(oldCanvas, 0, 0);
+	return newCanvas;
 }
