@@ -1,838 +1,5 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 /**
- * hermite-resize - Canvas image resize/resample using Hermite filter with JavaScript.
- * @version v2.2.4
- * @link https://github.com/viliusle/miniPaint
- * @license MIT
- */
-function Hermite_class(){var t,a,e=[];this.init=void(t=navigator.hardwareConcurrency||4),this.getCores=function(){return t},this.resample_auto=function(t,a,e,r,i){var h=this.getCores();window.Worker&&h>1?this.resample(t,a,e,r,i):(this.resample_single(t,a,e,!0),void 0!=i&&i())},this.resize_image=function(t,a,e,r,i){var h=document.getElementById(t),o=document.createElement("canvas");if(o.width=h.width,o.height=h.height,o.getContext("2d").drawImage(h,0,0),void 0==a&&void 0==e&&void 0!=r&&(a=h.width/100*r,e=h.height/100*r),void 0==e){var n=h.width/a;e=h.height/n}a=Math.round(a),e=Math.round(e);var s=function(){var t=o.toDataURL();h.width=a,h.height=e,h.src=t,t=null,o=null};void 0==i||1==i?this.resample(o,a,e,!0,s):(this.resample_single(o,a,e,!0),s())},this.resample=function(r,i,h,o,n){var s=r.width,d=r.height;i=Math.round(i);var c=d/(h=Math.round(h));if(e.length>0)for(u=0;u<t;u++)void 0!=e[u]&&(e[u].terminate(),delete e[u]);e=new Array(t);for(var g=r.getContext("2d"),v=[],l=2*Math.ceil(d/t/2),f=-1,u=0;u<t;u++){var M=f+1;if(!(M>=d)){f=M+l-1,f=Math.min(f,d-1);var m=l;m=Math.min(l,d-M),v[u]={},v[u].source=g.getImageData(0,M,s,l),v[u].target=!0,v[u].start_y=Math.ceil(M/c),v[u].height=m}}!0===o?(r.width=i,r.height=h):g.clearRect(0,0,s,d);for(var w=0,u=0;u<t;u++)if(void 0!=v[u].target){w++;var p=new Worker(a);e[u]=p,p.onmessage=function(t){w--;var a=t.data.core;e[a].terminate(),delete e[a];var r=Math.ceil(v[a].height/c);v[a].target=g.createImageData(i,r),v[a].target.data.set(t.data.target),g.putImageData(v[a].target,0,v[a].start_y),w<=0&&void 0!=n&&n()};var _={width_source:s,height_source:v[u].height,width:i,height:Math.ceil(v[u].height/c),core:u,source:v[u].source.data.buffer};p.postMessage(_,[_.source])}},a=window.URL.createObjectURL(new Blob(["(",function(){onmessage=function(t){for(var a=t.data.core,e=t.data.width_source,r=t.data.height_source,i=t.data.width,h=t.data.height,o=e/i,n=r/h,s=Math.ceil(o/2),d=Math.ceil(n/2),c=new Uint8ClampedArray(t.data.source),g=(c.length,i*h*4),v=new ArrayBuffer(g),l=new Uint8ClampedArray(v,0,g),f=0;f<h;f++)for(var u=0;u<i;u++){var M=4*(u+f*i),m=0,w=0,p=0,_=0,y=0,b=0,C=0,I=f*n,D=Math.floor(u*o),R=Math.ceil((u+1)*o),U=Math.floor(f*n),A=Math.ceil((f+1)*n);R=Math.min(R,e),A=Math.min(A,r);for(var x=U;x<A;x++)for(var B=Math.abs(I-x)/d,L=u*o,j=B*B,k=D;k<R;k++){var q=Math.abs(L-k)/s,E=Math.sqrt(j+q*q);if(!(E>=1)){var W=4*(k+x*e);C+=(m=2*E*E*E-3*E*E+1)*c[W+3],p+=m,c[W+3]<255&&(m=m*c[W+3]/250),_+=m*c[W],y+=m*c[W+1],b+=m*c[W+2],w+=m}}l[M]=_/w,l[M+1]=y/w,l[M+2]=b/w,l[M+3]=C/p}var z={core:a,target:l};postMessage(z,[l.buffer])}}.toString(),")()"],{type:"application/javascript"})),this.resample_single=function(t,a,e,r){for(var i=t.width,h=t.height,o=i/(a=Math.round(a)),n=h/(e=Math.round(e)),s=Math.ceil(o/2),d=Math.ceil(n/2),c=t.getContext("2d"),g=c.getImageData(0,0,i,h),v=c.createImageData(a,e),l=g.data,f=v.data,u=0;u<e;u++)for(var M=0;M<a;M++){var m=4*(M+u*a),w=0,p=0,_=0,y=0,b=0,C=0,I=0,D=u*n,R=Math.floor(M*o),U=Math.ceil((M+1)*o),A=Math.floor(u*n),x=Math.ceil((u+1)*n);U=Math.min(U,i),x=Math.min(x,h);for(var B=A;B<x;B++)for(var L=Math.abs(D-B)/d,j=M*o,k=L*L,q=R;q<U;q++){var E=Math.abs(j-q)/s,W=Math.sqrt(k+E*E);if(!(W>=1)){var z=4*(q+B*i);I+=(w=2*W*W*W-3*W*W+1)*l[z+3],_+=w,l[z+3]<255&&(w=w*l[z+3]/250),y+=w*l[z],b+=w*l[z+1],C+=w*l[z+2],p+=w}}f[m]=y/p,f[m+1]=b/p,f[m+2]=C/p,f[m+3]=I/_}!0===r?(t.width=a,t.height=e):c.clearRect(0,0,i,h),c.putImageData(v,0,0)}}
-module.exports = Hermite_class;
-
-},{}],2:[function(require,module,exports){
-var utils = require('./utils.js');
-var arange = utils.arange,
-		linRange = utils.linRange,
-		cartesian = utils.cartesian,
-		range = utils.range;
-
-function estimateAirLight(colorArray, quantStruct, minEst, maxEst) {
-	var diff = maxEst - minEst;
-	var step = 0;
-	if(diff > 0.6) {step = 0.08;}
-	else if (diff > 0.2) {step = 0.05;}
-	else {step = 0.02;}
-	var quantWithIds = quantStruct.quantizeID(colorArray);
-	var weights = Array(quantStruct.centroids.length).fill(0);
-	quantWithIds.forEach(element => {
-		weights[element]++;
-	});
-	var weightsum = weights.reduce((a, b) => a+b);
-	weights = weights.map(d => d/weightsum);
-
-	var colors = quantStruct.centroids.map(d => d.map(e => e / 255));
-
-	var AvalsR = arange(minEst, step, maxEst);
-	var AvalsG = arange(minEst, step, maxEst);
-	var AvalsB = arange(minEst, step, maxEst);
-
-	var directions = linRange(0, 25, Math.PI/2);
-	var dirTrig = directions.map((d) => [Math.cos(d), Math.sin(d)]);
-
-	/* Vote for each two channels */
-	var VotesRG = vote2D(colors, 0, 1, AvalsR, AvalsG, dirTrig, weights);
-	var VotesGB = vote2D(colors, 1, 2, AvalsG, AvalsB, dirTrig, weights);
-	var VotesRB = vote2D(colors, 0, 2, AvalsR, AvalsB, dirTrig, weights);
-
-	var vote3D = Array(AvalsR.length*AvalsG.length*AvalsB.length).fill()
-			.map(function(_, idx) {
-				var Ri = Math.floor(idx / (AvalsG.length*AvalsB.length));
-				var Gi = Math.floor(idx / AvalsB.length) % AvalsG.length;
-				var Bi = idx % AvalsB.length;
-				var RGi = Ri*AvalsG.length + Gi;
-				var GBi = Gi*AvalsB.length + Bi;
-				var RBi = Ri*AvalsB.length + Bi;
-				return VotesRG[RGi]*VotesGB[GBi]*VotesRB[RBi];
-			});
-	var idx = (vote3D.indexOf(Math.max(...vote3D)));
-	var Ri = Math.floor(idx / (AvalsG.length*AvalsB.length));
-	var Gi = Math.floor(idx / AvalsB.length) % AvalsG.length;
-	var Bi = idx % AvalsB.length;
-
-	var retColor = Array(3).fill(0);
-	var normWeight = 0;
-	for(var i = Math.max(Ri-1, 0); i < Math.min(Ri+2, AvalsR.length); ++i) {
-		for(var j = Math.max(Gi-1, 0); j < Math.min(Gi+2, AvalsG.length); ++j) {
-			for(var k = Math.max(Bi-1, 0); k < Math.min(Bi+2, AvalsB.length); ++k) {
-				var idx = i*AvalsG.length*AvalsB.length + j*AvalsB.length + k;
-				var w = vote3D[idx];
-				normWeight += w;
-				retColor[0] += AvalsR[i]*w;
-				retColor[1] += AvalsG[j]*w;
-				retColor[2] += AvalsB[k]*w;
-			}
-		}
-	}
-	retColor = retColor.map(d => d/normWeight);
-	return retColor;
-}
-
-function vote2D(colors, ch1, ch2, A1, A2, dirTrig, weights) {
-	var nBins = dirTrig.length;
-	var thresh = 0.01;
-	var votesTotal = [];
-
-	colors.forEach(color => {
-		var A1start = A1.findIndex(p => p > color[ch1]);
-		var A2start = A2.findIndex(p => p > color[ch2]);
-
-		if (A1start < 0 || A2start < 0) return;
-
-		var Aranges = cartesian(A1.slice(A1start), A2.slice(A2start));
-		var Aidxs = cartesian(range(A1start, A1.length), range(A2start, A2.length))
-								.map(d => d[0]*A2.length + d[1]);
-		var votes = Array(A1.length*A2.length*nBins).fill(0);
-		Aranges.forEach((Ac, idx) => {
-			//Get Angle
-			var xcomp = Ac[0] - color[ch1],
-					ycomp = Ac[1] - color[ch2],
-					dist = Math.sqrt(xcomp*xcomp + ycomp*ycomp),
-					xn = xcomp / dist,
-					//yn = ycomp / dist,
-					angle = Math.acos(xn),
-					bin = Math.round(angle/Math.PI*2 * nBins);
-			if(bin == nBins) {bin--;}
-			
-			var voteIdx = Aidxs[idx]*nBins + bin;
-			votes[voteIdx] = 1;
-			var lineDist = Array(nBins).fill().map(function(_, idx2) {
-				return Math.abs(
-					(Ac[0] - color[ch1])*dirTrig[idx2][0]
-						- (Ac[1] - color[ch2])*dirTrig[idx2][1]);
-			});
-			var tempVotes = Array(nBins).fill().map(function(_, idx2) {
-				return (lineDist[idx2] < 2*thresh*(dist*Math.SQRT1_2 + 1))?1:0;
-			});
-			tempVotes.forEach((data, idx2) => {
-				var voteIdx = Aidxs[idx]*nBins + idx2;
-				votes[voteIdx] = data;
-			});
-		});
-		votesTotal.push(votes);
-	});
-
-	var varCount = votesTotal.reduce((a, b) => 
-		a.map((d, i) => d + b[i])  
-	);
-	var candFlag = varCount.map(d => d >= 2);
-	var candIdx = [];
-	var ind = -1;
-	while((ind = candFlag.indexOf(true, ind + 1)) != -1) {
-		candIdx.push(ind);
-	}
-	var candDecode = candIdx.map(d => [
-		Math.floor(d / (A2.length*nBins)),
-		Math.floor(d / nBins) % A2.length,
-		d % nBins
-	]);
-
-	/* Cast vote. */
-	var finalVote = Array(A1.length*A2.length*nBins).fill(0);
-	var Aranges = cartesian(A1, A2);
-	candIdx.forEach((param, idx) => {
-		var Aidx = Math.floor(param / nBins),
-				Ac = Aranges[Aidx];
-		colors.forEach((color, coloridx) => {
-			var xcomp = Ac[0] - color[ch1],
-					ycomp = Ac[1] - color[ch2],
-					dist = Math.sqrt(xcomp*xcomp + ycomp*ycomp),
-					distweight = weights[coloridx]*Math.exp(5*-dist + 1);
-			finalVote[param] += distweight;
-		});
-	});
-
-	var returnMat = Array(A1.length*A2.length).fill()
-		.map((_, idx) => finalVote.slice(idx*nBins, idx*nBins + nBins))
-		.map(data => data.reduce((a, b) => a+b));
-	
-	var y = (returnMat.indexOf(Math.max(...returnMat)));
-	return returnMat;
-}
-
-module.exports = estimateAirLight;
-},{"./utils.js":9}],3:[function(require,module,exports){
-//var QuantKDTree = require('./min-variance-quantization');
-var Hermite_class = require('./Hermite-resize/dist/hermite.npm.js');
-var transmittanceMap = require('./transmittance_sci.js');
-
-var utils = require('./utils.js');
-var /*makeColorArray = utils.makeColorArray, */cloneCanvas = utils.cloneCanvas;
-var work = require('webworkify');
-
-function processImage(img) {
-	var gamma = new Number(document.getElementById('gammaSlide').value);
-	var canvas = document.getElementById('originalPic');
-	var context = canvas.getContext('2d');
-	canvas.width = img.width;
-	canvas.height = img.height;
-	context.drawImage(img, 0, 0);
-
-	window.origNonResize = cloneCanvas(canvas);
-
-	var ratio = 1, maxsize = 600;
-	if(img.width > maxsize) {
-		ratio = maxsize / img.width;
-	}
-	if(img.height*ratio > maxsize) {
-		ratio = maxsize / img.height;
-	}
-	var resizer = new Hermite_class();
-	resizer.resample(canvas,
-										Math.round(img.width*ratio),
-										Math.round(img.height*ratio),
-										true,
-										function() { 
-											window.origCanvas = cloneCanvas(canvas);
-											changeGamma(window.origCanvas, canvas, gamma);
-											canvas.style.visibility = "visible";
-										}
-	);
-}
-
-function dehazePreview() {
-	var startTime = new Date();
-	var canvas = document.getElementById('originalPic');
-	var minEst = new Number(document.getElementById('minAirSlide').value);
-	var maxEst = new Number(document.getElementById('maxAirSlide').value);
-	var context = canvas.getContext('2d');
-	var colorArrayFlat = context.getImageData(
-			0, 0, canvas.width, canvas.height).data.slice(0);
-	var picWidth = canvas.width;
-	var picHeight = canvas.height;
-
-	//Set loading screen
-	var loading = document.getElementById("loadingScreen");
-	var statusText = document.getElementById("statusUpdate");
-	//loading.style.visibility = "visible";
-	var loadingElems = Array.from(document.getElementsByClassName('loading'));
-	loadingElems.forEach(e => e.style.visibility = 'visible');
-	
-	var worker = work(require('../workers/dehazer_worker.js'));
-	worker.onmessage = function(e) {
-		if(e.data.signal === "finish") {
-			window.airLight = e.data.airLight;
-			var airLightPreview = document.getElementById('airLightPreview');
-			var airLightRGB = window.airLight.map(d => Math.round(d*255));
-			var airLightString = 'rgb(' + airLightRGB[0] + ',' + airLightRGB[1] + ',' + airLightRGB[2] + ')';
-			airLightPreview.style.backgroundColor = airLightString;
-
-			window.transmittance = e.data.transmittance;
-			var endTime = new Date();
-			console.log("Finished transmittance map in " + (endTime - startTime)/1000 + " secs.");
-			statusText.innerHTML = "Post processing…";
-			var transCanvas = document.getElementById('transmittanceResultsPic');
-			drawTransmittance(transCanvas, window.transmittance, canvas.width, canvas.height);
-			var dehazePreview = document.getElementById('dehazeResult');
-			drawDehazed(canvas, dehazePreview, window.transmittance, window.airLight);
-
-			//loading.style.visibility = "hidden";
-			loadingElems.forEach(e => e.style.visibility = 'hidden');
-			document.getElementById("transmittanceDiv").style.visibility = "visible";
-		} else {
-			statusText.innerHTML = e.data.signal;
-		}
-	}
-	worker.postMessage({
-		image: colorArrayFlat,
-		clusters: 500,
-		minEst: minEst,
-		maxEst: maxEst,
-		picWidth: picWidth,
-		picHeight: picHeight
-	}, [colorArrayFlat.buffer]);
-}
-
-function findAirLight() {
-	var canvas = document.getElementById('originalPic');
-	var minEst = new Number(document.getElementById('minAirSlide').value);
-	var maxEst = new Number(document.getElementById('maxAirSlide').value);
-	//window.colorArray = makeColorArray(canvas);
-	var context = canvas.getContext('2d');
-	var colorArrayFlat = context.getImageData(
-			0, 0, canvas.width, canvas.height).data.slice(0);
-	
-	var worker = work(require('../workers/kdtree_worker.js'));
-	worker.onmessage = function(e) {
-		window.airLight = e.data;
-		var airLightPreview = document.getElementById('airLightPreview');
-		var airLightRGB = e.data.map(d => Math.round(d*255));
-		var airLightString = 'rgb(' + airLightRGB[0] + ',' + airLightRGB[1] + ',' + airLightRGB[2] + ')';
-		airLightPreview.style.backgroundColor = airLightString;
-	}
-	worker.postMessage({image: colorArrayFlat, clusters: 500, minEst: minEst, maxEst: maxEst}, [colorArrayFlat.buffer]);
-}
-
-function findAndDrawResults() {
-	var canvas = document.getElementById('originalPic');
-	var context = canvas.getContext('2d');
-	var picWidth = canvas.width,
-		  picHeight = canvas.height;
-	var colorArray = context.getImageData(0, 0, picWidth, picHeight).data;
-	var startTime = new Date();
-	var worker = work(require('../workers/transmittance_worker.js'));
-	worker.onmessage = function(e) {
-		window.transmittance = e.data;
-		var endTime = new Date();
-		console.log("Finished transmittance map in " + (endTime - startTime)/1000 + " secs.");
-		var transCanvas = document.getElementById('transmittanceResultsPic');
-		drawTransmittance(transCanvas, window.transmittance, canvas.width, canvas.height);
-		var dehazePreview = document.getElementById('dehazeResult');
-		drawDehazed(canvas, dehazePreview, window.transmittance, window.airLight);
-	}
-	worker.postMessage({
-		colorArray: colorArray,
-		picWidth: picWidth,
-		picHeight: picHeight,
-		airLight: window.airLight
-	}, [colorArray.buffer]);
-}
-
-function drawDehazed(canvas, destCanvas, transmittance, airLight) {
-	var dehazeAmount = new Number(
-		document.getElementById("hazeAmountSlide").value
-	);
-	var distance = new Number(
-		document.getElementById("distSlide").value
-	);
-	var gamma = new Number(
-		document.getElementById("gammaOutSlide").value
-	);
-	var fac = Math.pow(2, distance);
-
-	window.dehazeFlat = hazeArray(canvas, transmittance, airLight, fac);
-	mixHaze(window.dehazeFlat, canvas.width, canvas.height,
-					destCanvas, transmittance, airLight, dehazeAmount);
-	window.dehazedCanvas = cloneCanvas(destCanvas);
-	changeGamma(window.dehazedCanvas, destCanvas, 1/gamma);
-}
-
-function hazeArray(canvas, transmittance, airLight, fac) {
-	var colorFlat = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
-	var dehazeFlat = new Uint8ClampedArray(4*transmittance.length).fill(255);
-	transmittance.forEach((t,i) => {
-		var tp = t*fac;
-		dehazeFlat[4*i] = (colorFlat[4*i] - (1-tp)*airLight[0]*255) / (tp+1e-4);
-		dehazeFlat[4*i + 1] = (colorFlat[4*i + 1] - (1-tp)*airLight[1]*255) / (tp+1e-4);
-		dehazeFlat[4*i + 2] = (colorFlat[4*i + 2] - (1-tp)*airLight[2]*255) / (tp+1e-4);
-	});
-	return dehazeFlat;
-}
-
-function mixHaze(origData, width, height, destCanvas,
-									transmittance, airLight, mixVal) {
-	var destData = new Uint8ClampedArray(origData.length).fill(255);
-	for(var i = 0; i < transmittance.length; i++) {
-		var tp = Math.pow(transmittance[i], mixVal);
-		destData[4*i] = tp*origData[4*i] + (1-tp)*airLight[0]*255;
-		destData[4*i+1] = tp*origData[4*i+1] + (1-tp)*airLight[1]*255;
-		destData[4*i+2] = tp*origData[4*i+2] + (1-tp)*airLight[2]*255;
-	}
-	destCanvas.width = width;
-	destCanvas.height = height;
-	var destContext = destCanvas.getContext('2d');
-	var imageData = destContext.createImageData(width, height);
-	imageData.data.set(destData);
-	destContext.putImageData(imageData, 0, 0);
-}
-
-
-function drawTransmittance(canvas, transmittance, width, height) {
-	var context = canvas.getContext('2d');
-
-	var transFlat = new Uint8ClampedArray(transmittance.length*4);
-	transmittance.forEach((d, i) => {
-		transFlat[i*4] = d*255;
-		transFlat[i*4 + 1] = d*255;
-		transFlat[i*4 + 2] = d*255;
-		transFlat[i*4 + 3] = 255;
-	});
-	canvas.width = width;
-	canvas.height = height;
-	var imageData = context.createImageData(canvas.width, canvas.height);
-	imageData.data.set(transFlat);
-	context.putImageData(imageData, 0, 0);
-}
-
-function sliderChange(slider, target) {
-	target.innerHTML = slider.value;
-}
-
-function changeGamma(origCanvas, canvas, gamma) {
-	var context = canvas.getContext('2d');
-	var origData = origCanvas.getContext('2d')
-	.getImageData(0, 0, canvas.width, canvas.height).data;
-	var destData = new Uint8ClampedArray(origData.length).fill(255);
-	for(var i = 0; i < origData.length; i += 4) {
-		destData[i] = Math.pow(origData[i]/255, gamma)*255;
-		destData[i+1] = Math.pow(origData[i+1]/255, gamma)*255;
-		destData[i+2] = Math.pow(origData[i+2]/255, gamma)*255;
-	}
-	var imageData = context.createImageData(canvas.width, canvas.height);
-	imageData.data.set(destData);
-	context.putImageData(imageData, 0, 0);
-}
-
-function calculateOriginal() {
-	var gamma = document.getElementById('gammaSlide').value;
-	changeGamma(window.origNonResize, window.origNonResize, gamma);
-	var startTime = new Date();
-	var context = window.origNonResize.getContext('2d');
-	var picWidth = window.origNonResize.width,
-		  picHeight = window.origNonResize.height;
-	var colorArray = context.getImageData(0, 0, picWidth, picHeight).data;
-
-	var statusText = document.getElementById("statusUpdate");
-	var loadingElems = Array.from(document.getElementsByClassName('loading'));
-	loadingElems.forEach(e => e.style.visibility = 'visible');
-
-	var worker = work(require('../workers/transmittance_worker.js'));
-	worker.onmessage = function(e) {
-		if(e.data.signal === "finish") {
-			var transmittance = e.data.transmittance;
-			var endTime = new Date();
-			console.log("Finished transmittance map in " + (endTime - startTime)/1000 + " secs.");
-
-			var finalCanvas = document.createElement('canvas');
-			drawDehazed(window.origNonResize, finalCanvas, transmittance, window.airLight);
-
-			console.log(finalCanvas.width);
-			var db = document.getElementById('downloadLink');
-			finalCanvas.toBlob(function(blob) {
-				db.href = URL.createObjectURL(blob);
-			});
-			var revokeURL = function() {
-				requestAnimationFrame(function() {
-					URL.revokeObjectURL(this.href);
-					this.href = null;
-				});
-				this.removeEventListener('click', revokeURL);
-			};
-			db.addEventListener('click', revokeURL);
-			db.download = "dehazed.png";
-			loadingElems.forEach(e => e.style.visibility = 'hidden');
-			document.getElementById("transmittanceDiv").style.visibility = "visible";
-		} else {
-			statusText.innerHTML = e.data.signal;
-		}
-	}
-	worker.postMessage({
-		colorArray: colorArray,
-		picWidth: picWidth,
-		picHeight: picHeight,
-		airLight: window.airLight
-	}, [colorArray.buffer]);
-}
-
-module.exports.processImage = processImage;
-module.exports.sliderChange = sliderChange;
-module.exports.changeGamma = changeGamma;
-module.exports.dehazePreview = dehazePreview;
-module.exports.findAirLight = findAirLight;
-module.exports.findAndDrawResults = findAndDrawResults;
-module.exports.drawDehazed = drawDehazed;
-module.exports.mixHaze = mixHaze;
-module.exports.calculateOriginal = calculateOriginal;
-},{"../workers/dehazer_worker.js":22,"../workers/kdtree_worker.js":23,"../workers/transmittance_worker.js":24,"./Hermite-resize/dist/hermite.npm.js":1,"./transmittance_sci.js":8,"./utils.js":9,"webworkify":21}],4:[function(require,module,exports){
-(function (global){
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.PriorityQueue = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-var AbstractPriorityQueue, ArrayStrategy, BHeapStrategy, BinaryHeapStrategy, PriorityQueue,
-  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  hasProp = {}.hasOwnProperty;
-
-AbstractPriorityQueue = _dereq_('./PriorityQueue/AbstractPriorityQueue');
-
-ArrayStrategy = _dereq_('./PriorityQueue/ArrayStrategy');
-
-BinaryHeapStrategy = _dereq_('./PriorityQueue/BinaryHeapStrategy');
-
-BHeapStrategy = _dereq_('./PriorityQueue/BHeapStrategy');
-
-PriorityQueue = (function(superClass) {
-  extend(PriorityQueue, superClass);
-
-  function PriorityQueue(options) {
-    options || (options = {});
-    options.strategy || (options.strategy = BinaryHeapStrategy);
-    options.comparator || (options.comparator = function(a, b) {
-      return (a || 0) - (b || 0);
-    });
-    PriorityQueue.__super__.constructor.call(this, options);
-  }
-
-  return PriorityQueue;
-
-})(AbstractPriorityQueue);
-
-PriorityQueue.ArrayStrategy = ArrayStrategy;
-
-PriorityQueue.BinaryHeapStrategy = BinaryHeapStrategy;
-
-PriorityQueue.BHeapStrategy = BHeapStrategy;
-
-module.exports = PriorityQueue;
-
-
-},{"./PriorityQueue/AbstractPriorityQueue":2,"./PriorityQueue/ArrayStrategy":3,"./PriorityQueue/BHeapStrategy":4,"./PriorityQueue/BinaryHeapStrategy":5}],2:[function(_dereq_,module,exports){
-var AbstractPriorityQueue;
-
-module.exports = AbstractPriorityQueue = (function() {
-  function AbstractPriorityQueue(options) {
-    var ref;
-    if ((options != null ? options.strategy : void 0) == null) {
-      throw 'Must pass options.strategy, a strategy';
-    }
-    if ((options != null ? options.comparator : void 0) == null) {
-      throw 'Must pass options.comparator, a comparator';
-    }
-    this.priv = new options.strategy(options);
-    this.length = (options != null ? (ref = options.initialValues) != null ? ref.length : void 0 : void 0) || 0;
-  }
-
-  AbstractPriorityQueue.prototype.queue = function(value) {
-    this.length++;
-    this.priv.queue(value);
-    return void 0;
-  };
-
-  AbstractPriorityQueue.prototype.dequeue = function(value) {
-    if (!this.length) {
-      throw 'Empty queue';
-    }
-    this.length--;
-    return this.priv.dequeue();
-  };
-
-  AbstractPriorityQueue.prototype.peek = function(value) {
-    if (!this.length) {
-      throw 'Empty queue';
-    }
-    return this.priv.peek();
-  };
-
-  AbstractPriorityQueue.prototype.clear = function() {
-    this.length = 0;
-    return this.priv.clear();
-  };
-
-  return AbstractPriorityQueue;
-
-})();
-
-
-},{}],3:[function(_dereq_,module,exports){
-var ArrayStrategy, binarySearchForIndexReversed;
-
-binarySearchForIndexReversed = function(array, value, comparator) {
-  var high, low, mid;
-  low = 0;
-  high = array.length;
-  while (low < high) {
-    mid = (low + high) >>> 1;
-    if (comparator(array[mid], value) >= 0) {
-      low = mid + 1;
-    } else {
-      high = mid;
-    }
-  }
-  return low;
-};
-
-module.exports = ArrayStrategy = (function() {
-  function ArrayStrategy(options) {
-    var ref;
-    this.options = options;
-    this.comparator = this.options.comparator;
-    this.data = ((ref = this.options.initialValues) != null ? ref.slice(0) : void 0) || [];
-    this.data.sort(this.comparator).reverse();
-  }
-
-  ArrayStrategy.prototype.queue = function(value) {
-    var pos;
-    pos = binarySearchForIndexReversed(this.data, value, this.comparator);
-    this.data.splice(pos, 0, value);
-    return void 0;
-  };
-
-  ArrayStrategy.prototype.dequeue = function() {
-    return this.data.pop();
-  };
-
-  ArrayStrategy.prototype.peek = function() {
-    return this.data[this.data.length - 1];
-  };
-
-  ArrayStrategy.prototype.clear = function() {
-    this.data.length = 0;
-    return void 0;
-  };
-
-  return ArrayStrategy;
-
-})();
-
-
-},{}],4:[function(_dereq_,module,exports){
-var BHeapStrategy;
-
-module.exports = BHeapStrategy = (function() {
-  function BHeapStrategy(options) {
-    var arr, i, j, k, len, ref, ref1, shift, value;
-    this.comparator = (options != null ? options.comparator : void 0) || function(a, b) {
-      return a - b;
-    };
-    this.pageSize = (options != null ? options.pageSize : void 0) || 512;
-    this.length = 0;
-    shift = 0;
-    while ((1 << shift) < this.pageSize) {
-      shift += 1;
-    }
-    if (1 << shift !== this.pageSize) {
-      throw 'pageSize must be a power of two';
-    }
-    this._shift = shift;
-    this._emptyMemoryPageTemplate = arr = [];
-    for (i = j = 0, ref = this.pageSize; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
-      arr.push(null);
-    }
-    this._memory = [];
-    this._mask = this.pageSize - 1;
-    if (options.initialValues) {
-      ref1 = options.initialValues;
-      for (k = 0, len = ref1.length; k < len; k++) {
-        value = ref1[k];
-        this.queue(value);
-      }
-    }
-  }
-
-  BHeapStrategy.prototype.queue = function(value) {
-    this.length += 1;
-    this._write(this.length, value);
-    this._bubbleUp(this.length, value);
-    return void 0;
-  };
-
-  BHeapStrategy.prototype.dequeue = function() {
-    var ret, val;
-    ret = this._read(1);
-    val = this._read(this.length);
-    this.length -= 1;
-    if (this.length > 0) {
-      this._write(1, val);
-      this._bubbleDown(1, val);
-    }
-    return ret;
-  };
-
-  BHeapStrategy.prototype.peek = function() {
-    return this._read(1);
-  };
-
-  BHeapStrategy.prototype.clear = function() {
-    this.length = 0;
-    this._memory.length = 0;
-    return void 0;
-  };
-
-  BHeapStrategy.prototype._write = function(index, value) {
-    var page;
-    page = index >> this._shift;
-    while (page >= this._memory.length) {
-      this._memory.push(this._emptyMemoryPageTemplate.slice(0));
-    }
-    return this._memory[page][index & this._mask] = value;
-  };
-
-  BHeapStrategy.prototype._read = function(index) {
-    return this._memory[index >> this._shift][index & this._mask];
-  };
-
-  BHeapStrategy.prototype._bubbleUp = function(index, value) {
-    var compare, indexInPage, parentIndex, parentValue;
-    compare = this.comparator;
-    while (index > 1) {
-      indexInPage = index & this._mask;
-      if (index < this.pageSize || indexInPage > 3) {
-        parentIndex = (index & ~this._mask) | (indexInPage >> 1);
-      } else if (indexInPage < 2) {
-        parentIndex = (index - this.pageSize) >> this._shift;
-        parentIndex += parentIndex & ~(this._mask >> 1);
-        parentIndex |= this.pageSize >> 1;
-      } else {
-        parentIndex = index - 2;
-      }
-      parentValue = this._read(parentIndex);
-      if (compare(parentValue, value) < 0) {
-        break;
-      }
-      this._write(parentIndex, value);
-      this._write(index, parentValue);
-      index = parentIndex;
-    }
-    return void 0;
-  };
-
-  BHeapStrategy.prototype._bubbleDown = function(index, value) {
-    var childIndex1, childIndex2, childValue1, childValue2, compare;
-    compare = this.comparator;
-    while (index < this.length) {
-      if (index > this._mask && !(index & (this._mask - 1))) {
-        childIndex1 = childIndex2 = index + 2;
-      } else if (index & (this.pageSize >> 1)) {
-        childIndex1 = (index & ~this._mask) >> 1;
-        childIndex1 |= index & (this._mask >> 1);
-        childIndex1 = (childIndex1 + 1) << this._shift;
-        childIndex2 = childIndex1 + 1;
-      } else {
-        childIndex1 = index + (index & this._mask);
-        childIndex2 = childIndex1 + 1;
-      }
-      if (childIndex1 !== childIndex2 && childIndex2 <= this.length) {
-        childValue1 = this._read(childIndex1);
-        childValue2 = this._read(childIndex2);
-        if (compare(childValue1, value) < 0 && compare(childValue1, childValue2) <= 0) {
-          this._write(childIndex1, value);
-          this._write(index, childValue1);
-          index = childIndex1;
-        } else if (compare(childValue2, value) < 0) {
-          this._write(childIndex2, value);
-          this._write(index, childValue2);
-          index = childIndex2;
-        } else {
-          break;
-        }
-      } else if (childIndex1 <= this.length) {
-        childValue1 = this._read(childIndex1);
-        if (compare(childValue1, value) < 0) {
-          this._write(childIndex1, value);
-          this._write(index, childValue1);
-          index = childIndex1;
-        } else {
-          break;
-        }
-      } else {
-        break;
-      }
-    }
-    return void 0;
-  };
-
-  return BHeapStrategy;
-
-})();
-
-
-},{}],5:[function(_dereq_,module,exports){
-var BinaryHeapStrategy;
-
-module.exports = BinaryHeapStrategy = (function() {
-  function BinaryHeapStrategy(options) {
-    var ref;
-    this.comparator = (options != null ? options.comparator : void 0) || function(a, b) {
-      return a - b;
-    };
-    this.length = 0;
-    this.data = ((ref = options.initialValues) != null ? ref.slice(0) : void 0) || [];
-    this._heapify();
-  }
-
-  BinaryHeapStrategy.prototype._heapify = function() {
-    var i, j, ref;
-    if (this.data.length > 0) {
-      for (i = j = 1, ref = this.data.length; 1 <= ref ? j < ref : j > ref; i = 1 <= ref ? ++j : --j) {
-        this._bubbleUp(i);
-      }
-    }
-    return void 0;
-  };
-
-  BinaryHeapStrategy.prototype.queue = function(value) {
-    this.data.push(value);
-    this._bubbleUp(this.data.length - 1);
-    return void 0;
-  };
-
-  BinaryHeapStrategy.prototype.dequeue = function() {
-    var last, ret;
-    ret = this.data[0];
-    last = this.data.pop();
-    if (this.data.length > 0) {
-      this.data[0] = last;
-      this._bubbleDown(0);
-    }
-    return ret;
-  };
-
-  BinaryHeapStrategy.prototype.peek = function() {
-    return this.data[0];
-  };
-
-  BinaryHeapStrategy.prototype.clear = function() {
-    this.length = 0;
-    this.data.length = 0;
-    return void 0;
-  };
-
-  BinaryHeapStrategy.prototype._bubbleUp = function(pos) {
-    var parent, x;
-    while (pos > 0) {
-      parent = (pos - 1) >>> 1;
-      if (this.comparator(this.data[pos], this.data[parent]) < 0) {
-        x = this.data[parent];
-        this.data[parent] = this.data[pos];
-        this.data[pos] = x;
-        pos = parent;
-      } else {
-        break;
-      }
-    }
-    return void 0;
-  };
-
-  BinaryHeapStrategy.prototype._bubbleDown = function(pos) {
-    var last, left, minIndex, right, x;
-    last = this.data.length - 1;
-    while (true) {
-      left = (pos << 1) + 1;
-      right = left + 1;
-      minIndex = pos;
-      if (left <= last && this.comparator(this.data[left], this.data[minIndex]) < 0) {
-        minIndex = left;
-      }
-      if (right <= last && this.comparator(this.data[right], this.data[minIndex]) < 0) {
-        minIndex = right;
-      }
-      if (minIndex !== pos) {
-        x = this.data[minIndex];
-        this.data[minIndex] = this.data[pos];
-        this.data[pos] = x;
-        pos = minIndex;
-      } else {
-        break;
-      }
-    }
-    return void 0;
-  };
-
-  return BinaryHeapStrategy;
-
-})();
-
-
-},{}]},{},[1])(1)
-});
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],5:[function(require,module,exports){
-/**
  * k-d Tree JavaScript - V 1.01
  *
  * https://github.com/ubilabs/kd-tree-javascript
@@ -1298,1349 +465,7 @@ module.exports = BinaryHeapStrategy = (function() {
   exports.BinaryHeap = BinaryHeap;
 }));
 
-},{}],6:[function(require,module,exports){
-var PriorityQueue = require('./js-priority-queue/priority-queue.js');
-
-function QuantKDTreeNode(colorArray, startIdx, endIdx, minVal, maxVal, parent) {
-	this.minVal = minVal.slice(0);
-	this.maxVal = maxVal.slice(0);
-	
-	this.startIdx = startIdx;
-	this.endIdx = endIdx;
-	this.splitChannel = -1; // must be integer;
-	this.splitThreshold = -1;
-	this.splitVariance = -1;
-	this.left = -1;
-	this.right = -1;
-	this.parent = parent;
-	this.isLeaf = true;
-	this.index = -1;
-
-	/* TODO: Find optimal split */
-	for(var i = 0; i < 3; i++) {
-		var histo = Array(256).fill(0);
-		colorArray.slice(this.startIdx, this.endIdx).forEach(element => {
-			histo[element[i]]++;
-		});
-
-		/* Find split with Otsu's Algorithm */
-		var sumB = 0, wB = 0;
-		var sum1 = histo.map((data, idx) => data*idx)
-		                .reduce((a, b) => a+b, 0);
-		var total = histo.reduce((a, b) => a+b, 0);
-		for(var j = 0; j < 256; ++j) {
-			wB += histo[j];
-			var wF = total - wB;
-			if(wB == 0 || wF == 0) {
-				continue;
-			}
-			sumB += j*histo[j];
-			var mF = (sum1 - sumB) / wF;
-			var tempRat = sumB / wB - mF;
-			var between = wB*wF*tempRat*tempRat;
-
-			if(between >= this.splitVariance) {
-				this.splitChannel = i;
-				this.splitThreshold = j;
-				this.splitVariance = between;
-			}
-		}
-	}
-} 
-
-function QuantKDTree(colorArray, clusters) {
-	//var colorArray = makeColorArray(canvas);
-	var pq = new PriorityQueue({
-		comparator: function(a, b) {
-			return b.splitVariance - a.splitVariance;
-		}
-	});
-
-	pq.queue(new QuantKDTreeNode(
-		colorArray, 0, colorArray.length,
-		[0, 0, 0], [255, 255, 255],
-		-1)
-	);
-
-	this.kdtree = Array(2*clusters - 1);
-	var idx = 0, currLeaves = 0;
-
-	while(pq.length > 0 && currLeaves + pq.length < clusters) {
-		var front = pq.dequeue();
-		if(front.parent >= 0) {
-			var parent = this.kdtree[front.parent];
-			if (parent.minVal.every(
-				(v, i) => v === front.minVal[i])) {
-				parent.left = idx;
-			} else {
-				parent.right = idx;
-			}
-		}
-
-		this.kdtree[idx] = front;
-
-		if(front.splitChannel == -1) {
-			idx++;
-			currLeaves++;
-			continue;
-		}
-
-		var sc = front.splitChannel, st = front.splitThreshold;
-
-		// Split colorArray
-		var colorslice = colorArray.slice(front.startIdx, front.endIdx);
-		var left = colorslice.filter(color => color[sc] < st);
-		var right = colorslice.filter(color => color[sc] >= st);
-		var pivot = front.startIdx + left.length;
-		if(pivot == front.startIdx || pivot == front.endIdx) {
-			idx++;
-			currLeaves++;
-			continue;
-		}
-		var partition = left.concat(right);
-		partition.forEach((data, idx) => {
-			colorArray[front.startIdx + idx] = data;
-		});
-
-		var thresh = front.maxVal.slice(0);
-		thresh[sc] = st;
-		pq.queue(new QuantKDTreeNode(
-			colorArray, front.startIdx, pivot,
-			front.minVal, thresh, idx
-		));
-		thresh = front.minVal.slice(0);
-		thresh[sc] = st+1;
-		pq.queue(new QuantKDTreeNode(
-			colorArray, pivot, front.endIdx,
-			thresh, front.maxVal, idx
-		));
-
-		this.kdtree[idx].isLeaf = false;
-		idx++;
-	}
-	while(pq.length > 0) {
-		var front = pq.dequeue();
-		if(front.parent >= 0) {
-			var parent = this.kdtree[front.parent];
-			if (parent.minVal.every(
-				(v, i) => v === front.minVal[i])) {
-				parent.left = idx;
-			} else {
-				parent.right = idx;
-			}
-		}
-		this.kdtree[idx] = front;
-		idx++;
-	}
-	var leafindex = 0;
-	this.centroids = [];
-	for(var i = 0; i < idx; ++i) {
-		if(this.kdtree[i].isLeaf) {
-			this.kdtree[i].index = leafindex;
-			leafindex++;
-
-			//Calculate centroid
-			var leaf = this.kdtree[i];
-			var colorslice = colorArray.slice(leaf.startIdx, leaf.endIdx);
-			var elems = leaf.endIdx - leaf.startIdx;
-			leaf.centroid = colorslice.reduce((a, b) => [a[0]+b[0], a[1]+b[1], a[2]+b[2]])
-																.map(data => Math.round(data/elems));
-			this.centroids.push(leaf.centroid);
-		}
-	}
-}
-
-QuantKDTree.prototype.lookupColor = function(color) {
-	var currNode = this.kdtree[0];
-	while(!currNode.isLeaf) {
-		var chan = currNode.splitChannel;
-		currNode = (color[chan] < currNode.splitThreshold)?
-			        this.kdtree[currNode.left]:
-			        this.kdtree[currNode.right];
-	}
-	return currNode.centroid.slice(0);
-}
-
-QuantKDTree.prototype.lookupID = function(color) {
-	var currNode = this.kdtree[0];
-	while(!currNode.isLeaf) {
-		var chan = currNode.splitChannel;
-		currNode = (color[chan] < currNode.splitThreshold)?
-			        this.kdtree[currNode.left]:
-			        this.kdtree[currNode.right];
-	}
-	return currNode.index;
-}
-
-QuantKDTree.prototype.quantizeImage = function(canvas, destCanvas) {
-	var colorArray = makeColorArray(canvas);
-
-	var destColorArray = colorArray.map(data => this.lookupColor(data).concat(255));
-	var destFlat = new Uint8ClampedArray([].concat.apply([], destColorArray));
-	
-	destCanvas.width = canvas.width;
-	destCanvas.height = canvas.height;
-	var dContext = destCanvas.getContext("2d");
-	var imageData = dContext.createImageData(canvas.width, canvas.height);
-	imageData.data.set(destFlat);
-	dContext.putImageData(imageData, 0, 0);
-}
-
-QuantKDTree.prototype.quantizeID = function(colorArray) {
-	return colorArray.map(data => this.lookupID(data));
-}
-
-module.exports = QuantKDTree;
-},{"./js-priority-queue/priority-queue.js":4}],7:[function(require,module,exports){
-var utils = require('./utils.js');
-var kdTree = require('./kd-tree-javascript/kdTree.js');
-
-kd_tree_sample_points = [
-{x: 0.000000, y: -1.000000, z: 0.000000},
-{x: 0.723607, y: -0.447220, z: 0.525725},
-{x: -0.276388, y: -0.447220, z: 0.850649},
-{x: -0.894426, y: -0.447216, z: 0.000000},
-{x: -0.276388, y: -0.447220, z: -0.850649},
-{x: 0.723607, y: -0.447220, z: -0.525725},
-{x: 0.276388, y: 0.447220, z: 0.850649},
-{x: -0.723607, y: 0.447220, z: 0.525725},
-{x: -0.723607, y: 0.447220, z: -0.525725},
-{x: 0.276388, y: 0.447220, z: -0.850649},
-{x: 0.894426, y: 0.447216, z: 0.000000},
-{x: 0.000000, y: 1.000000, z: 0.000000},
-{x: -0.257937, y: -0.550685, z: 0.793860},
-{x: -0.232822, y: -0.657519, z: 0.716563},
-{x: -0.200688, y: -0.760403, z: 0.617666},
-{x: -0.162456, y: -0.850654, z: 0.499995},
-{x: -0.120413, y: -0.920955, z: 0.370598},
-{x: -0.077607, y: -0.967950, z: 0.238853},
-{x: -0.036848, y: -0.992865, z: 0.113408},
-{x: 0.096471, y: -0.992865, z: 0.070089},
-{x: 0.203181, y: -0.967950, z: 0.147618},
-{x: 0.315251, y: -0.920955, z: 0.229040},
-{x: 0.425323, y: -0.850654, z: 0.309011},
-{x: 0.525420, y: -0.760403, z: 0.381735},
-{x: 0.609547, y: -0.657519, z: 0.442856},
-{x: 0.675300, y: -0.550685, z: 0.490628},
-{x: 0.638452, y: -0.476987, z: 0.604038},
-{x: 0.531941, y: -0.502302, z: 0.681712},
-{x: 0.405008, y: -0.519572, z: 0.752338},
-{x: 0.262869, y: -0.525738, z: 0.809012},
-{x: 0.114564, y: -0.519572, z: 0.846711},
-{x: -0.029639, y: -0.502302, z: 0.864184},
-{x: -0.161465, y: -0.476988, z: 0.863951},
-{x: 0.771771, y: -0.476987, z: -0.420539},
-{x: 0.812729, y: -0.502301, z: -0.295238},
-{x: 0.840673, y: -0.519571, z: -0.152694},
-{x: 0.850648, y: -0.525736, z: 0.000000},
-{x: 0.840673, y: -0.519571, z: 0.152694},
-{x: 0.812729, y: -0.502301, z: 0.295238},
-{x: 0.771771, y: -0.476987, z: 0.420539},
-{x: 0.096471, y: -0.992865, z: -0.070089},
-{x: 0.203181, y: -0.967950, z: -0.147618},
-{x: 0.315251, y: -0.920955, z: -0.229040},
-{x: 0.425323, y: -0.850654, z: -0.309011},
-{x: 0.525420, y: -0.760403, z: -0.381735},
-{x: 0.609547, y: -0.657519, z: -0.442856},
-{x: 0.675300, y: -0.550685, z: -0.490628},
-{x: -0.834716, y: -0.550681, z: 0.000000},
-{x: -0.753442, y: -0.657515, z: 0.000000},
-{x: -0.649456, y: -0.760399, z: 0.000000},
-{x: -0.525730, y: -0.850652, z: 0.000000},
-{x: -0.389673, y: -0.920953, z: 0.000000},
-{x: -0.251147, y: -0.967949, z: 0.000000},
-{x: -0.119245, y: -0.992865, z: 0.000000},
-{x: -0.377183, y: -0.476988, z: 0.793861},
-{x: -0.483971, y: -0.502302, z: 0.716565},
-{x: -0.590366, y: -0.519572, z: 0.617668},
-{x: -0.688189, y: -0.525736, z: 0.499997},
-{x: -0.769872, y: -0.519570, z: 0.370600},
-{x: -0.831051, y: -0.502299, z: 0.238853},
-{x: -0.871565, y: -0.476984, z: 0.113408},
-{x: -0.257937, y: -0.550685, z: -0.793860},
-{x: -0.232822, y: -0.657519, z: -0.716563},
-{x: -0.200688, y: -0.760403, z: -0.617666},
-{x: -0.162456, y: -0.850654, z: -0.499995},
-{x: -0.120413, y: -0.920955, z: -0.370598},
-{x: -0.077607, y: -0.967950, z: -0.238853},
-{x: -0.036848, y: -0.992865, z: -0.113408},
-{x: -0.871565, y: -0.476984, z: -0.113408},
-{x: -0.831051, y: -0.502299, z: -0.238853},
-{x: -0.769872, y: -0.519570, z: -0.370600},
-{x: -0.688189, y: -0.525736, z: -0.499997},
-{x: -0.590366, y: -0.519572, z: -0.617668},
-{x: -0.483971, y: -0.502302, z: -0.716565},
-{x: -0.377183, y: -0.476988, z: -0.793861},
-{x: -0.161465, y: -0.476988, z: -0.863951},
-{x: -0.029639, y: -0.502302, z: -0.864184},
-{x: 0.114564, y: -0.519573, z: -0.846711},
-{x: 0.262869, y: -0.525738, z: -0.809012},
-{x: 0.405008, y: -0.519572, z: -0.752338},
-{x: 0.531941, y: -0.502302, z: -0.681712},
-{x: 0.638453, y: -0.476987, z: -0.604038},
-{x: 0.931188, y: 0.357738, z: 0.070089},
-{x: 0.956626, y: 0.251149, z: 0.147618},
-{x: 0.964711, y: 0.129893, z: 0.229041},
-{x: 0.951058, y: -0.000000, z: 0.309013},
-{x: 0.915098, y: -0.129893, z: 0.381737},
-{x: 0.860698, y: -0.251151, z: 0.442858},
-{x: 0.794547, y: -0.357741, z: 0.490629},
-{x: 0.794547, y: -0.357741, z: -0.490629},
-{x: 0.860698, y: -0.251151, z: -0.442858},
-{x: 0.915098, y: -0.129893, z: -0.381737},
-{x: 0.951058, y: 0.000000, z: -0.309013},
-{x: 0.964711, y: 0.129893, z: -0.229041},
-{x: 0.956626, y: 0.251149, z: -0.147618},
-{x: 0.931188, y: 0.357738, z: -0.070089},
-{x: 0.221089, y: 0.357741, z: 0.907271},
-{x: 0.155215, y: 0.251152, z: 0.955422},
-{x: 0.080276, y: 0.129894, z: 0.988273},
-{x: -0.000000, y: -0.000000, z: 1.000000},
-{x: -0.080276, y: -0.129894, z: 0.988273},
-{x: -0.155215, y: -0.251152, z: 0.955422},
-{x: -0.221089, y: -0.357741, z: 0.907271},
-{x: 0.712150, y: -0.357741, z: 0.604039},
-{x: 0.687159, y: -0.251152, z: 0.681715},
-{x: 0.645839, y: -0.129894, z: 0.752343},
-{x: 0.587786, y: 0.000000, z: 0.809017},
-{x: 0.515946, y: 0.129894, z: 0.846716},
-{x: 0.436007, y: 0.251152, z: 0.864188},
-{x: 0.354409, y: 0.357742, z: 0.863953},
-{x: -0.794547, y: 0.357741, z: 0.490629},
-{x: -0.860698, y: 0.251151, z: 0.442858},
-{x: -0.915098, y: 0.129893, z: 0.381737},
-{x: -0.951058, y: -0.000000, z: 0.309013},
-{x: -0.964711, y: -0.129893, z: 0.229041},
-{x: -0.956626, y: -0.251149, z: 0.147618},
-{x: -0.931188, y: -0.357738, z: 0.070089},
-{x: -0.354409, y: -0.357742, z: 0.863953},
-{x: -0.436007, y: -0.251152, z: 0.864188},
-{x: -0.515946, y: -0.129894, z: 0.846716},
-{x: -0.587786, y: 0.000000, z: 0.809017},
-{x: -0.645839, y: 0.129894, z: 0.752342},
-{x: -0.687159, y: 0.251152, z: 0.681715},
-{x: -0.712150, y: 0.357741, z: 0.604039},
-{x: -0.712150, y: 0.357741, z: -0.604039},
-{x: -0.687159, y: 0.251152, z: -0.681715},
-{x: -0.645839, y: 0.129894, z: -0.752343},
-{x: -0.587786, y: -0.000000, z: -0.809017},
-{x: -0.515946, y: -0.129894, z: -0.846716},
-{x: -0.436007, y: -0.251152, z: -0.864188},
-{x: -0.354409, y: -0.357742, z: -0.863953},
-{x: -0.931188, y: -0.357738, z: -0.070089},
-{x: -0.956626, y: -0.251149, z: -0.147618},
-{x: -0.964711, y: -0.129893, z: -0.229041},
-{x: -0.951058, y: 0.000000, z: -0.309013},
-{x: -0.915098, y: 0.129893, z: -0.381737},
-{x: -0.860698, y: 0.251151, z: -0.442858},
-{x: -0.794547, y: 0.357741, z: -0.490629},
-{x: 0.354409, y: 0.357742, z: -0.863953},
-{x: 0.436007, y: 0.251152, z: -0.864188},
-{x: 0.515946, y: 0.129894, z: -0.846716},
-{x: 0.587786, y: -0.000000, z: -0.809017},
-{x: 0.645839, y: -0.129894, z: -0.752342},
-{x: 0.687159, y: -0.251152, z: -0.681715},
-{x: 0.712150, y: -0.357741, z: -0.604039},
-{x: -0.221089, y: -0.357741, z: -0.907271},
-{x: -0.155215, y: -0.251152, z: -0.955422},
-{x: -0.080276, y: -0.129894, z: -0.988273},
-{x: 0.000000, y: 0.000000, z: -1.000000},
-{x: 0.080276, y: 0.129894, z: -0.988273},
-{x: 0.155215, y: 0.251152, z: -0.955422},
-{x: 0.221089, y: 0.357741, z: -0.907271},
-{x: 0.871565, y: 0.476984, z: 0.113408},
-{x: 0.831051, y: 0.502299, z: 0.238853},
-{x: 0.769872, y: 0.519570, z: 0.370600},
-{x: 0.688189, y: 0.525736, z: 0.499997},
-{x: 0.590366, y: 0.519572, z: 0.617668},
-{x: 0.483971, y: 0.502302, z: 0.716565},
-{x: 0.377183, y: 0.476988, z: 0.793861},
-{x: 0.161465, y: 0.476988, z: 0.863951},
-{x: 0.029639, y: 0.502302, z: 0.864184},
-{x: -0.114564, y: 0.519573, z: 0.846711},
-{x: -0.262869, y: 0.525738, z: 0.809012},
-{x: -0.405008, y: 0.519572, z: 0.752338},
-{x: -0.531941, y: 0.502302, z: 0.681712},
-{x: -0.638453, y: 0.476987, z: 0.604038},
-{x: -0.771771, y: 0.476987, z: 0.420539},
-{x: -0.812729, y: 0.502301, z: 0.295238},
-{x: -0.840673, y: 0.519571, z: 0.152694},
-{x: -0.850648, y: 0.525736, z: -0.000000},
-{x: -0.840673, y: 0.519571, z: -0.152694},
-{x: -0.812729, y: 0.502301, z: -0.295238},
-{x: -0.771771, y: 0.476987, z: -0.420539},
-{x: -0.638452, y: 0.476987, z: -0.604038},
-{x: -0.531941, y: 0.502302, z: -0.681712},
-{x: -0.405008, y: 0.519572, z: -0.752338},
-{x: -0.262869, y: 0.525738, z: -0.809012},
-{x: -0.114564, y: 0.519572, z: -0.846711},
-{x: 0.029639, y: 0.502302, z: -0.864184},
-{x: 0.161465, y: 0.476988, z: -0.863951},
-{x: 0.377183, y: 0.476988, z: -0.793861},
-{x: 0.483971, y: 0.502302, z: -0.716565},
-{x: 0.590366, y: 0.519572, z: -0.617668},
-{x: 0.688189, y: 0.525736, z: -0.499997},
-{x: 0.769872, y: 0.519570, z: -0.370600},
-{x: 0.831051, y: 0.502299, z: -0.238853},
-{x: 0.871565, y: 0.476984, z: -0.113408},
-{x: 0.036848, y: 0.992865, z: 0.113408},
-{x: 0.077607, y: 0.967950, z: 0.238853},
-{x: 0.120413, y: 0.920955, z: 0.370598},
-{x: 0.162456, y: 0.850654, z: 0.499995},
-{x: 0.200688, y: 0.760403, z: 0.617666},
-{x: 0.232822, y: 0.657519, z: 0.716563},
-{x: 0.257937, y: 0.550685, z: 0.793860},
-{x: 0.834716, y: 0.550681, z: 0.000000},
-{x: 0.753442, y: 0.657515, z: 0.000000},
-{x: 0.649456, y: 0.760399, z: 0.000000},
-{x: 0.525730, y: 0.850652, z: 0.000000},
-{x: 0.389673, y: 0.920953, z: 0.000000},
-{x: 0.251147, y: 0.967949, z: 0.000000},
-{x: 0.119245, y: 0.992865, z: 0.000000},
-{x: -0.096471, y: 0.992865, z: 0.070089},
-{x: -0.203181, y: 0.967950, z: 0.147618},
-{x: -0.315251, y: 0.920955, z: 0.229040},
-{x: -0.425323, y: 0.850654, z: 0.309011},
-{x: -0.525420, y: 0.760403, z: 0.381735},
-{x: -0.609547, y: 0.657519, z: 0.442856},
-{x: -0.675300, y: 0.550685, z: 0.490628},
-{x: -0.096471, y: 0.992865, z: -0.070089},
-{x: -0.203181, y: 0.967950, z: -0.147618},
-{x: -0.315251, y: 0.920955, z: -0.229040},
-{x: -0.425323, y: 0.850654, z: -0.309011},
-{x: -0.525420, y: 0.760403, z: -0.381735},
-{x: -0.609547, y: 0.657519, z: -0.442856},
-{x: -0.675300, y: 0.550685, z: -0.490628},
-{x: 0.036848, y: 0.992865, z: -0.113408},
-{x: 0.077607, y: 0.967950, z: -0.238853},
-{x: 0.120413, y: 0.920955, z: -0.370598},
-{x: 0.162456, y: 0.850654, z: -0.499995},
-{x: 0.200688, y: 0.760403, z: -0.617666},
-{x: 0.232822, y: 0.657519, z: -0.716563},
-{x: 0.257937, y: 0.550685, z: -0.793860},
-{x: 0.166198, y: 0.978672, z: -0.120749},
-{x: 0.307167, y: 0.943208, z: -0.126518},
-{x: 0.215245, y: 0.943209, z: -0.253036},
-{x: 0.451375, y: 0.882854, z: -0.129731},
-{x: 0.361800, y: 0.894429, z: -0.262863},
-{x: 0.262862, y: 0.882855, z: -0.389192},
-{x: 0.587783, y: 0.798549, z: -0.129731},
-{x: 0.506729, y: 0.819912, z: -0.266403},
-{x: 0.409951, y: 0.819913, z: -0.399604},
-{x: 0.305014, y: 0.798552, z: -0.518924},
-{x: 0.706258, y: 0.696558, z: -0.126519},
-{x: 0.638194, y: 0.723610, z: -0.262864},
-{x: 0.550008, y: 0.733353, z: -0.399605},
-{x: 0.447209, y: 0.723612, z: -0.525728},
-{x: 0.338569, y: 0.696561, z: -0.632593},
-{x: 0.801022, y: 0.586331, z: -0.120750},
-{x: 0.747366, y: 0.614342, z: -0.253038},
-{x: 0.672087, y: 0.629942, z: -0.389194},
-{x: 0.577830, y: 0.629943, z: -0.518926},
-{x: 0.471599, y: 0.614344, z: -0.632594},
-{x: 0.362366, y: 0.586334, z: -0.724502},
-{x: -0.063483, y: 0.978672, z: -0.195376},
-{x: -0.025408, y: 0.943209, z: -0.331227},
-{x: -0.174138, y: 0.943209, z: -0.282901},
-{x: 0.016098, y: 0.882855, z: -0.469369},
-{x: -0.138197, y: 0.894430, z: -0.425319},
-{x: -0.288916, y: 0.882855, z: -0.370262},
-{x: 0.058250, y: 0.798552, z: -0.599101},
-{x: -0.096779, y: 0.819914, z: -0.564248},
-{x: -0.253366, y: 0.819914, z: -0.513369},
-{x: -0.399272, y: 0.798552, z: -0.450440},
-{x: 0.097915, y: 0.696561, z: -0.710785},
-{x: -0.052790, y: 0.723612, z: -0.688185},
-{x: -0.210088, y: 0.733355, z: -0.646571},
-{x: -0.361804, y: 0.723612, z: -0.587778},
-{x: -0.497009, y: 0.696561, z: -0.517479},
-{x: 0.132684, y: 0.586334, z: -0.799129},
-{x: -0.009708, y: 0.614345, z: -0.788978},
-{x: -0.162463, y: 0.629944, z: -0.759458},
-{x: -0.314971, y: 0.629944, z: -0.709904},
-{x: -0.455902, y: 0.614344, z: -0.643998},
-{x: -0.577066, y: 0.586334, z: -0.568513},
-{x: -0.205432, y: 0.978671, z: 0.000000},
-{x: -0.322868, y: 0.943208, z: -0.078192},
-{x: -0.322868, y: 0.943208, z: 0.078192},
-{x: -0.441423, y: 0.882855, z: -0.160354},
-{x: -0.447210, y: 0.894429, z: 0.000000},
-{x: -0.441423, y: 0.882855, z: 0.160354},
-{x: -0.551779, y: 0.798551, z: -0.240532},
-{x: -0.566539, y: 0.819912, z: -0.082322},
-{x: -0.566539, y: 0.819912, z: 0.082322},
-{x: -0.551779, y: 0.798551, z: 0.240532},
-{x: -0.645740, y: 0.696561, z: -0.312768},
-{x: -0.670817, y: 0.723611, z: -0.162457},
-{x: -0.679848, y: 0.733353, z: 0.000000},
-{x: -0.670817, y: 0.723611, z: 0.162457},
-{x: -0.645740, y: 0.696560, z: 0.312768},
-{x: -0.719015, y: 0.586334, z: -0.373135},
-{x: -0.753363, y: 0.614343, z: -0.234576},
-{x: -0.772492, y: 0.629942, z: -0.080177},
-{x: -0.772492, y: 0.629942, z: 0.080177},
-{x: -0.753363, y: 0.614343, z: 0.234576},
-{x: -0.719015, y: 0.586334, z: 0.373135},
-{x: -0.063483, y: 0.978672, z: 0.195376},
-{x: -0.174138, y: 0.943209, z: 0.282901},
-{x: -0.025408, y: 0.943209, z: 0.331227},
-{x: -0.288916, y: 0.882855, z: 0.370262},
-{x: -0.138197, y: 0.894430, z: 0.425319},
-{x: 0.016098, y: 0.882855, z: 0.469369},
-{x: -0.399272, y: 0.798552, z: 0.450440},
-{x: -0.253366, y: 0.819914, z: 0.513369},
-{x: -0.096779, y: 0.819914, z: 0.564248},
-{x: 0.058250, y: 0.798552, z: 0.599101},
-{x: -0.497009, y: 0.696561, z: 0.517479},
-{x: -0.361804, y: 0.723612, z: 0.587778},
-{x: -0.210088, y: 0.733355, z: 0.646571},
-{x: -0.052790, y: 0.723612, z: 0.688185},
-{x: 0.097915, y: 0.696561, z: 0.710785},
-{x: -0.577066, y: 0.586334, z: 0.568513},
-{x: -0.455902, y: 0.614345, z: 0.643998},
-{x: -0.314971, y: 0.629944, z: 0.709904},
-{x: -0.162463, y: 0.629944, z: 0.759458},
-{x: -0.009708, y: 0.614345, z: 0.788978},
-{x: 0.132684, y: 0.586335, z: 0.799129},
-{x: 0.166198, y: 0.978672, z: 0.120749},
-{x: 0.215245, y: 0.943209, z: 0.253036},
-{x: 0.307167, y: 0.943208, z: 0.126518},
-{x: 0.262862, y: 0.882855, z: 0.389192},
-{x: 0.361800, y: 0.894429, z: 0.262863},
-{x: 0.451375, y: 0.882854, z: 0.129731},
-{x: 0.305014, y: 0.798552, z: 0.518924},
-{x: 0.409951, y: 0.819913, z: 0.399604},
-{x: 0.506729, y: 0.819912, z: 0.266403},
-{x: 0.587783, y: 0.798549, z: 0.129731},
-{x: 0.338569, y: 0.696561, z: 0.632593},
-{x: 0.447209, y: 0.723612, z: 0.525728},
-{x: 0.550008, y: 0.733353, z: 0.399605},
-{x: 0.638194, y: 0.723610, z: 0.262864},
-{x: 0.706258, y: 0.696558, z: 0.126519},
-{x: 0.362366, y: 0.586334, z: 0.724502},
-{x: 0.471599, y: 0.614344, z: 0.632594},
-{x: 0.577830, y: 0.629943, z: 0.518926},
-{x: 0.672087, y: 0.629942, z: 0.389194},
-{x: 0.747366, y: 0.614342, z: 0.253038},
-{x: 0.801022, y: 0.586331, z: 0.120750},
-{x: 0.903740, y: 0.380897, z: -0.195376},
-{x: 0.921508, y: 0.266063, z: -0.282902},
-{x: 0.854992, y: 0.399094, z: -0.331229},
-{x: 0.918856, y: 0.136410, z: -0.370264},
-{x: 0.861804, y: 0.276396, z: -0.425322},
-{x: 0.782446, y: 0.409229, z: -0.469371},
-{x: 0.892805, y: -0.000000, z: -0.450443},
-{x: 0.846660, y: 0.140059, z: -0.513372},
-{x: 0.776630, y: 0.280118, z: -0.564251},
-{x: 0.688190, y: 0.409230, z: -0.599104},
-{x: 0.845290, y: -0.133032, z: -0.517481},
-{x: 0.809019, y: 0.000000, z: -0.587782},
-{x: 0.749882, y: 0.140059, z: -0.646576},
-{x: 0.670821, y: 0.276397, z: -0.688189},
-{x: 0.579226, y: 0.399096, z: -0.710788},
-{x: 0.782501, y: -0.253933, z: -0.568515},
-{x: 0.753368, y: -0.133032, z: -0.644002},
-{x: 0.704293, y: 0.000000, z: -0.709909},
-{x: 0.636088, y: 0.136411, z: -0.759463},
-{x: 0.553820, y: 0.266065, z: -0.788982},
-{x: 0.465085, y: 0.380900, z: -0.799132},
-{x: 0.093451, y: 0.380900, z: -0.919882},
-{x: 0.015700, y: 0.266064, z: -0.963827},
-{x: -0.050816, y: 0.399096, z: -0.915500},
-{x: -0.068205, y: 0.136410, z: -0.988302},
-{x: -0.138198, y: 0.276397, z: -0.951055},
-{x: -0.204615, y: 0.409230, z: -0.889193},
-{x: -0.152509, y: -0.000000, z: -0.988302},
-{x: -0.226618, y: 0.140059, z: -0.963861},
-{x: -0.296648, y: 0.280118, z: -0.912981},
-{x: -0.357124, y: 0.409230, z: -0.839639},
-{x: -0.230948, y: -0.133033, z: -0.963829},
-{x: -0.309016, y: -0.000000, z: -0.951057},
-{x: -0.383207, y: 0.140059, z: -0.912982},
-{x: -0.447215, y: 0.276397, z: -0.850649},
-{x: -0.497012, y: 0.399096, z: -0.770520},
-{x: -0.298885, y: -0.253934, z: -0.919883},
-{x: -0.379680, y: -0.133033, z: -0.915503},
-{x: -0.457527, y: -0.000000, z: -0.889196},
-{x: -0.525732, y: 0.136410, z: -0.839642},
-{x: -0.579229, y: 0.266065, z: -0.770522},
-{x: -0.616302, y: 0.380900, z: -0.689266},
-{x: -0.845982, y: 0.380899, z: -0.373136},
-{x: -0.911804, y: 0.266063, z: -0.312769},
-{x: -0.886396, y: 0.399095, z: -0.234577},
-{x: -0.961008, y: 0.136410, z: -0.240533},
-{x: -0.947213, y: 0.276396, z: -0.162458},
-{x: -0.908902, y: 0.409229, z: -0.080178},
-{x: -0.987059, y: 0.000000, z: -0.160355},
-{x: -0.986715, y: 0.140059, z: -0.082322},
-{x: -0.959966, y: 0.280117, z: 0.000000},
-{x: -0.908902, y: 0.409229, z: 0.080178},
-{x: -0.988023, y: -0.133031, z: -0.078192},
-{x: -1.000000, y: 0.000001, z: 0.000000},
-{x: -0.986715, y: 0.140059, z: 0.082323},
-{x: -0.947213, y: 0.276397, z: 0.162458},
-{x: -0.886395, y: 0.399095, z: 0.234577},
-{x: -0.967222, y: -0.253931, z: 0.000000},
-{x: -0.988023, y: -0.133030, z: 0.078193},
-{x: -0.987059, y: 0.000001, z: 0.160356},
-{x: -0.961008, y: 0.136411, z: 0.240534},
-{x: -0.911803, y: 0.266065, z: 0.312769},
-{x: -0.845982, y: 0.380900, z: 0.373136},
-{x: -0.616302, y: 0.380900, z: 0.689266},
-{x: -0.579229, y: 0.266064, z: 0.770521},
-{x: -0.497012, y: 0.399096, z: 0.770520},
-{x: -0.525732, y: 0.136410, z: 0.839641},
-{x: -0.447216, y: 0.276397, z: 0.850649},
-{x: -0.357124, y: 0.409230, z: 0.839639},
-{x: -0.457527, y: -0.000001, z: 0.889196},
-{x: -0.383208, y: 0.140059, z: 0.912982},
-{x: -0.296649, y: 0.280118, z: 0.912981},
-{x: -0.204616, y: 0.409230, z: 0.889193},
-{x: -0.379681, y: -0.133033, z: 0.915502},
-{x: -0.309017, y: -0.000001, z: 0.951056},
-{x: -0.226619, y: 0.140059, z: 0.963861},
-{x: -0.138199, y: 0.276397, z: 0.951055},
-{x: -0.050817, y: 0.399096, z: 0.915500},
-{x: -0.298885, y: -0.253934, z: 0.919883},
-{x: -0.230948, y: -0.133033, z: 0.963828},
-{x: -0.152509, y: -0.000000, z: 0.988302},
-{x: -0.068206, y: 0.136410, z: 0.988302},
-{x: 0.015699, y: 0.266064, z: 0.963827},
-{x: 0.093451, y: 0.380900, z: 0.919882},
-{x: 0.465085, y: 0.380900, z: 0.799132},
-{x: 0.553820, y: 0.266064, z: 0.788983},
-{x: 0.579226, y: 0.399096, z: 0.710788},
-{x: 0.636088, y: 0.136410, z: 0.759463},
-{x: 0.670820, y: 0.276396, z: 0.688190},
-{x: 0.688190, y: 0.409229, z: 0.599104},
-{x: 0.704293, y: -0.000001, z: 0.709909},
-{x: 0.749882, y: 0.140058, z: 0.646576},
-{x: 0.776630, y: 0.280116, z: 0.564252},
-{x: 0.782446, y: 0.409228, z: 0.469372},
-{x: 0.753368, y: -0.133034, z: 0.644002},
-{x: 0.809019, y: -0.000002, z: 0.587783},
-{x: 0.846659, y: 0.140057, z: 0.513373},
-{x: 0.861804, y: 0.276394, z: 0.425323},
-{x: 0.854992, y: 0.399093, z: 0.331230},
-{x: 0.782501, y: -0.253934, z: 0.568515},
-{x: 0.845289, y: -0.133034, z: 0.517482},
-{x: 0.892805, y: -0.000002, z: 0.450444},
-{x: 0.918856, y: 0.136407, z: 0.370266},
-{x: 0.921508, y: 0.266061, z: 0.282904},
-{x: 0.903740, y: 0.380896, z: 0.195377},
-{x: 0.298886, y: 0.253934, z: -0.919883},
-{x: 0.379681, y: 0.133033, z: -0.915502},
-{x: 0.230948, y: 0.133033, z: -0.963828},
-{x: 0.457527, y: -0.000000, z: -0.889196},
-{x: 0.309017, y: -0.000000, z: -0.951056},
-{x: 0.152509, y: 0.000000, z: -0.988302},
-{x: 0.525732, y: -0.136411, z: -0.839641},
-{x: 0.383207, y: -0.140060, z: -0.912982},
-{x: 0.226619, y: -0.140060, z: -0.963861},
-{x: 0.068205, y: -0.136410, z: -0.988302},
-{x: 0.579229, y: -0.266065, z: -0.770521},
-{x: 0.447216, y: -0.276398, z: -0.850648},
-{x: 0.296648, y: -0.280119, z: -0.912980},
-{x: 0.138199, y: -0.276398, z: -0.951055},
-{x: -0.015699, y: -0.266065, z: -0.963827},
-{x: 0.616302, y: -0.380900, z: -0.689265},
-{x: 0.497012, y: -0.399097, z: -0.770520},
-{x: 0.357124, y: -0.409231, z: -0.839639},
-{x: 0.204615, y: -0.409231, z: -0.889192},
-{x: 0.050817, y: -0.399097, z: -0.915500},
-{x: -0.093451, y: -0.380900, z: -0.919881},
-{x: -0.782501, y: 0.253934, z: -0.568515},
-{x: -0.753368, y: 0.133032, z: -0.644002},
-{x: -0.845290, y: 0.133032, z: -0.517482},
-{x: -0.704293, y: -0.000000, z: -0.709910},
-{x: -0.809018, y: -0.000000, z: -0.587783},
-{x: -0.892805, y: 0.000000, z: -0.450444},
-{x: -0.636087, y: -0.136411, z: -0.759464},
-{x: -0.749881, y: -0.140059, z: -0.646577},
-{x: -0.846659, y: -0.140059, z: -0.513374},
-{x: -0.918856, y: -0.136410, z: -0.370265},
-{x: -0.553819, y: -0.266065, z: -0.788983},
-{x: -0.670819, y: -0.276397, z: -0.688191},
-{x: -0.776628, y: -0.280118, z: -0.564253},
-{x: -0.861803, y: -0.276396, z: -0.425324},
-{x: -0.921507, y: -0.266063, z: -0.282904},
-{x: -0.465084, y: -0.380900, z: -0.799132},
-{x: -0.579224, y: -0.399096, z: -0.710789},
-{x: -0.688189, y: -0.409230, z: -0.599106},
-{x: -0.782445, y: -0.409229, z: -0.469374},
-{x: -0.854991, y: -0.399094, z: -0.331231},
-{x: -0.903739, y: -0.380897, z: -0.195378},
-{x: -0.782501, y: 0.253934, z: 0.568515},
-{x: -0.845290, y: 0.133032, z: 0.517482},
-{x: -0.753368, y: 0.133032, z: 0.644002},
-{x: -0.892805, y: -0.000000, z: 0.450444},
-{x: -0.809018, y: 0.000000, z: 0.587783},
-{x: -0.704293, y: 0.000000, z: 0.709910},
-{x: -0.918856, y: -0.136410, z: 0.370265},
-{x: -0.846659, y: -0.140059, z: 0.513374},
-{x: -0.749881, y: -0.140059, z: 0.646577},
-{x: -0.636087, y: -0.136411, z: 0.759464},
-{x: -0.921508, y: -0.266063, z: 0.282904},
-{x: -0.861803, y: -0.276396, z: 0.425324},
-{x: -0.776629, y: -0.280118, z: 0.564253},
-{x: -0.670819, y: -0.276397, z: 0.688191},
-{x: -0.553819, y: -0.266065, z: 0.788983},
-{x: -0.903739, y: -0.380897, z: 0.195378},
-{x: -0.854991, y: -0.399094, z: 0.331231},
-{x: -0.782445, y: -0.409229, z: 0.469374},
-{x: -0.688189, y: -0.409230, z: 0.599106},
-{x: -0.579224, y: -0.399096, z: 0.710789},
-{x: -0.465084, y: -0.380900, z: 0.799132},
-{x: 0.298886, y: 0.253934, z: 0.919883},
-{x: 0.230948, y: 0.133032, z: 0.963828},
-{x: 0.379681, y: 0.133033, z: 0.915502},
-{x: 0.152509, y: -0.000000, z: 0.988302},
-{x: 0.309017, y: 0.000000, z: 0.951056},
-{x: 0.457527, y: 0.000000, z: 0.889196},
-{x: 0.068206, y: -0.136410, z: 0.988302},
-{x: 0.226619, y: -0.140060, z: 0.963861},
-{x: 0.383207, y: -0.140060, z: 0.912982},
-{x: 0.525732, y: -0.136411, z: 0.839641},
-{x: -0.015699, y: -0.266065, z: 0.963827},
-{x: 0.138199, y: -0.276397, z: 0.951055},
-{x: 0.296648, y: -0.280119, z: 0.912980},
-{x: 0.447216, y: -0.276398, z: 0.850648},
-{x: 0.579229, y: -0.266065, z: 0.770521},
-{x: -0.093451, y: -0.380900, z: 0.919882},
-{x: 0.050817, y: -0.399097, z: 0.915500},
-{x: 0.204615, y: -0.409230, z: 0.889192},
-{x: 0.357124, y: -0.409230, z: 0.839639},
-{x: 0.497012, y: -0.399097, z: 0.770520},
-{x: 0.616302, y: -0.380900, z: 0.689266},
-{x: 0.967222, y: 0.253931, z: 0.000000},
-{x: 0.988023, y: 0.133031, z: 0.078192},
-{x: 0.988023, y: 0.133031, z: -0.078192},
-{x: 0.987059, y: -0.000000, z: 0.160355},
-{x: 1.000000, y: 0.000000, z: 0.000000},
-{x: 0.987059, y: 0.000000, z: -0.160355},
-{x: 0.961008, y: -0.136410, z: 0.240533},
-{x: 0.986715, y: -0.140059, z: 0.082322},
-{x: 0.986715, y: -0.140059, z: -0.082322},
-{x: 0.961008, y: -0.136410, z: -0.240533},
-{x: 0.911804, y: -0.266064, z: 0.312769},
-{x: 0.947213, y: -0.276396, z: 0.162458},
-{x: 0.959966, y: -0.280117, z: 0.000000},
-{x: 0.947213, y: -0.276396, z: -0.162458},
-{x: 0.911804, y: -0.266064, z: -0.312769},
-{x: 0.845982, y: -0.380899, z: 0.373136},
-{x: 0.886396, y: -0.399095, z: 0.234576},
-{x: 0.908902, y: -0.409229, z: 0.080178},
-{x: 0.908902, y: -0.409229, z: -0.080178},
-{x: 0.886396, y: -0.399095, z: -0.234576},
-{x: 0.845982, y: -0.380899, z: -0.373136},
-{x: 0.577066, y: -0.586334, z: -0.568513},
-{x: 0.497009, y: -0.696561, z: -0.517479},
-{x: 0.455902, y: -0.614344, z: -0.643999},
-{x: 0.399272, y: -0.798552, z: -0.450441},
-{x: 0.361804, y: -0.723612, z: -0.587779},
-{x: 0.314971, y: -0.629943, z: -0.709905},
-{x: 0.288916, y: -0.882855, z: -0.370263},
-{x: 0.253366, y: -0.819913, z: -0.513370},
-{x: 0.210087, y: -0.733354, z: -0.646572},
-{x: 0.162463, y: -0.629943, z: -0.759459},
-{x: 0.174138, y: -0.943209, z: -0.282902},
-{x: 0.138197, y: -0.894429, z: -0.425321},
-{x: 0.096779, y: -0.819912, z: -0.564250},
-{x: 0.052789, y: -0.723611, z: -0.688186},
-{x: 0.009708, y: -0.614344, z: -0.788979},
-{x: 0.063482, y: -0.978671, z: -0.195377},
-{x: 0.025407, y: -0.943208, z: -0.331229},
-{x: -0.016099, y: -0.882854, z: -0.469371},
-{x: -0.058250, y: -0.798550, z: -0.599103},
-{x: -0.097915, y: -0.696560, z: -0.710786},
-{x: -0.132684, y: -0.586334, z: -0.799129},
-{x: -0.362367, y: -0.586334, z: -0.724501},
-{x: -0.338569, y: -0.696561, z: -0.632593},
-{x: -0.471601, y: -0.614344, z: -0.632593},
-{x: -0.305014, y: -0.798552, z: -0.518923},
-{x: -0.447211, y: -0.723612, z: -0.525727},
-{x: -0.577832, y: -0.629943, z: -0.518924},
-{x: -0.262862, y: -0.882855, z: -0.389192},
-{x: -0.409952, y: -0.819913, z: -0.399603},
-{x: -0.550010, y: -0.733353, z: -0.399603},
-{x: -0.672088, y: -0.629942, z: -0.389192},
-{x: -0.215245, y: -0.943209, z: -0.253036},
-{x: -0.361801, y: -0.894429, z: -0.262863},
-{x: -0.506730, y: -0.819912, z: -0.266402},
-{x: -0.638195, y: -0.723609, z: -0.262863},
-{x: -0.747367, y: -0.614341, z: -0.253036},
-{x: -0.166198, y: -0.978671, z: -0.120749},
-{x: -0.307168, y: -0.943208, z: -0.126518},
-{x: -0.451376, y: -0.882853, z: -0.129730},
-{x: -0.587784, y: -0.798549, z: -0.129730},
-{x: -0.706258, y: -0.696557, z: -0.126518},
-{x: -0.801022, y: -0.586330, z: -0.120749},
-{x: -0.801022, y: -0.586330, z: 0.120750},
-{x: -0.706258, y: -0.696558, z: 0.126518},
-{x: -0.747367, y: -0.614341, z: 0.253037},
-{x: -0.587784, y: -0.798549, z: 0.129731},
-{x: -0.638195, y: -0.723609, z: 0.262864},
-{x: -0.672088, y: -0.629941, z: 0.389193},
-{x: -0.451375, y: -0.882853, z: 0.129731},
-{x: -0.506730, y: -0.819911, z: 0.266403},
-{x: -0.550009, y: -0.733352, z: 0.399605},
-{x: -0.577832, y: -0.629942, z: 0.518925},
-{x: -0.307168, y: -0.943208, z: 0.126519},
-{x: -0.361801, y: -0.894428, z: 0.262864},
-{x: -0.409952, y: -0.819912, z: 0.399605},
-{x: -0.447211, y: -0.723610, z: 0.525729},
-{x: -0.471601, y: -0.614343, z: 0.632594},
-{x: -0.166198, y: -0.978671, z: 0.120750},
-{x: -0.215246, y: -0.943208, z: 0.253038},
-{x: -0.262863, y: -0.882854, z: 0.389194},
-{x: -0.305015, y: -0.798550, z: 0.518925},
-{x: -0.338569, y: -0.696560, z: 0.632594},
-{x: -0.362367, y: -0.586333, z: 0.724502},
-{x: 0.719015, y: -0.586334, z: -0.373135},
-{x: 0.753363, y: -0.614343, z: -0.234576},
-{x: 0.645740, y: -0.696560, z: -0.312768},
-{x: 0.772493, y: -0.629942, z: -0.080177},
-{x: 0.670817, y: -0.723611, z: -0.162457},
-{x: 0.551780, y: -0.798551, z: -0.240532},
-{x: 0.772493, y: -0.629942, z: 0.080178},
-{x: 0.679849, y: -0.733353, z: 0.000000},
-{x: 0.566540, y: -0.819912, z: -0.082322},
-{x: 0.441423, y: -0.882854, z: -0.160354},
-{x: 0.753364, y: -0.614343, z: 0.234576},
-{x: 0.670818, y: -0.723610, z: 0.162458},
-{x: 0.566541, y: -0.819911, z: 0.082323},
-{x: 0.447211, y: -0.894428, z: 0.000001},
-{x: 0.322869, y: -0.943208, z: -0.078191},
-{x: 0.719016, y: -0.586333, z: 0.373136},
-{x: 0.645741, y: -0.696559, z: 0.312769},
-{x: 0.551781, y: -0.798550, z: 0.240533},
-{x: 0.441424, y: -0.882854, z: 0.160356},
-{x: 0.322870, y: -0.943208, z: 0.078193},
-{x: 0.205432, y: -0.978671, z: 0.000001},
-{x: -0.132684, y: -0.586334, z: 0.799129},
-{x: -0.097915, y: -0.696561, z: 0.710785},
-{x: 0.009709, y: -0.614344, z: 0.788978},
-{x: -0.058249, y: -0.798552, z: 0.599101},
-{x: 0.052790, y: -0.723612, z: 0.688185},
-{x: 0.162463, y: -0.629944, z: 0.759458},
-{x: -0.016097, y: -0.882855, z: 0.469370},
-{x: 0.096780, y: -0.819913, z: 0.564249},
-{x: 0.210089, y: -0.733354, z: 0.646572},
-{x: 0.314971, y: -0.629943, z: 0.709905},
-{x: 0.025409, y: -0.943209, z: 0.331228},
-{x: 0.138199, y: -0.894429, z: 0.425321},
-{x: 0.253368, y: -0.819912, z: 0.513370},
-{x: 0.361805, y: -0.723611, z: 0.587779},
-{x: 0.455903, y: -0.614344, z: 0.643999},
-{x: 0.063484, y: -0.978671, z: 0.195377},
-{x: 0.174140, y: -0.943208, z: 0.282902},
-{x: 0.288918, y: -0.882854, z: 0.370264},
-{x: 0.399274, y: -0.798550, z: 0.450441},
-{x: 0.497011, y: -0.696560, z: 0.517480},
-{x: 0.577067, y: -0.586333, z: 0.568513}
-]
-kd_tree_points_with_index = kd_tree_sample_points.map((point, idx) => {
-	point.index = idx;
-	return point;
-});
-	
-module.exports.length = kd_tree_points_with_index.length;
-module.exports.tree = new kdTree.kdTree(
-	kd_tree_points_with_index,
-	utils.euclideanDist,
-	['x', 'y', 'z']
-);
-},{"./kd-tree-javascript/kdTree.js":5,"./utils.js":9}],8:[function(require,module,exports){
-var ndarray = require('ndarray');
-var cwise = require('cwise');
-var hazeTreeLib = require('./sample_642.js');
-var hazeTree = hazeTreeLib.tree;
-
-transmittanceMap = function(colorArrayFlat, picWidth, picHeight, airLight) {
-	//var context = canvas.getContext('2d');
-	//var picWidth = canvas.width,
-	//	picHeight = canvas.height,
-	var	pixCount = picWidth*picHeight,
-		picDim = [picHeight, picWidth];
-	/*var colorArray = ndarray(context.getImageData(0, 0, picWidth, picHeight).data,
-	                 [picHeight, picWidth, 4]);*/
-	var colorArray = ndarray(colorArrayFlat, [picHeight, picWidth, 4]);
-	//var ballPointCount = window.kd_tree_points_with_index.length;
-	var ballPointCount = hazeTreeLib.length;
-	/*var hazeTree = new window.kdTree(
-		window.kd_tree_points_with_index, window.euclideanDist, ['x', 'y', 'z']
-	);*/
-	var nearestQuery = ndarray(new Uint16Array(pixCount), picDim);
-	var furthestDist = ndarray(new Float32Array(ballPointCount), [ballPointCount]);
-	var colorNorm = ndarray(new Float32Array(pixCount), picDim);
-	for(var i = 0; i < picHeight; ++i) {
-		for(var j = 0; j < picWidth; ++j) {
-			var cc = [
-				colorArray.get(i, j, 0)/255 - airLight[0],
-				colorArray.get(i, j, 1)/255 - airLight[1],
-				colorArray.get(i, j, 2)/255 - airLight[2]
-			];
-			var cN = Math.sqrt(cc[0]*cc[0] + cc[1]*cc[1] + cc[2]*cc[2]);
-			colorNorm.set(i, j, cN); 
-			var cND = { x:cc[0]/cN, y:cc[1]/cN, z:cc[2]/cN };
-			var nQ = hazeTree.nearest(cND, 1, 0.1)[0][0].index;
-			nearestQuery.set(i, j, nQ);
-			furthestDist.set(nQ, Math.max(furthestDist.get(nQ), cN));
-		}
-	}
-	var transmittanceRaw = ndarray(new Float32Array(pixCount), picDim);
-	var maxTrans = cwise({
-		args: [{blockIndices: -1}],
-		pre: function() {
-			this.res = [256, 256, 256];
-		},
-		body: function(c) {
-			this.res = [
-				Math.min(this.res[0], c[0]),
-				Math.min(this.res[1], c[1]),
-				Math.min(this.res[2], c[2])
-			];
-		},
-		post: function() {
-			return this.res;
-		}
-	})(colorArray).reduce((a, b, i) => {
-		return Math.min(a, 1 - b/(airLight[i]*255));
-	}, 1.0);
-	var transmittanceRaw = ndarray(new Float32Array(pixCount), picDim);
-	for(var i = 0; i < picHeight; ++i) {
-		for(var j = 0; j < picWidth; ++j) {
-			var t = maxTrans*colorNorm.get(i, j)
-						 /furthestDist.get(nearestQuery.get(i, j));
-			var lbRatio = [
-				colorArray.get(i, j, 0)/255/airLight[0],
-				colorArray.get(i, j, 1)/255/airLight[1],
-				colorArray.get(i, j, 2)/255/airLight[2]
-			].reduce((a, b) => Math.min(a, b));
-			transmittanceRaw.set(i, j, Math.max(t, 1-lbRatio));
-		}
-	}
-	var sum =    ndarray(new Float32Array(ballPointCount), [ballPointCount]),
-			sum2 =   ndarray(new Float32Array(ballPointCount), [ballPointCount]),
-			pCount = ndarray(new Uint32Array(ballPointCount), [ballPointCount]);
-	transmittanceRaw.data.forEach((t, i) => {
-		var p = nearestQuery.data[i];
-		sum.set(p, sum.get(p)+t);
-		sum2.set(p, sum2.get(p)+t*t);
-		pCount.set(p, pCount.get(p)+1);
-	});
-	var one_var = ndarray(new Float32Array(ballPointCount), [ballPointCount]);
-	cwise({
-		args: ['array', 'array', 'array', 'array'],
-		body: function(o, s, s2, c) {
-			var avg = s/c, v = (s2/c - avg*avg);
-			o = (v !== 0)? 1/v: 0;
-		}
-	})(one_var, sum, sum2, pCount);
-	var lambda = 2;
-	var epsilon = 1e-6;
-	var coeffs = ndarray(new Float32Array(pixCount*5), picDim.concat(5));
-	var one_varPix = ndarray(new Float32Array(pixCount), picDim);
-	for(var i = 0; i < picHeight; ++i) {
-		for(var j = 0; j < picWidth; ++j) {
-			var c = one_var.get(nearestQuery.get(i, j));
-			one_varPix.set(i, j, c);
-			coeffs.set(i, j, 4, c);
-		}
-	}
-	function laplacianCoeff(i, j, o) {
-		var cN = [
-			(colorArray.get(i + o[0], j + o[1], 0) - colorArray.get(i, j, 0))/255,
-			(colorArray.get(i + o[0], j + o[1], 1) - colorArray.get(i, j, 1))/255,
-			(colorArray.get(i + o[0], j + o[1], 2) - colorArray.get(i, j, 2))/255,
-		].reduce((a, b) => a + b*b, 0) + epsilon;
-		var coeff = lambda*2/cN;
-		return coeff;
-	}
-	for(var i = 0; i < picHeight; ++i) {
-		for(var j = 0; j < picWidth; ++j) {
-			if(i > 0) {
-				var c = laplacianCoeff(i, j, [-1, 0]);
-				coeffs.set(i, j, 0, -c);
-				coeffs.set(i, j, 4, coeffs.get(i, j, 4)+c);
-			}
-			if(j > 0) {
-				var c = laplacianCoeff(i, j, [0, -1]);
-				coeffs.set(i, j, 1, -c);
-				coeffs.set(i, j, 4, coeffs.get(i, j, 4)+c);
-			}
-			if(j < picWidth - 1) {
-				var c = laplacianCoeff(i, j, [0,1]);
-				coeffs.set(i, j, 2, -c);
-				coeffs.set(i, j, 4, coeffs.get(i, j, 4)+c);
-			}
-			if(i < picHeight-1) {
-				var c = laplacianCoeff(i, j, [1,0]);
-				coeffs.set(i, j, 3, -c);
-				coeffs.set(i, j, 4, coeffs.get(i, j, 4)+c);
-			}
-		}
-	}
-	var maxC = coeffs.data.reduce((a, b) => Math.max(a, Math.abs(b)));
-	var mscale = cwise({
-		args: ['array', 'scalar'],
-		body: function(m, a) {m = m*a;}
-	});
-	mscale(coeffs, 1/maxC);
-	var RHS = ndarray(new Float32Array(pixCount), picDim);
-	var mprod = cwise({
-		args: ['array', 'array', 'array'],
-		body: function(c, a, b) {c = a*b;}
-	});
-	mprod(RHS, one_varPix, transmittanceRaw);
-	mscale(RHS, 1/maxC);
-	
-	//Conjugate gradients
-	smoothTransmittance(coeffs, RHS, transmittanceRaw, 700);
-	
-	return transmittanceRaw.data;
-}
-
-function smoothTransmittance(A, rhs, x, max_iter) {
-	var M = ndarray(new Float32Array(rhs.data.length), rhs.shape);
-	var mprod = cwise({
-		args: ['array', 'array', 'array'],
-		body: function(c, a, b) {c = a*b;}
-	});
-	var iprod = cwise({
-		args: ['array', 'array'],
-		pre: function(){this.prod = 0;},
-		body: function(a, b) {this.prod += a*b;},
-		post: function(){return this.prod;}
-	});
-	var msub = cwise({
-		args: ['array', 'array', 'array'],
-		body: function(c, a, b) {c = a-b;}
-	});
-	var mscale = cwise({
-		args: ['array', 'scalar'],
-		body: function(a, b) {a = a*b;}
-	});
-	var mdescend = cwise({
-		args: ['array', 'array', 'array', 'array', 'scalar'],
-		body: function(x, r, mt, vt, eta) {
-			mt = 0.9*mt + 0.1*r;
-			vt = 0.999*vt + 0.001*r*r;
-			var m = mt/0.1;
-			var v = vt/0.001;
-			//g = g + r*r;
-			x = x - eta*m/(Math.sqrt(v) + 1e-8);
-		}
-	});
-	var apply = cwise({
-		args: ['array', 'array', {blockIndices: -1},
-		 {offset:[-1, 0], array: 1},
-		 {offset:[0, -1], array: 1},
-		 {offset:[0, 1], array: 1},
-		 {offset:[1, 0], array: 1}
-		],
-		pre: function() {
-			this.log = true;
-		},
-		body: function(o, x, a, u, l, r, b) {
-			if(u === undefined) u = 0;
-			if(l === undefined) l = 0;
-			if(r === undefined) r = 0;
-			if(b === undefined) b = 0;
-			o = u*a[0] + l*a[1] + r*a[2] + b*a[3] + x*a[4];
-		}
-	});
-	var incVec = cwise({
-		args: ['scalar', 'array', 'scalar', 'array'],
-		body: function(a, am, b, bm) { am = a*am + b*bm; }
-	});
-
-	cwise({
-		args: ['array', {blockIndices: -1}],
-		body: function(m, a) {m = (Math.abs(a[4]) > 1e-5)?1/a[4]:1;}
-	})(M, A);
-
-	var R = ndarray(new Float32Array(rhs.data.length), rhs.shape);
-	var Z = ndarray(new Float32Array(rhs.data.length), rhs.shape);
-	var P = ndarray(new Float32Array(rhs.data.length), rhs.shape);
-	var Mt = ndarray(new Float32Array(rhs.data.length), rhs.shape);
-	var Vt = ndarray(new Float32Array(rhs.data.length), rhs.shape);
-	//var G = ndarray(new Float32Array(rhs.data.length), rhs.shape);
-	var Ax = ndarray(new Float32Array(rhs.data.length), rhs.shape);
-	var Ap = ndarray(new Float32Array(rhs.data.length), rhs.shape);
-	var zTr = 0, zTrOld = 0;
-	
-	// AdaM for initial guess
-	if(x.data.length > 1e6) {
-		var eta = 0.003;
-
-		apply(Ax, x, A);
-		msub(R, Ax, rhs);
-		var lastError = Math.sqrt(R.data.reduce((a, b) => a + b*b)/R.data.length);
-		console.log(lastError);
-		for(var k = 0; k < max_iter; ++k) {
-			apply(Ax, x, A);
-			msub(R, Ax, rhs);
-			if(k%50 == 2) {
-			// var rnorm = R.data.reduce((a, b) => Math.max(Math.abs(b), a));
-				var rnorm = Math.sqrt(R.data.reduce((a, b) => a + b*b)/R.data.length);
-				if(rnorm < 1e-5){// || lastError < rnorm) {
-					break;
-				}
-				lastError = rnorm;
-				self.postMessage({signal: "Smoothing with AdaM.  Error: " + rnorm});
-			}
-			if(k%50 == 49) {
-				eta *= 0.9;
-			}
-			//var rnorm = R.data.reduce((a, b) => Math.max(Math.abs(b), a));
-			mdescend(x, R, Mt, Vt, eta);
-		}
-	}
-	console.log("PCG");
-	apply(Ax, x, A);
-	msub(R, rhs, Ax);
-	mprod(Z, R, M);
-	P.data = Z.data.slice(0);
-	zTrOld = iprod(Z, R);
-
-	for(var k = 0; k < max_iter; ++k) {
-		apply(Ap, P, A);
-		var alpha = zTr/iprod(Ap, P);
-		incVec(1, x, alpha, P);
-		incVec(1, R, -alpha, Ap);
-		//var rmax = R.data.reduce((a, b) => Math.max(Math.abs(b), a));
-		//console.log(rmax);
-		if(k%50 == 0) {
-			var rnorm = Math.sqrt(R.data.reduce((a, b) => a + b*b)/R.data.length);
-			self.postMessage({signal: "Smoothing with PCG.  Error: " + rnorm});
-			if(rnorm < 1e-6) break;
-		}
-		mprod(Z, M, R);
-		zTr = iprod(Z, R);
-		var beta = zTr/zTrOld;
-		incVec(beta, P, 1, Z);
-		zTrOld = zTr;
-	}
-}
-
-module.exports = transmittanceMap;
-},{"./sample_642.js":7,"cwise":15,"ndarray":19}],9:[function(require,module,exports){
-function makeColorArray(canvas, normalize = false) {
-	var context = canvas.getContext('2d');
-	var colorArrayFlat = Array.from(context.getImageData(
-			0, 0, canvas.width, canvas.height).data);
-	if(normalize) {
-		colorArrayFlat.map(d => d/255);
-	}
-	var retArray = Array(Math.ceil(colorArrayFlat.length/4)).fill();
-	for(var i = 0; i < retArray.length; ++i) {
-		retArray[i] = [
-			colorArrayFlat[4*i], colorArrayFlat[4*i+1], colorArrayFlat[4*i+2]
-		];
-	}
-	return retArray;
-}
-
-function arange(start, step, end) {
-	var nnums = Math.floor((end - start) / step) + 1;
-	return Array(nnums).fill().map((_, idx) => start + idx*step);
-}
-
-function linRange(start, elems, end) {
-	var step = (end - start)/(elems-1);
-	return Array(elems).fill().map((_, idx) => start + idx*step);
-}
-
-function cartesian(A, B) {
-	return [].concat(...A.map(d => B.map(e => [d, e])));
-}
-
-function range(size) {
-	return [...Array(size).keys()];
-}
-
-function range(start, end) {
-	var size = end - start;
-	return [...Array(size).keys()].map(d => d + start);
-}
-
-function list2dict3D(array) {
-	var ret = array.map(data => {
-		return { x: data[0], y: data[1], z: data[2] };
-	});
-	return ret;
-}
-
-function dict2list3D(dict) {
-	return dict.map(entry => [entry.x, entry.y, entry.z]);
-}
-
-function euclideanDist(a, b) {
-	var diff = {
-		x: a.x - b.x,
-		y: a.y - b.y,
-		z: a.z - b.z
-	};
-	return Math.sqrt(diff.x*diff.x + diff.y*diff.y + diff.z*diff.z);
-}
-
-function angleDist(a, b) {
-	var innerProd = a.x*b.x + a.y*b.y + a.z*b.z;
-	innerProd = Math.max(-1.0, Math.min(innerProd, 1.0));
-	return Math.acos(innerProd) / Math.PI * 2;
-}
-
-flatten = function(arr, result = []) {
-  for (let i = 0, length = arr.length; i < length; i++) {
-    const value = arr[i];
-    if (Array.isArray(value)) {
-      flatten(value, result);
-    } else {
-      result.push(value);
-    }
-  }
-  return result;
-};
-
-function cloneCanvas(oldCanvas) {
-	var newCanvas = document.createElement('canvas');
-	var context = newCanvas.getContext('2d');
-
-	newCanvas.width = oldCanvas.width;
-	newCanvas.height = oldCanvas.height;
-
-	context.drawImage(oldCanvas, 0, 0);
-	return newCanvas;
-}
- module.exports.makeColorArray = makeColorArray;
- module.exports.arange = arange;
- module.exports.linRange = linRange;
- module.exports.cartesian = cartesian;
- module.exports.range = range;
- module.exports.list2dict3D = list2dict3D;
- module.exports.dict2list3D = dict2list3D;
- module.exports.euclideanDist = euclideanDist;
- module.exports.angleDist = angleDist;
- module.exports.flatten = flatten;
- module.exports.cloneCanvas = cloneCanvas;
- 
-},{}],10:[function(require,module,exports){
-var gui_utils = require('./functions/gui_utils.js');
-var processImage = gui_utils.processImage,
-    sliderChange = gui_utils.sliderChange,
-    changeGamma = gui_utils.changeGamma,
-    dehazePreview = gui_utils.dehazePreview,
-    findAirLight = gui_utils.findAirLight,
-    findAndDrawResults = gui_utils.findAndDrawResults,
-    drawDehazed = gui_utils.drawDehazed,
-    mixHaze = gui_utils.mixHaze,
-    calculateOriginal = gui_utils.calculateOriginal;
-
-window.onload = function() {
-	var fileInput = document.getElementById('fileInput');
-	var fileDisplayArea = document.getElementById('fileDisplayArea');
-
-	fileInput.addEventListener('change', function(e) {
-		var file = fileInput.files[0];
-		var imageType = /image.*/;
-
-		if (file.type.match(imageType)) {
-			var reader = new FileReader();
-			reader.readAsDataURL(file);	
-			reader.onload = function(e) {
-				document.getElementById("airLightSection").style.visibility = "visible";
-				document.getElementById("transmittanceDiv").style.visibility = "hidden";
-				fileDisplayArea.innerHTML = "";
-
-				var img = new Image();
-				img.src = reader.result;
-				img.onload = function() {
-					processImage(img);
-				};
-			}
-		} else {
-			fileDisplayArea.innerHTML = "File not supported!"
-		}
-	});
-
-	var gammaSlide = document.getElementById('gammaSlide'),
-			gammaVal = document.getElementById('gammaVal');
-	gammaSlide.addEventListener('input', function(e){
-		sliderChange(this, gammaVal);
-		var canvas = document.getElementById('originalPic');
-		changeGamma(window.origCanvas, canvas, new Number(this.value))
-	});
-	gammaVal.innerHTML = gammaSlide.value;
-
-	var minAirSlide = document.getElementById('minAirSlide'),
-			minAirVal = document.getElementById('minAirVal'),
-			maxAirSlide = document.getElementById('maxAirSlide'),
-			maxAirVal = document.getElementById('maxAirVal');
-	minAirSlide.addEventListener('input', function(e){
-		if(maxAirSlide.value - 0.05 < this.value) {
-			this.value = maxAirSlide.value - 0.05;
-		}
-		sliderChange(this, minAirVal);
-	});
-	minAirVal.innerHTML = minAirSlide.value;
-	maxAirSlide.addEventListener('input', function(e){
-		if(minAirSlide.value > this.value - 0.05) {
-			this.value = new Number(minAirSlide.value) + 0.05;
-		}
-		sliderChange(this, maxAirVal);
-	});
-	maxAirVal.innerHTML = maxAirSlide.value;
-
-	var dehazePreviewButton = document.getElementById('dehazePreviewButton');
-	dehazePreviewButton.addEventListener('click', function(e){
-		//findAirLight();
-		dehazePreview();
-	});
-	/*var transmittanceButton = document.getElementById('transmittanceButton');
-	transmittanceButton.addEventListener('click', function(e){
-		findAndDrawResults();
-	});*/
-
-	var distSlide = document.getElementById('distSlide'),
-	    distVal = document.getElementById('distVal'),
-	    hazeAmountSlide = document.getElementById('hazeAmountSlide'),
-	    hazeAmountVal = document.getElementById('hazeAmountVal'),
-	    gammaOutSlide = document.getElementById('gammaOutSlide'),
-			gammaOutVal = document.getElementById('gammaOutVal');
-
-	distSlide.addEventListener('input', function(e){
-		oninput=sliderChange(this, distVal);
-		var canvas = document.getElementById('originalPic');
-		var destCanvas = document.getElementById('dehazeResult');
-		drawDehazed(canvas, destCanvas, window.transmittance, window.airLight);
-	});
-	distVal.innerHTML = distSlide.value;
-	hazeAmountSlide.addEventListener('input', function(e){
-		sliderChange(this, hazeAmountVal);
-		var canvas = window.origCanvas;
-		mixHaze(window.dehazeFlat, canvas.width, canvas.height,
-						window.dehazedCanvas, window.transmittance, window.airLight,
-						new Number(this.value));
-		var gammaVal = new Number(document.getElementById('gammaOutSlide').value);
-		canvas = document.getElementById('dehazeResult');
-		changeGamma(window.dehazedCanvas, canvas, 1/gammaVal)
-	});
-	hazeAmountVal.innerHTML = hazeAmountSlide.value;
-	gammaOutSlide.addEventListener('input', function(e){
-		sliderChange(this, gammaOutVal);
-		var canvas = document.getElementById('dehazeResult');
-		changeGamma(window.dehazedCanvas, canvas, 1/new Number(this.value))
-	});
-	gammaOutVal.innerHTML = gammaOutSlide.value;
-
-	var originalButton = document.getElementById("originalButton");
-	originalButton.addEventListener('click', function(e){
-		calculateOriginal();
-	});
-}
-
-},{"./functions/gui_utils.js":3}],11:[function(require,module,exports){
+},{}],2:[function(require,module,exports){
 "use strict"
 
 var createThunk = require("./lib/thunk.js")
@@ -2751,7 +576,7 @@ function compileCwise(user_args) {
 
 module.exports = compileCwise
 
-},{"./lib/thunk.js":13}],12:[function(require,module,exports){
+},{"./lib/thunk.js":4}],3:[function(require,module,exports){
 "use strict"
 
 var uniq = require("uniq")
@@ -3111,7 +936,7 @@ function generateCWiseOp(proc, typesig) {
 }
 module.exports = generateCWiseOp
 
-},{"uniq":20}],13:[function(require,module,exports){
+},{"uniq":11}],4:[function(require,module,exports){
 "use strict"
 
 // The function below is called when constructing a cwise function object, and does the following:
@@ -3199,7 +1024,7 @@ function createThunk(proc) {
 
 module.exports = createThunk
 
-},{"./compile.js":12}],14:[function(require,module,exports){
+},{"./compile.js":3}],5:[function(require,module,exports){
 (function (global){
 "use strict"
 
@@ -3397,7 +1222,7 @@ function preprocess(func) {
 
 module.exports = preprocess
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"esprima":16,"uniq":20}],15:[function(require,module,exports){
+},{"esprima":7,"uniq":11}],6:[function(require,module,exports){
 "use strict"
 
 var parse   = require("cwise-parser")
@@ -3434,7 +1259,7 @@ function createCWise(user_args) {
 
 module.exports = createCWise
 
-},{"cwise-compiler":11,"cwise-parser":14}],16:[function(require,module,exports){
+},{"cwise-compiler":2,"cwise-parser":5}],7:[function(require,module,exports){
 /*
   Copyright (C) 2013 Ariya Hidayat <ariya.hidayat@gmail.com>
   Copyright (C) 2013 Thaddee Tyl <thaddee.tyl@gmail.com>
@@ -7208,7 +5033,7 @@ parseStatement: true, parseSourceElement: true */
 }));
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{}],17:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 "use strict"
 
 function iota(n) {
@@ -7220,7 +5045,7 @@ function iota(n) {
 }
 
 module.exports = iota
-},{}],18:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -7243,7 +5068,7 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],19:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 var iota = require("iota-array")
 var isBuffer = require("is-buffer")
 
@@ -7588,7 +5413,7 @@ function wrappedNDArrayCtor(data, shape, stride, offset) {
 
 module.exports = wrappedNDArrayCtor
 
-},{"iota-array":17,"is-buffer":18}],20:[function(require,module,exports){
+},{"iota-array":8,"is-buffer":9}],11:[function(require,module,exports){
 "use strict"
 
 function unique_pred(list, compare) {
@@ -7647,172 +5472,1335 @@ function unique(list, compare, sorted) {
 
 module.exports = unique
 
-},{}],21:[function(require,module,exports){
-var bundleFn = arguments[3];
-var sources = arguments[4];
-var cache = arguments[5];
+},{}],12:[function(require,module,exports){
+kd_tree_sample_points = [
+	{x: -0.9425, y: -0.2041, z: -0.2648},
+	{x: 0.5224, y: 0.7539, z: 0.3985},
+	{x: 0.5528, y: 0.0429, z: -0.8322},
+	{x: 0.6499, y: 0.0243, z: -0.7596},
+	{x: 0.6986, y: 0.1199, z: -0.7054},
+	{x: -0.0303, y: 0.9929, z: -0.1151},
+	{x: 0.8482, y: 0.0839, z: -0.5230},
+	{x: 0.9526, y: 0.0586, z: -0.2985},
+	{x: -0.2253, y: -0.1544, z: -0.9620},
+	{x: 0.9065, y: 0.0667, z: -0.4168},
+	{x: 0.9313, y: -0.0364, z: -0.3625},
+	{x: 0.9274, y: 0.2528, z: -0.2755},
+	{x: 0.9601, y: 0.1575, z: -0.2311},
+	{x: 0.9827, y: 0.0588, z: -0.1759},
+	{x: 0.4552, y: 0.2145, z: 0.8641},
+	{x: 0.0245, y: 0.6354, z: 0.7718},
+	{x: 0.9838, y: 0.1794, z: 0.0003},
+	{x: 0.9944, y: 0.0840, z: 0.0637},
+	{x: 0.1522, y: 0.2044, z: -0.9670},
+	{x: 0.9784, y: 0.1048, z: 0.1784},
+	{x: 0.1846, y: 0.8742, z: -0.4490},
+	{x: 0.9353, y: 0.0254, z: 0.3528},
+	{x: 0.8863, y: 0.0396, z: 0.4613},
+	{x: -0.4683, y: 0.2315, z: 0.8527},
+	{x: 0.8514, y: -0.0566, z: 0.5215},
+	{x: 0.8241, y: 0.0513, z: 0.5642},
+	{x: 0.7803, y: -0.0439, z: 0.6238},
+	{x: 0.0253, y: -0.0740, z: 0.9969},
+	{x: 0.6571, y: 0.0871, z: 0.7487},
+	{x: 0.5676, y: 0.1304, z: 0.8129},
+	{x: 0.4011, y: 0.0242, z: 0.9157},
+	{x: -0.1442, y: 0.9656, z: 0.2165},
+	{x: 0.3730, y: -0.9271, z: -0.0358},
+	{x: 0.3781, y: 0.2043, z: -0.9030},
+	{x: 0.5067, y: 0.1507, z: -0.8489},
+	{x: 0.6084, y: 0.1352, z: -0.7820},
+	{x: 0.6523, y: 0.2322, z: -0.7215},
+	{x: 0.7786, y: 0.1026, z: -0.6190},
+	{x: 0.7782, y: 0.4864, z: -0.3974},
+	{x: 0.8083, y: 0.1983, z: -0.5544},
+	{x: 0.8251, y: 0.2929, z: -0.4831},
+	{x: 0.9227, y: 0.1605, z: -0.3506},
+	{x: -0.1930, y: -0.2652, z: -0.9447},
+	{x: 0.2991, y: -0.7068, z: -0.6410},
+	{x: 0.9420, y: 0.2887, z: -0.1714},
+	{x: 0.9597, y: 0.2731, z: -0.0659},
+	{x: 0.9245, y: 0.3775, z: -0.0524},
+	{x: 0.9124, y: 0.4034, z: 0.0693},
+	{x: 0.8871, y: 0.4228, z: 0.1851},
+	{x: 0.9539, y: 0.2970, z: 0.0444},
+	{x: 0.9485, y: 0.2208, z: 0.2270},
+	{x: 0.9358, y: 0.3163, z: 0.1556},
+	{x: 0.9052, y: 0.3318, z: 0.2656},
+	{x: 0.9110, y: 0.2363, z: 0.3379},
+	{x: 0.8596, y: 0.2498, z: 0.4457},
+	{x: 0.8511, y: 0.1507, z: 0.5028},
+	{x: 0.5268, y: -0.1617, z: -0.8345},
+	{x: 0.4062, y: -0.8690, z: -0.2825},
+	{x: 0.7849, y: 0.1609, z: 0.5984},
+	{x: 0.6297, y: 0.2089, z: 0.7482},
+	{x: -0.4992, y: -0.5457, z: 0.6731},
+	{x: 0.4784, y: 0.1069, z: 0.8716},
+	{x: 0.3721, y: 0.1418, z: 0.9173},
+	{x: 0.2940, y: 0.0590, z: 0.9540},
+	{x: 0.1776, y: 0.0098, z: -0.9841},
+	{x: 0.4599, y: 0.2507, z: -0.8518},
+	{x: 0.5606, y: 0.2450, z: -0.7910},
+	{x: 0.8616, y: 0.3439, z: 0.3733},
+	{x: 0.5910, y: 0.3426, z: -0.7303},
+	{x: 0.6792, y: 0.3292, z: -0.6559},
+	{x: 0.6980, y: 0.4219, z: -0.5786},
+	{x: 0.7573, y: 0.3130, z: -0.5732},
+	{x: 0.7092, y: 0.5082, z: -0.4887},
+	{x: 0.8347, y: 0.3809, z: -0.3977},
+	{x: 0.8390, y: 0.4548, z: -0.2988},
+	{x: 0.7755, y: 0.5572, z: -0.2970},
+	{x: 0.8357, y: 0.5103, z: -0.2028},
+	{x: 0.8797, y: 0.4629, z: -0.1087},
+	{x: 0.7105, y: 0.5858, z: -0.3899},
+	{x: 0.8213, y: 0.5628, z: -0.0929},
+	{x: 0.8731, y: 0.4875, z: 0.0001},
+	{x: 0.8536, y: 0.5093, z: 0.1093},
+	{x: 0.8232, y: 0.5241, z: 0.2183},
+	{x: 0.7814, y: 0.5319, z: 0.3263},
+	{x: 0.8495, y: 0.4357, z: 0.2975},
+	{x: -0.2468, y: 0.1027, z: 0.9636},
+	{x: 0.7977, y: 0.4449, z: 0.4071},
+	{x: 0.1627, y: -0.2310, z: 0.9593},
+	{x: 0.7389, y: 0.3623, z: 0.5681},
+	{x: 0.7948, y: 0.2599, z: 0.5484},
+	{x: 0.6632, y: 0.3722, z: 0.6494},
+	{x: 0.5757, y: 0.4340, z: 0.6929},
+	{x: 0.5132, y: 0.3740, z: 0.7725},
+	{x: 0.5376, y: 0.2555, z: 0.8036},
+	{x: 0.3492, y: 0.2587, z: 0.9006},
+	{x: 0.2158, y: -0.0260, z: 0.9761},
+	{x: 0.2310, y: 0.1126, z: -0.9664},
+	{x: 0.2889, y: 0.3200, z: -0.9023},
+	{x: 0.3872, y: 0.3360, z: -0.8586},
+	{x: 0.4929, y: 0.3498, z: -0.7966},
+	{x: 0.6143, y: 0.4353, z: -0.6581},
+	{x: 0.4626, y: 0.6167, z: -0.6369},
+	{x: -0.6389, y: 0.0488, z: -0.7677},
+	{x: 0.6308, y: 0.5228, z: -0.5734},
+	{x: 0.8405, y: -0.5070, z: 0.1908},
+	{x: 0.6358, y: 0.6762, z: -0.3721},
+	{x: 0.7049, y: 0.6511, z: -0.2813},
+	{x: 0.2048, y: -0.4480, z: 0.8703},
+	{x: 0.7686, y: 0.6112, z: -0.1887},
+	{x: 0.6725, y: 0.7383, z: -0.0519},
+	{x: 0.7523, y: 0.6547, z: -0.0744},
+	{x: 0.8087, y: 0.5879, z: 0.0188},
+	{x: 0.7329, y: 0.6792, z: 0.0388},
+	{x: 0.7873, y: -0.6015, z: 0.1353},
+	{x: 0.5690, y: 0.7715, z: 0.2847},
+	{x: -0.1491, y: -0.2403, z: 0.9592},
+	{x: 0.7501, y: 0.6177, z: 0.2361},
+	{x: -0.7850, y: 0.5957, z: 0.1702},
+	{x: 0.6162, y: 0.6969, z: 0.3670},
+	{x: 0.7255, y: 0.5343, z: 0.4339},
+	{x: 0.6520, y: 0.6136, z: 0.4454},
+	{x: 0.7248, y: 0.4607, z: 0.5123},
+	{x: 0.6498, y: 0.4717, z: 0.5960},
+	{x: 0.4806, y: 0.4880, z: 0.7286},
+	{x: -0.6173, y: 0.7753, z: 0.1334},
+	{x: 0.4338, y: 0.3253, z: 0.8403},
+	{x: 0.2405, y: 0.2983, z: 0.9237},
+	{x: 0.2661, y: 0.1811, z: 0.9468},
+	{x: 0.2703, y: 0.2162, z: -0.9382},
+	{x: 0.4466, y: 0.8881, z: 0.1087},
+	{x: 0.3099, y: 0.4290, z: -0.8485},
+	{x: 0.3354, y: 0.5265, z: -0.7812},
+	{x: 0.4417, y: 0.5321, z: -0.7223},
+	{x: -0.7669, y: -0.1000, z: -0.6339},
+	{x: 0.5554, y: 0.6141, z: -0.5607},
+	{x: -0.7876, y: 0.4996, z: -0.3608},
+	{x: 0.5594, y: 0.6906, z: -0.4585},
+	{x: 0.6260, y: 0.7356, z: -0.2588},
+	{x: 0.7031, y: 0.6952, z: 0.1496},
+	{x: 0.4621, y: -0.1997, z: 0.8640},
+	{x: 0.5381, y: 0.8103, z: -0.2322},
+	{x: 0.6084, y: 0.7806, z: -0.1430},
+	{x: 0.5820, y: 0.8127, z: -0.0279},
+	{x: 0.6463, y: 0.7606, z: 0.0617},
+	{x: 0.5501, y: 0.8307, z: 0.0855},
+	{x: 0.5624, y: -0.2132, z: 0.7989},
+	{x: 0.6640, y: 0.7017, z: 0.2585},
+	{x: 0.7224, y: -0.6868, z: 0.0807},
+	{x: -0.0298, y: 0.3762, z: -0.9261},
+	{x: 0.5645, y: 0.6711, z: 0.4806},
+	{x: 0.4687, y: 0.7228, z: 0.5077},
+	{x: 0.6256, y: 0.5636, z: 0.5394},
+	{x: 0.5548, y: 0.5351, z: 0.6371},
+	{x: -0.4648, y: 0.8330, z: 0.3002},
+	{x: 0.4522, y: 0.5876, z: 0.6709},
+	{x: 0.3754, y: 0.5376, z: 0.7550},
+	{x: 0.4077, y: 0.4334, z: 0.8037},
+	{x: 0.0966, y: 0.4429, z: 0.8914},
+	{x: -0.0566, y: -0.9558, z: 0.2885},
+	{x: 0.1077, y: 0.0948, z: -0.9897},
+	{x: 0.2017, y: 0.4148, z: -0.8873},
+	{x: 0.5197, y: 0.4436, z: -0.7302},
+	{x: 0.2489, y: 0.6064, z: -0.7552},
+	{x: 0.2711, y: 0.6883, z: -0.6729},
+	{x: 0.3592, y: 0.6144, z: -0.7025},
+	{x: 0.3791, y: 0.6935, z: -0.6126},
+	{x: 0.2903, y: 0.7607, z: -0.5805},
+	{x: 0.3883, y: 0.7669, z: -0.5109},
+	{x: 0.3818, y: 0.8329, z: -0.4007},
+	{x: 0.3598, y: 0.8862, z: -0.2918},
+	{x: 0.4628, y: 0.8271, z: -0.3188},
+	{x: -0.1835, y: 0.3060, z: 0.9342},
+	{x: 0.4391, y: 0.8744, z: -0.2065},
+	{x: 0.5134, y: 0.8500, z: -0.1180},
+	{x: 0.4820, y: 0.8762, z: -0.0044},
+	{x: 0.4840, y: -0.3078, z: 0.8191},
+	{x: 0.1280, y: 0.3348, z: 0.9335},
+	{x: 0.5120, y: 0.8358, z: 0.1982},
+	{x: 0.4699, y: 0.8258, z: 0.3118},
+	{x: 0.3654, y: 0.8692, z: 0.3332},
+	{x: 0.4230, y: 0.8014, z: 0.4230},
+	{x: 0.5220, y: 0.6279, z: 0.5773},
+	{x: 0.3662, y: 0.7653, z: 0.5294},
+	{x: 0.2580, y: 0.7980, z: 0.5447},
+	{x: 0.3434, y: 0.6325, z: 0.6943},
+	{x: 0.4017, y: -0.7699, z: 0.4959},
+	{x: 0.2640, y: 0.5758, z: 0.7738},
+	{x: 0.2969, y: 0.4765, z: 0.8275},
+	{x: 0.2130, y: 0.4087, z: 0.8875},
+	{x: 0.1571, y: 0.2192, z: 0.9630},
+	{x: 0.0338, y: 0.1872, z: -0.9817},
+	{x: 0.1778, y: 0.3110, z: -0.9336},
+	{x: 0.6041, y: -0.7333, z: -0.3119},
+	{x: 0.1352, y: 0.5942, z: -0.7929},
+	{x: -0.5395, y: -0.4109, z: -0.7349},
+	{x: 0.1568, y: 0.6791, z: -0.7171},
+	{x: 0.1087, y: -0.6415, z: -0.7594},
+	{x: 0.1768, y: 0.7534, z: -0.6333},
+	{x: 0.0925, y: -0.5496, z: -0.8303},
+	{x: 0.2947, y: 0.8282, z: -0.4767},
+	{x: -0.7825, y: 0.1475, z: -0.6049},
+	{x: 0.2749, y: 0.8865, z: -0.3722},
+	{x: 0.7211, y: -0.3034, z: -0.6228},
+	{x: 0.3303, y: 0.9261, z: -0.1825},
+	{x: 0.3376, y: 0.9323, z: 0.1298},
+	{x: 0.2606, y: 0.9647, z: 0.0375},
+	{x: 0.4078, y: 0.8857, z: 0.2218},
+	{x: 0.2982, y: 0.9237, z: 0.2406},
+	{x: -0.2396, y: 0.4107, z: -0.8797},
+	{x: 0.8711, y: 0.1783, z: -0.4575},
+	{x: 0.2562, y: 0.9013, z: 0.3492},
+	{x: 0.2108, y: 0.8654, z: 0.4546},
+	{x: 0.3189, y: 0.8386, z: 0.4417},
+	{x: 0.1450, y: 0.8198, z: 0.5540},
+	{x: 0.7000, y: -0.5315, z: 0.4770},
+	{x: 0.3049, y: 0.7191, z: 0.6244},
+	{x: 0.2295, y: 0.6664, z: 0.7094},
+	{x: 0.1898, y: 0.7478, z: 0.6362},
+	{x: 0.1472, y: 0.6066, z: 0.7813},
+	{x: 0.0623, y: 0.5436, z: 0.8370},
+	{x: 0.0763, y: 0.1349, z: 0.9879},
+	{x: 0.0624, y: 0.2954, z: -0.9533},
+	{x: 0.0871, y: 0.4001, z: -0.9123},
+	{x: 0.3691, y: -0.8047, z: -0.4650},
+	{x: -0.0480, y: 0.7293, z: -0.6825},
+	{x: -0.6396, y: 0.7299, z: 0.2411},
+	{x: 0.0646, y: 0.7522, z: -0.6557},
+	{x: 0.8438, y: -0.4136, z: -0.3420},
+	{x: 0.0872, y: 0.8233, z: -0.5609},
+	{x: 0.0781, y: 0.8946, z: -0.4400},
+	{x: 0.1588, y: 0.9243, z: -0.3471},
+	{x: 0.0424, y: 0.9421, z: -0.3328},
+	{x: 0.1262, y: 0.9618, z: -0.2430},
+	{x: 0.2466, y: 0.9318, z: -0.2665},
+	{x: 0.2133, y: 0.9639, z: -0.1597},
+	{x: 0.0913, y: 0.9865, z: -0.1361},
+	{x: 0.2965, y: 0.9523, z: -0.0727},
+	{x: -0.0677, y: 0.9977, z: -0.0047},
+	{x: 0.1780, y: 0.9827, z: -0.0517},
+	{x: 0.7488, y: 0.0605, z: 0.6601},
+	{x: 0.2231, y: 0.9636, z: 0.1471},
+	{x: 0.1033, y: 0.9811, z: 0.1636},
+	{x: 0.1427, y: 0.9218, z: 0.3604},
+	{x: 0.0997, y: 0.8810, z: 0.4625},
+	{x: 0.0641, y: 0.9612, z: 0.2682},
+	{x: 0.0694, y: 0.7668, z: 0.6382},
+	{x: -0.0169, y: 0.7166, z: 0.6972},
+	{x: 0.1103, y: 0.6919, z: 0.7135},
+	{x: -0.0998, y: 0.6557, z: 0.7484},
+	{x: -0.0584, y: 0.5691, z: 0.8202},
+	{x: -0.0211, y: 0.4718, z: 0.8815},
+	{x: 0.0124, y: 0.3659, z: 0.9306},
+	{x: 0.0450, y: 0.2541, z: 0.9661},
+	{x: -0.0551, y: 0.2675, z: -0.9620},
+	{x: -0.0040, y: 0.4795, z: -0.8775},
+	{x: -0.0673, y: 0.6417, z: -0.7640},
+	{x: -0.6821, y: 0.7297, z: 0.0471},
+	{x: -0.1518, y: 0.7000, z: -0.6979},
+	{x: -0.0348, y: 0.8001, z: -0.5989},
+	{x: 0.6401, y: -0.2910, z: -0.7110},
+	{x: -0.1488, y: 0.7913, z: -0.5930},
+	{x: -0.1151, y: 0.8558, z: -0.5043},
+	{x: -0.0421, y: 0.9104, z: -0.4115},
+	{x: -0.1567, y: 0.9040, z: -0.3978},
+	{x: -0.1948, y: 0.9369, z: -0.2904},
+	{x: -0.1145, y: 0.9729, z: -0.2008},
+	{x: -0.1515, y: 0.9843, z: -0.0910},
+	{x: -0.4692, y: 0.0630, z: -0.8808},
+	{x: 0.4747, y: 0.6953, z: -0.5396},
+	{x: -0.1885, y: 0.9819, z: 0.0205},
+	{x: -0.1057, y: 0.9887, z: 0.1060},
+	{x: 0.0169, y: 0.9965, z: 0.0814},
+	{x: -0.1837, y: 0.9266, z: 0.3282},
+	{x: -0.0634, y: 0.9527, z: 0.2971},
+	{x: -0.1039, y: 0.9096, z: 0.4023},
+	{x: -0.0142, y: 0.8852, z: 0.4651},
+	{x: 0.0264, y: 0.8309, z: 0.5557},
+	{x: -0.1031, y: 0.8475, z: 0.5207},
+	{x: 0.2068, y: -0.6779, z: -0.7054},
+	{x: -0.0618, y: 0.7868, z: 0.6141},
+	{x: -0.1801, y: 0.5848, z: 0.7909},
+	{x: -0.1393, y: 0.4940, z: 0.8583},
+	{x: -0.8438, y: -0.4630, z: 0.2714},
+	{x: -0.0364, y: 0.1688, z: 0.9850},
+	{x: -0.1683, y: 0.2374, z: -0.9567},
+	{x: -0.1216, y: 0.4501, z: -0.8847},
+	{x: -0.0947, y: 0.5487, z: -0.8306},
+	{x: -0.1829, y: 0.6088, z: -0.7720},
+	{x: -0.2701, y: 0.6536, z: -0.7070},
+	{x: -0.2340, y: 0.7372, z: -0.6338},
+	{x: -0.2850, y: 0.7855, z: -0.5493},
+	{x: -0.2225, y: 0.8469, z: -0.4830},
+	{x: -0.3395, y: 0.8249, z: -0.4521},
+	{x: -0.2707, y: 0.8862, z: -0.3760},
+	{x: -0.3087, y: 0.9128, z: -0.2675},
+	{x: -0.2318, y: 0.9559, z: -0.1801},
+	{x: -0.3451, y: 0.9257, z: -0.1548},
+	{x: 0.7136, y: 0.2696, z: 0.6466},
+	{x: -0.2687, y: 0.9609, z: -0.0675},
+	{x: -0.3047, y: 0.9513, z: 0.0460},
+	{x: -0.4148, y: 0.9067, z: 0.0758},
+	{x: -0.2251, y: 0.9653, z: 0.1326},
+	{x: -0.2586, y: 0.9338, z: 0.2473},
+	{x: -0.3581, y: 0.8912, z: 0.2785},
+	{x: -0.1636, y: -0.1226, z: 0.9789},
+	{x: -0.1991, y: 0.8678, z: 0.4554},
+	{x: -0.2778, y: 0.8831, z: 0.3781},
+	{x: 0.4746, y: 0.7669, z: -0.4320},
+	{x: -0.2832, y: 0.8148, z: 0.5058},
+	{x: -0.1437, y: 0.7314, z: 0.6667},
+	{x: 0.9489, y: 0.1232, z: 0.2906},
+	{x: -0.2233, y: 0.6642, z: 0.7134},
+	{x: 0.9079, y: -0.0710, z: 0.4131},
+	{x: -0.1030, y: 0.3920, z: 0.9142},
+	{x: -0.2626, y: 0.2148, z: 0.9407},
+	{x: -0.0787, y: 0.1501, z: -0.9855},
+	{x: -0.1468, y: 0.3464, z: -0.9265},
+	{x: -0.2126, y: 0.5126, z: -0.8319},
+	{x: -0.3017, y: 0.5626, z: -0.7697},
+	{x: 0.7844, y: 0.6069, z: 0.1284},
+	{x: -0.9995, y: 0.0320, z: 0.0087},
+	{x: -0.3459, y: 0.7023, z: -0.6222},
+	{x: -0.4518, y: 0.6594, z: -0.6009},
+	{x: -0.3995, y: 0.7489, z: -0.5287},
+	{x: -0.6044, y: 0.6423, z: -0.4713},
+	{x: -0.3851, y: 0.8548, z: -0.3480},
+	{x: -0.4935, y: 0.8081, z: -0.3216},
+	{x: -0.5209, y: 0.8268, z: -0.2124},
+	{x: -0.4186, y: 0.8759, z: -0.2399},
+	{x: -0.4534, y: 0.8824, z: -0.1258},
+	{x: -0.3813, y: 0.9236, z: -0.0401},
+	{x: 0.8824, y: 0.2712, z: -0.3845},
+	{x: -0.4876, y: 0.8730, z: -0.0091},
+	{x: -0.5171, y: 0.8490, z: 0.1084},
+	{x: -0.3372, y: 0.9276, z: 0.1607},
+	{x: -0.0030, y: 0.8608, z: -0.5089},
+	{x: -0.4804, y: 0.7781, z: 0.4048},
+	{x: -0.3848, y: 0.7901, z: 0.4771},
+	{x: -0.3625, y: 0.7348, z: 0.5733},
+	{x: -0.9911, y: -0.0428, z: 0.1264},
+	{x: -0.2609, y: 0.7375, z: 0.6229},
+	{x: -0.8758, y: 0.0725, z: 0.4772},
+	{x: -0.3400, y: 0.6627, z: 0.6673},
+	{x: -0.2590, y: 0.5067, z: 0.8223},
+	{x: -0.2188, y: 0.4123, z: 0.8844},
+	{x: -0.4272, y: 0.0449, z: 0.9030},
+	{x: -0.1884, y: 0.1246, z: -0.9742},
+	{x: -0.2628, y: 0.3033, z: -0.9159},
+	{x: -0.3299, y: 0.4643, z: -0.8220},
+	{x: -0.4140, y: 0.5157, z: -0.7501},
+	{x: -0.5188, y: 0.4615, z: -0.7196},
+	{x: -0.4888, y: 0.5637, z: -0.6658},
+	{x: -0.5520, y: 0.6068, z: -0.5719},
+	{x: -0.5055, y: 0.7006, z: -0.5036},
+	{x: -0.5509, y: 0.7323, z: -0.4002},
+	{x: -0.5957, y: 0.7486, z: -0.2910},
+	{x: -0.6453, y: 0.6707, z: -0.3657},
+	{x: -0.8289, y: -0.0099, z: 0.5594},
+	{x: -0.6927, y: 0.6750, z: -0.2543},
+	{x: -0.6143, y: 0.7677, z: -0.1827},
+	{x: -0.7910, y: 0.5591, z: -0.2484},
+	{x: -0.5542, y: 0.8269, z: -0.0952},
+	{x: -0.5859, y: 0.8100, z: 0.0240},
+	{x: -0.4533, y: -0.0577, z: -0.8895},
+	{x: 0.6376, y: 0.6041, z: -0.4781},
+	{x: -0.7078, y: 0.6893, z: 0.1545},
+	{x: -0.5447, y: 0.8099, z: 0.2176},
+	{x: -0.5635, y: 0.7597, z: 0.3244},
+	{x: -0.6487, y: 0.6762, z: 0.3492},
+	{x: -0.4726, y: 0.7186, z: 0.5102},
+	{x: -0.5540, y: 0.6387, z: 0.5340},
+	{x: -0.3829, y: 0.6125, z: -0.6916},
+	{x: -0.4975, y: 0.4979, z: 0.7104},
+	{x: -0.4209, y: 0.5839, z: 0.6942},
+	{x: -0.3816, y: 0.5073, z: 0.7727},
+	{x: -0.3364, y: 0.4241, z: 0.8408},
+	{x: -0.2959, y: 0.3258, z: 0.8979},
+	{x: 0.1060, y: 0.0120, z: 0.9943},
+	{x: -0.2818, y: 0.1905, z: -0.9404},
+	{x: 0.7198, y: -0.5001, z: -0.4814},
+	{x: -0.3544, y: 0.3592, z: -0.8634},
+	{x: -0.4612, y: 0.3020, z: -0.8343},
+	{x: -0.1872, y: 0.7990, z: 0.5714},
+	{x: 0.0066, y: 0.9744, z: -0.2246},
+	{x: -0.5881, y: 0.5058, z: -0.6311},
+	{x: -0.6458, y: 0.5454, z: -0.5344},
+	{x: -0.7332, y: 0.4808, z: -0.4809},
+	{x: -0.6967, y: 0.5739, z: -0.4305},
+	{x: -0.6806, y: 0.4421, z: -0.5843},
+	{x: -0.7701, y: 0.6184, z: -0.1565},
+	{x: -0.7310, y: 0.5983, z: -0.3281},
+	{x: -0.6972, y: 0.7015, z: -0.1480},
+	{x: -0.8101, y: 0.5847, z: -0.0434},
+	{x: -0.7372, y: 0.6743, z: -0.0438},
+	{x: -0.3344, y: -0.1017, z: -0.9369},
+	{x: -0.7666, y: 0.6391, z: 0.0624},
+	{x: -0.7412, y: -0.5639, z: -0.3643},
+	{x: -0.7217, y: 0.6405, z: 0.2625},
+	{x: -0.7238, y: 0.5834, z: 0.3684},
+	{x: -0.9242, y: 0.3810, z: -0.0272},
+	{x: -0.6450, y: 0.6148, z: 0.4538},
+	{x: -0.6281, y: 0.5486, z: 0.5519},
+	{x: 0.2056, y: -0.0969, z: -0.9738},
+	{x: 0.6931, y: 0.7010, z: -0.1678},
+	{x: -0.5647, y: 0.4003, z: 0.7217},
+	{x: -0.4563, y: 0.4197, z: 0.7846},
+	{x: -0.4489, y: 0.7844, z: -0.4280},
+	{x: -0.4093, y: 0.3354, z: 0.8485},
+	{x: -0.1534, y: 0.1925, z: 0.9692},
+	{x: 0.9774, y: 0.1726, z: -0.1217},
+	{x: -0.3738, y: 0.2477, z: -0.8938},
+	{x: -0.5558, y: 0.2381, z: -0.7965},
+	{x: -0.4485, y: 0.6571, z: 0.6059},
+	{x: -0.5422, y: 0.3535, z: -0.7623},
+	{x: -0.6160, y: 0.4004, z: -0.6784},
+	{x: -0.7147, y: 0.2203, z: -0.6638},
+	{x: -0.7610, y: 0.3699, z: -0.5329},
+	{x: -0.8039, y: 0.4078, z: -0.4329},
+	{x: -0.8970, y: 0.2891, z: -0.3343},
+	{x: -0.9045, y: 0.3564, z: -0.2344},
+	{x: -0.8549, y: 0.3924, z: -0.3395},
+	{x: -0.2367, y: -0.5384, z: -0.8088},
+	{x: -0.8956, y: 0.4231, z: -0.1376},
+	{x: 0.4088, y: 0.9077, z: -0.0944},
+	{x: -0.8734, y: 0.4859, z: -0.0326},
+	{x: -0.8937, y: 0.4420, z: 0.0773},
+	{x: -0.8359, y: 0.5446, z: 0.0684},
+	{x: -0.9010, y: 0.3919, z: 0.1862},
+	{x: -0.8491, y: 0.4971, z: 0.1785},
+	{x: -0.8404, y: 0.3770, z: 0.3894},
+	{x: -0.7924, y: 0.5433, z: 0.2773},
+	{x: -0.8509, y: 0.4406, z: 0.2861},
+	{x: -0.7880, y: 0.4832, z: 0.3816},
+	{x: -0.7722, y: 0.4150, z: 0.4811},
+	{x: -0.7451, y: 0.3405, z: 0.5736},
+	{x: -0.6923, y: 0.4484, z: 0.5653},
+	{x: -0.6191, y: 0.2914, z: 0.7292},
+	{x: 0.7103, y: 0.1674, z: 0.6838},
+	{x: 0.2117, y: -0.8454, z: 0.4905},
+	{x: 0.3399, y: -0.8830, z: 0.3237},
+	{x: -0.0055, y: 0.0495, z: 0.9988},
+	{x: -0.1348, y: 0.0302, z: -0.9904},
+	{x: -0.2808, y: 0.0672, z: -0.9574},
+	{x: -0.4711, y: 0.1843, z: -0.8626},
+	{x: -0.6328, y: 0.2882, z: -0.7187},
+	{x: -0.6413, y: 0.1710, z: -0.7480},
+	{x: -0.7022, y: 0.3322, z: -0.6297},
+	{x: -0.7815, y: 0.2631, z: -0.5657},
+	{x: 0.1412, y: 0.9884, z: 0.0565},
+	{x: -0.8376, y: 0.3025, z: -0.4548},
+	{x: -0.8880, y: 0.2086, z: -0.4098},
+	{x: -0.2688, y: -0.9286, z: 0.2560},
+	{x: -0.9349, y: 0.1658, z: -0.3137},
+	{x: -0.9410, y: 0.3133, z: -0.1283},
+	{x: -0.9628, y: 0.2694, z: -0.0203},
+	{x: -0.1435, y: -0.4813, z: -0.8647},
+	{x: -0.9390, y: 0.3339, z: 0.0824},
+	{x: -0.9716, y: 0.2199, z: 0.0875},
+	{x: -0.9058, y: 0.0963, z: -0.4125},
+	{x: -0.9403, y: 0.2819, z: 0.1905},
+	{x: -0.8970, y: 0.3316, z: 0.2922},
+	{x: -0.7140, y: 0.5188, z: 0.4702},
+	{x: -0.8804, y: 0.2655, z: 0.3930},
+	{x: -0.8184, y: 0.3052, z: 0.4868},
+	{x: -0.8528, y: 0.1904, z: 0.4863},
+	{x: -0.7856, y: 0.2265, z: 0.5757},
+	{x: -0.7483, y: -0.2219, z: -0.6251},
+	{x: -0.6596, y: 0.1761, z: 0.7307},
+	{x: -0.5678, y: 0.2059, z: 0.7970},
+	{x: -0.4902, y: 0.1264, z: 0.8624},
+	{x: -0.3696, y: 0.2330, z: 0.8995},
+	{x: -0.6277, y: -0.7784, z: 0.0020},
+	{x: 0.0688, y: -0.9925, z: -0.1015},
+	{x: -0.3692, y: 0.0059, z: -0.9293},
+	{x: -0.5520, y: -0.0031, z: -0.8338},
+	{x: -0.7153, y: 0.0994, z: -0.6917},
+	{x: 0.0547, y: 0.9981, z: -0.0277},
+	{x: -0.7807, y: 0.0274, z: -0.6243},
+	{x: -0.8422, y: 0.1859, z: -0.5060},
+	{x: -0.8438, y: 0.0767, z: -0.5312},
+	{x: -0.9700, y: -0.1392, z: 0.1994},
+	{x: 0.0243, y: 0.9292, z: 0.3687},
+	{x: 0.3428, y: 0.1021, z: -0.9338},
+	{x: -0.9698, y: 0.1217, z: -0.2112},
+	{x: -0.9796, y: 0.0023, z: -0.2008},
+	{x: -0.9726, y: 0.1985, z: -0.1212},
+	{x: -0.9426, y: 0.2438, z: -0.2284},
+	{x: -0.9881, y: 0.1531, z: -0.0128},
+	{x: -0.9906, y: 0.0993, z: 0.0943},
+	{x: -0.9668, y: 0.1671, z: 0.1932},
+	{x: -0.9525, y: 0.0954, z: 0.2891},
+	{x: 0.1838, y: 0.9493, z: 0.2551},
+	{x: -0.0779, y: 0.9482, z: -0.3079},
+	{x: -0.9266, y: 0.0310, z: 0.3748},
+	{x: -0.8141, y: 0.1087, z: 0.5705},
+	{x: -0.7419, y: 0.1432, z: 0.6551},
+	{x: -0.6837, y: 0.0592, z: 0.7274},
+	{x: -0.5944, y: 0.0936, z: 0.7987},
+	{x: -0.5288, y: 0.0106, z: 0.8487},
+	{x: 0.1947, y: 0.8177, z: -0.5418},
+	{x: -0.1203, y: 0.0842, z: 0.9892},
+	{x: -0.2392, y: -0.0348, z: -0.9703},
+	{x: -0.5331, y: -0.1214, z: -0.8373},
+	{x: -0.6274, y: -0.0729, z: -0.7752},
+	{x: -0.7094, y: -0.0238, z: -0.7044},
+	{x: -0.2971, y: -0.8401, z: 0.4539},
+	{x: -0.6603, y: 0.3729, z: 0.6519},
+	{x: -0.8314, y: -0.0490, z: -0.5535},
+	{x: -0.8868, y: -0.0000, z: -0.4622},
+	{x: -0.8782, y: -0.1168, z: -0.4637},
+	{x: 0.2250, y: 0.5151, z: -0.8271},
+	{x: -0.9284, y: -0.0423, z: -0.3691},
+	{x: -0.9590, y: -0.0857, z: -0.2702},
+	{x: -0.9849, y: -0.1664, z: -0.0485},
+	{x: -0.9949, y: -0.0415, z: -0.0921},
+	{x: -0.9967, y: -0.0784, z: 0.0190},
+	{x: 0.9727, y: 0.2020, z: 0.1144},
+	{x: -0.9371, y: -0.1745, z: 0.3022},
+	{x: -0.9805, y: 0.0459, z: 0.1910},
+	{x: -0.9204, y: -0.2783, z: 0.2745},
+	{x: -0.9306, y: -0.0793, z: 0.3573},
+	{x: -0.9648, y: -0.0392, z: 0.2600},
+	{x: -0.8851, y: -0.0446, z: 0.4633},
+	{x: -0.8366, y: -0.1300, z: 0.5322},
+	{x: -0.7741, y: -0.0963, z: 0.6257},
+	{x: -0.7063, y: -0.1805, z: 0.6845},
+	{x: -0.7017, y: -0.0616, z: 0.7098},
+	{x: -0.6282, y: -0.1448, z: 0.7645},
+	{x: -0.6198, y: -0.0262, z: 0.7843},
+	{x: -0.3585, y: 0.1286, z: 0.9247},
+	{x: -0.3286, y: 0.0095, z: 0.9444},
+	{x: 0.8513, y: -0.5228, z: -0.0450},
+	{x: -0.4221, y: -0.1687, z: -0.8907},
+	{x: -0.5033, y: -0.2328, z: -0.8322},
+	{x: -0.6043, y: -0.1916, z: -0.7734},
+	{x: -0.6916, y: -0.1479, z: -0.7070},
+	{x: -0.6676, y: -0.2657, z: -0.6955},
+	{x: -0.8182, y: -0.1718, z: -0.5486},
+	{x: -0.7756, y: -0.6312, z: 0.0074},
+	{x: -0.6004, y: 0.4779, z: 0.6413},
+	{x: -0.8319, y: -0.3501, z: -0.4305},
+	{x: -0.3776, y: 0.8432, z: 0.3827},
+	{x: -0.8932, y: -0.2817, z: -0.3505},
+	{x: -0.9782, y: -0.1271, z: -0.1639},
+	{x: -0.9244, y: -0.3568, z: -0.1348},
+	{x: -0.9602, y: -0.2740, z: -0.0540},
+	{x: -0.9615, y: -0.2691, z: 0.0556},
+	{x: -0.9266, y: -0.3759, z: -0.0130},
+	{x: -0.9027, y: -0.3726, z: 0.2154},
+	{x: 0.2015, y: -0.9477, z: -0.2474},
+	{x: 0.1105, y: -0.9386, z: -0.3268},
+	{x: -0.8668, y: -0.3693, z: 0.3352},
+	{x: -0.8844, y: -0.2638, z: 0.3851},
+	{x: -0.8896, y: -0.1607, z: 0.4275},
+	{x: -0.8336, y: -0.2439, z: 0.4956},
+	{x: 0.5379, y: -0.1063, z: 0.8363},
+	{x: -0.7747, y: -0.2142, z: 0.5950},
+	{x: -0.7018, y: -0.2963, z: 0.6478},
+	{x: -0.6280, y: -0.2618, z: 0.7329},
+	{x: -0.4426, y: -0.0642, z: 0.8944},
+	{x: 0.6113, y: 0.7722, z: 0.1734},
+	{x: -0.1982, y: 0.0016, z: 0.9802},
+	{x: -0.1339, y: -0.0907, z: -0.9868},
+	{x: -0.3793, y: 0.1278, z: -0.9164},
+	{x: -0.1804, y: -0.8800, z: 0.4394},
+	{x: -0.5759, y: -0.3033, z: -0.7592},
+	{x: 0.7352, y: 0.2167, z: -0.6424},
+	{x: -0.6361, y: -0.3771, z: -0.6732},
+	{x: -0.7958, y: -0.2903, z: -0.5314},
+	{x: -0.7210, y: -0.3377, z: -0.6051},
+	{x: -0.9307, y: 0.2172, z: 0.2944},
+	{x: -0.7612, y: -0.4045, z: -0.5069},
+	{x: -0.8583, y: -0.3969, z: -0.3252},
+	{x: -0.9143, y: -0.3224, z: -0.2452},
+	{x: -0.8131, y: -0.5043, z: -0.2908},
+	{x: -0.8751, y: -0.4339, z: -0.2143},
+	{x: -0.8841, y: -0.4579, z: -0.0937},
+	{x: -0.8714, y: -0.4668, z: 0.1507},
+	{x: -0.3026, y: 0.5880, z: 0.7501},
+	{x: -0.7077, y: -0.7044, z: -0.0539},
+	{x: -0.3130, y: -0.2184, z: -0.9243},
+	{x: -0.8266, y: -0.5567, z: 0.0824},
+	{x: -0.7736, y: -0.5440, z: 0.3250},
+	{x: -0.8018, y: -0.4522, z: 0.3907},
+	{x: -0.6672, y: -0.5077, z: 0.5451},
+	{x: -0.8229, y: -0.3505, z: 0.4473},
+	{x: -0.7503, y: -0.4324, z: 0.5001},
+	{x: -0.7666, y: -0.3271, z: 0.5525},
+	{x: -0.6882, y: -0.4058, z: 0.6014},
+	{x: -0.6170, y: -0.3734, z: 0.6928},
+	{x: -0.5370, y: -0.3379, z: 0.7730},
+	{x: -0.5454, y: -0.2249, z: 0.8074},
+	{x: -0.3614, y: -0.1311, z: 0.9231},
+	{x: 0.1862, y: 0.0975, z: 0.9777},
+	{x: 0.8099, y: -0.5151, z: -0.2805},
+	{x: -0.2807, y: -0.3295, z: -0.9015},
+	{x: -0.4734, y: -0.3426, z: -0.8115},
+	{x: -0.3602, y: -0.3954, z: -0.8449},
+	{x: -0.4335, y: -0.4484, z: -0.7816},
+	{x: -0.5851, y: -0.4816, z: -0.6524},
+	{x: -0.6810, y: -0.4477, z: -0.5795},
+	{x: -0.6209, y: -0.5448, z: -0.5637},
+	{x: -0.7157, y: -0.5108, z: -0.4762},
+	{x: -0.7912, y: -0.4614, z: -0.4015},
+	{x: -0.6655, y: -0.6451, z: -0.3753},
+	{x: -0.7621, y: -0.5995, z: -0.2445},
+	{x: -0.8287, y: -0.5328, z: -0.1714},
+	{x: -0.7750, y: -0.6207, z: -0.1193},
+	{x: -0.8350, y: -0.5484, z: -0.0452},
+	{x: -0.8828, y: -0.4686, z: 0.0328},
+	{x: -0.7045, y: -0.7067, z: 0.0651},
+	{x: -0.8401, y: 0.5232, z: -0.1429},
+	{x: -0.8082, y: -0.5522, z: 0.2048},
+	{x: -0.7595, y: -0.6360, z: 0.1368},
+	{x: -0.7332, y: -0.6300, z: 0.2561},
+	{x: -0.7251, y: -0.5308, z: 0.4387},
+	{x: -0.6918, y: -0.6209, z: 0.3687},
+	{x: -0.6386, y: -0.6019, z: 0.4795},
+	{x: 0.1816, y: 0.5116, z: 0.8398},
+	{x: -0.5742, y: -0.5752, z: 0.5825},
+	{x: -0.5987, y: -0.4782, z: 0.6425},
+	{x: -0.4409, y: 0.8767, z: 0.1926},
+	{x: -0.4493, y: -0.2979, z: 0.8423},
+	{x: -0.3440, y: -0.3610, z: 0.8668},
+	{x: -0.4554, y: -0.1837, z: 0.8711},
+	{x: 0.7060, y: 0.6205, z: 0.3414},
+	{x: -0.6464, y: 0.7605, z: -0.0609},
+	{x: -0.4609, y: -0.8136, z: 0.3545},
+	{x: -0.3483, y: -0.5175, z: -0.7816},
+	{x: -0.4801, y: -0.5154, z: -0.7098},
+	{x: 0.3855, y: -0.7280, z: -0.5670},
+	{x: -0.4433, y: -0.6686, z: -0.5970},
+	{x: -0.5190, y: -0.5817, z: -0.6263},
+	{x: -0.5484, y: -0.6422, z: -0.5355},
+	{x: -0.5706, y: -0.6948, z: -0.4377},
+	{x: -0.5131, y: -0.8117, z: -0.2790},
+	{x: -0.5910, y: -0.7350, z: -0.3325},
+	{x: -0.6851, y: -0.6748, z: -0.2745},
+	{x: -0.6104, y: -0.7600, z: -0.2233},
+	{x: -0.6443, y: -0.7063, z: 0.2932},
+	{x: -0.7009, y: -0.6934, z: -0.1673},
+	{x: -0.5393, y: -0.8408, z: -0.0467},
+	{x: -0.6223, y: -0.7738, z: 0.1186},
+	{x: -0.5425, y: -0.8367, z: 0.0749},
+	{x: 0.7420, y: -0.5628, z: 0.3643},
+	{x: -0.6775, y: -0.7108, z: 0.1891},
+	{x: -0.5568, y: -0.7671, z: 0.3186},
+	{x: -0.5666, y: 0.7014, z: 0.4324},
+	{x: -0.8503, y: 0.4630, z: -0.2501},
+	{x: -0.5432, y: -0.6640, z: 0.5138},
+	{x: -0.4163, y: -0.5091, z: 0.7533},
+	{x: -0.3917, y: -0.6049, z: 0.6933},
+	{x: -0.3268, y: -0.4665, z: 0.8219},
+	{x: -0.2322, y: -0.4163, z: 0.8791},
+	{x: -0.3562, y: -0.2496, z: 0.9005},
+	{x: -0.2583, y: -0.1983, z: 0.9455},
+	{x: -0.0369, y: -0.0324, z: -0.9988},
+	{x: -0.1693, y: -0.3769, z: -0.9106},
+	{x: -0.2599, y: -0.4420, z: -0.8585},
+	{x: -0.4085, y: -0.5972, z: -0.6903},
+	{x: -0.3053, y: -0.6128, z: -0.7289},
+	{x: -0.3658, y: -0.7533, z: -0.5466},
+	{x: -0.9087, y: 0.1493, z: 0.3898},
+	{x: -0.4702, y: -0.7288, z: -0.4977},
+	{x: -0.3903, y: -0.8069, z: -0.4434},
+	{x: 0.7702, y: -0.5864, z: 0.2510},
+	{x: -0.4928, y: -0.7773, z: -0.3912},
+	{x: -0.4120, y: -0.8481, z: -0.3331},
+	{x: -0.5297, y: -0.8322, z: -0.1641},
+	{x: -0.4403, y: 0.4121, z: -0.7977},
+	{x: -0.4436, y: -0.8906, z: -0.1009},
+	{x: -0.5405, y: -0.1069, z: 0.8345},
+	{x: -0.4518, y: -0.8919, z: 0.0188},
+	{x: -0.4301, y: -0.8760, z: -0.2182},
+	{x: -0.4708, y: -0.8469, z: 0.2473},
+	{x: -0.3706, y: -0.9051, z: 0.2085},
+	{x: -0.3700, y: -0.8702, z: 0.3252},
+	{x: -0.5663, y: -0.7973, z: 0.2086},
+	{x: -0.5071, y: -0.7436, z: 0.4359},
+	{x: 0.7099, y: -0.6764, z: 0.1961},
+	{x: -0.4382, y: -0.7243, z: 0.5323},
+	{x: -0.4713, y: -0.6390, z: 0.6079},
+	{x: -0.3625, y: -0.6928, z: 0.6234},
+	{x: -0.2775, y: -0.6581, z: 0.6999},
+	{x: -0.3046, y: -0.5659, z: 0.7661},
+	{x: -0.2131, y: -0.5183, z: 0.8282},
+	{x: -0.2473, y: -0.3094, z: 0.9182},
+	{x: -0.0222, y: 0.9815, z: 0.1900},
+	{x: -0.0758, y: -0.3089, z: -0.9481},
+	{x: 0.5416, y: 0.5314, z: -0.6514},
+	{x: -0.9916, y: 0.0770, z: -0.1040},
+	{x: -0.1140, y: -0.5796, z: -0.8069},
+	{x: -0.1952, y: -0.6296, z: -0.7520},
+	{x: -0.2553, y: -0.7698, z: -0.5850},
+	{x: 0.1120, y: 0.5000, z: -0.8588},
+	{x: -0.1665, y: -0.8309, z: -0.5310},
+	{x: -0.2817, y: -0.8264, z: -0.4875},
+	{x: -0.2164, y: -0.9231, z: -0.3178},
+	{x: -0.3056, y: -0.8724, z: -0.3815},
+	{x: -0.3258, y: -0.9064, z: -0.2689},
+	{x: -0.1397, y: -0.9814, z: -0.1314},
+	{x: -0.3417, y: -0.9274, z: -0.1519},
+	{x: 0.3688, y: -0.9256, z: 0.0851},
+	{x: -0.3534, y: -0.9349, z: -0.0320},
+	{x: -0.7076, y: 0.2605, z: 0.6568},
+	{x: -0.2484, y: -0.9649, z: -0.0853},
+	{x: -0.2651, y: -0.9531, z: 0.1462},
+	{x: -0.3643, y: -0.9269, z: 0.0900},
+	{x: -0.2692, y: -0.8925, z: 0.3620},
+	{x: -0.3948, y: -0.2837, z: -0.8738},
+	{x: -0.9503, y: 0.0483, z: -0.3074},
+	{x: -0.3290, y: -0.7715, z: 0.5445},
+	{x: -0.2137, y: -0.8165, z: 0.5362},
+	{x: -0.2461, y: -0.7419, z: 0.6237},
+	{x: 0.9062, y: 0.1385, z: 0.3996},
+	{x: -0.1889, y: -0.6144, z: 0.7661},
+	{x: -0.0981, y: -0.5588, z: 0.8235},
+	{x: -0.1183, y: -0.4584, z: 0.8808},
+	{x: -0.1353, y: -0.3521, z: 0.9261},
+	{x: 0.0475, y: -0.3508, z: -0.9352},
+	{x: -0.0508, y: -0.4132, z: -0.9092},
+	{x: -0.0245, y: -0.5115, z: -0.8589},
+	{x: -0.9516, y: -0.2559, z: 0.1704},
+	{x: -0.1051, y: -0.6875, z: -0.7185},
+	{x: -0.2257, y: -0.7038, z: -0.6736},
+	{x: -0.1380, y: -0.7662, z: -0.6276},
+	{x: -0.0767, y: -0.8832, z: -0.4627},
+	{x: 0.0175, y: -0.9175, z: -0.3974},
+	{x: -0.1933, y: -0.8830, z: -0.4278},
+	{x: -0.1029, y: -0.9276, z: -0.3592},
+	{x: -0.0098, y: -0.9567, z: -0.2909},
+	{x: -0.0292, y: -0.9840, z: -0.1756},
+	{x: 0.8777, y: -0.0262, z: -0.4785},
+	{x: -0.2347, y: -0.9507, z: -0.2029},
+	{x: -0.1501, y: -0.9886, z: -0.0139},
+	{x: 0.1662, y: -0.8336, z: -0.5267},
+	{x: -0.0405, y: -0.9975, z: -0.0578},
+	{x: -0.0508, y: -0.9834, z: 0.1740},
+	{x: 0.0519, y: -0.9679, z: 0.2459},
+	{x: -0.1557, y: -0.9826, z: 0.1017},
+	{x: 0.0371, y: -0.9317, z: 0.3613},
+	{x: -0.0723, y: -0.9124, z: 0.4028},
+	{x: 0.0139, y: -0.8808, z: 0.4734},
+	{x: -0.0967, y: -0.8531, z: 0.5127},
+	{x: -0.0126, y: -0.8151, z: 0.5792},
+	{x: -0.1289, y: -0.7833, z: 0.6082},
+	{x: -0.0434, y: -0.7389, z: 0.6724},
+	{x: -0.0726, y: -0.6528, z: 0.7541},
+	{x: 0.0163, y: -0.5916, z: 0.8061},
+	{x: -0.0223, y: -0.3890, z: 0.9209},
+	{x: -0.0388, y: -0.2781, z: 0.9598},
+	{x: -0.0018, y: -0.1375, z: -0.9905},
+	{x: -0.0077, y: -0.6069, z: -0.7947},
+	{x: 0.0061, y: -0.6891, z: -0.7246},
+	{x: -0.0237, y: -0.7624, z: -0.6466},
+	{x: -0.0498, y: -0.8280, z: -0.5586},
+	{x: 0.0725, y: -0.8041, z: -0.5900},
+	{x: 0.0220, y: 0.5772, z: -0.8163},
+	{x: -0.1002, y: -0.1994, z: -0.9748},
+	{x: 0.0457, y: -0.8667, z: -0.4967},
+	{x: 0.1397, y: -0.8925, z: -0.4288},
+	{x: 0.2301, y: -0.9080, z: -0.3500},
+	{x: 0.0824, y: -0.9724, z: -0.2184},
+	{x: 0.1784, y: -0.9732, z: -0.1449},
+	{x: 0.0652, y: -0.9978, z: 0.0141},
+	{x: -0.1635, y: -0.9306, z: 0.3275},
+	{x: 0.1691, y: -0.9823, z: 0.0811},
+	{x: 0.0590, y: -0.9898, z: 0.1300},
+	{x: 0.1603, y: -0.9671, z: 0.1976},
+	{x: -0.8609, y: -0.2341, z: -0.4517},
+	{x: 0.1467, y: -0.9377, z: 0.3149},
+	{x: 0.1258, y: -0.8945, z: 0.4290},
+	{x: -0.5201, y: 0.3190, z: 0.7923},
+	{x: 0.0987, y: -0.8378, z: 0.5370},
+	{x: 0.1813, y: -0.7840, z: 0.5937},
+	{x: 0.0708, y: -0.7659, z: 0.6390},
+	{x: 0.1533, y: -0.7060, z: 0.6914},
+	{x: 0.0418, y: -0.6832, z: 0.7290},
+	{x: -0.0040, y: -0.4935, z: 0.8697},
+	{x: 0.1100, y: -0.5226, z: 0.8455},
+	{x: -0.0854, y: -0.0362, z: 0.9957},
+	{x: -0.9573, y: -0.2404, z: -0.1603},
+	{x: 0.0732, y: -0.4517, z: -0.8892},
+	{x: 0.1894, y: -0.4854, z: -0.8535},
+	{x: 0.2057, y: -0.5827, z: -0.7862},
+	{x: 0.1020, y: -0.7311, z: -0.6746},
+	{x: 0.1950, y: -0.7634, z: -0.6158},
+	{x: 0.2848, y: -0.7876, z: -0.5464},
+	{x: 0.9667, y: -0.2206, z: 0.1300},
+	{x: 0.2556, y: -0.8537, z: -0.4537},
+	{x: 0.3069, y: -0.9196, z: -0.2455},
+	{x: -0.4356, y: -0.4065, z: 0.8032},
+	{x: -0.9165, y: -0.1621, z: -0.3658},
+	{x: 0.2811, y: -0.9530, z: -0.1128},
+	{x: 0.2758, y: -0.9611, z: 0.0160},
+	{x: -0.9243, y: -0.3671, z: 0.1047},
+	{x: 0.1762, y: -0.9838, z: -0.0338},
+	{x: 0.2670, y: -0.9536, z: 0.1392},
+	{x: 0.2534, y: -0.9316, z: 0.2604},
+	{x: 0.3572, y: -0.9113, z: 0.2049},
+	{x: 0.2336, y: -0.2057, z: -0.9503},
+	{x: -0.0703, y: 0.2818, z: 0.9569},
+	{x: 0.2356, y: -0.8949, z: 0.3791},
+	{x: 0.3205, y: -0.8390, z: 0.4397},
+	{x: 0.2950, y: -0.7839, z: 0.5463},
+	{x: 0.6090, y: 0.3156, z: 0.7276},
+	{x: 0.2617, y: -0.7197, z: 0.6431},
+	{x: 0.2373, y: -0.6364, z: 0.7340},
+	{x: 0.3336, y: -0.5625, z: 0.7565},
+	{x: 0.1285, y: -0.6175, z: 0.7760},
+	{x: 0.0913, y: -0.4211, z: 0.9024},
+	{x: -0.9823, y: -0.1656, z: 0.0874},
+	{x: 0.1409, y: -0.2755, z: -0.9509},
+	{x: 0.1674, y: -0.3825, z: -0.9087},
+	{x: 0.2825, y: -0.4170, z: -0.8639},
+	{x: 0.3002, y: -0.5178, z: -0.8011},
+	{x: 0.3053, y: -0.6157, z: -0.7264},
+	{x: 0.4160, y: 0.4393, z: -0.7962},
+	{x: 0.3978, y: -0.6410, z: -0.6564},
+	{x: 0.4836, y: -0.6581, z: -0.5771},
+	{x: 0.3357, y: -0.8673, z: -0.3675},
+	{x: 0.4483, y: -0.8108, z: -0.3764},
+	{x: 0.3766, y: -0.9131, z: -0.1564},
+	{x: 0.5231, y: -0.8049, z: -0.2802},
+	{x: 0.4717, y: -0.8599, z: -0.1952},
+	{x: 0.4709, y: -0.8785, z: -0.0807},
+	{x: 0.5626, y: -0.8263, z: -0.0268},
+	{x: 0.4680, y: -0.8831, z: 0.0342},
+	{x: -0.2701, y: -0.0820, z: 0.9593},
+	{x: 0.6463, y: -0.7581, z: -0.0868},
+	{x: 0.4592, y: -0.8755, z: 0.1505},
+	{x: 0.9705, y: 0.0071, z: 0.2409},
+	{x: 0.4429, y: -0.8560, z: 0.2666},
+	{x: 0.4218, y: -0.8223, z: 0.3820},
+	{x: 0.6836, y: -0.0874, z: -0.7246},
+	{x: 0.5943, y: -0.7131, z: 0.3719},
+	{x: 0.4158, y: 0.6789, z: 0.6051},
+	{x: 0.4723, y: -0.6849, z: 0.5548},
+	{x: 0.3433, y: -0.6455, z: 0.6823},
+	{x: 0.4402, y: -0.6000, z: 0.6679},
+	{x: -0.4640, y: -0.8747, z: 0.1404},
+	{x: 0.2225, y: -0.5455, z: 0.8080},
+	{x: 0.1846, y: -0.3431, z: 0.9210},
+	{x: 0.0725, y: -0.3126, z: 0.9471},
+	{x: 0.1134, y: -0.1624, z: -0.9802},
+	{x: 0.2599, y: -0.3125, z: -0.9137},
+	{x: 0.3893, y: -0.4438, z: -0.8072},
+	{x: 0.3995, y: -0.5460, z: -0.7364},
+	{x: 0.4907, y: -0.5678, z: -0.6610},
+	{x: 0.5750, y: -0.5816, z: -0.5754},
+	{x: 0.5633, y: -0.6654, z: -0.4898},
+	{x: 0.4649, y: -0.7401, z: -0.4860},
+	{x: 0.6381, y: -0.6607, z: -0.3954},
+	{x: 0.5379, y: -0.7421, z: -0.4001},
+	{x: 0.6284, y: -0.7501, z: -0.2060},
+	{x: -0.0006, y: 0.0683, z: -0.9977},
+	{x: 0.5603, y: -0.8152, z: -0.1468},
+	{x: 0.7129, y: -0.6832, z: -0.1581},
+	{x: 0.7250, y: -0.6877, z: -0.0371},
+	{x: 0.5569, y: -0.8256, z: 0.0907},
+	{x: 0.6465, y: -0.7623, z: 0.0301},
+	{x: -0.6025, y: -0.6878, z: 0.4049},
+	{x: 0.6377, y: -0.7564, z: 0.1456},
+	{x: 0.5437, y: -0.8134, z: 0.2069},
+	{x: 0.5226, y: -0.7896, z: 0.3217},
+	{x: 0.6883, y: -0.6565, z: 0.3087},
+	{x: 0.4963, y: -0.7508, z: 0.4358},
+	{x: 0.5605, y: -0.6724, z: 0.4834},
+	{x: 0.6172, y: -0.5855, z: 0.5256},
+	{x: 0.5299, y: -0.5994, z: 0.5999},
+	{x: 0.4262, y: -0.5026, z: 0.7521},
+	{x: 0.3171, y: -0.4712, z: 0.8230},
+	{x: 0.2960, y: -0.3699, z: 0.8806},
+	{x: 0.3254, y: 0.3706, z: 0.8700},
+	{x: 0.2734, y: -0.2613, z: 0.9257},
+	{x: 0.0227, y: -0.2456, z: -0.9691},
+	{x: 0.3466, y: -0.2298, z: -0.9094},
+	{x: 0.3707, y: -0.3385, z: -0.8648},
+	{x: 0.4852, y: -0.4675, z: -0.7389},
+	{x: 0.5656, y: -0.3816, z: -0.7310},
+	{x: 0.5722, y: -0.4854, z: -0.6611},
+	{x: 0.6507, y: -0.4961, z: -0.5748},
+	{x: -0.6469, y: -0.5997, z: -0.4710},
+	{x: 0.6536, y: -0.5861, z: -0.4788},
+	{x: 0.7227, y: -0.5897, z: -0.3604},
+	{x: 0.6922, y: -0.6657, z: -0.2786},
+	{x: 0.5536, y: 0.7568, z: -0.3475},
+	{x: 0.7668, y: -0.6005, z: -0.2270},
+	{x: -0.3374, y: -0.6887, z: -0.6418},
+	{x: 0.7870, y: -0.6081, z: -0.1043},
+	{x: 0.7939, y: -0.6078, z: 0.0170},
+	{x: 0.8520, y: -0.5182, z: 0.0741},
+	{x: -0.0560, y: -0.1604, z: 0.9855},
+	{x: 0.6203, y: -0.7401, z: 0.2597},
+	{x: -0.5210, y: -0.4451, z: 0.7283},
+	{x: -0.3986, y: -0.8014, z: 0.4459},
+	{x: -0.6233, y: -0.7740, z: -0.1118},
+	{x: 0.6569, y: -0.6272, z: 0.4184},
+	{x: 0.6161, y: -0.5079, z: 0.6020},
+	{x: 0.8124, y: -0.0097, z: -0.5830},
+	{x: 0.8995, y: -0.3259, z: -0.2910},
+	{x: 0.5899, y: -0.4194, z: 0.6900},
+	{x: 0.4033, y: -0.3977, z: 0.8241},
+	{x: 0.3820, y: -0.2891, z: 0.8778},
+	{x: 0.3559, y: -0.1772, z: 0.9176},
+	{x: 0.0528, y: -0.1969, z: 0.9790},
+	{x: 0.3185, y: -0.1174, z: -0.9406},
+	{x: 0.4526, y: -0.2528, z: -0.8551},
+	{x: 0.4730, y: -0.3616, z: -0.8034},
+	{x: 0.7257, y: -0.4040, z: -0.5570},
+	{x: 0.5507, y: -0.2732, z: -0.7887},
+	{x: 0.6498, y: -0.3962, z: -0.6487},
+	{x: -0.5597, y: 0.1185, z: -0.8202},
+	{x: 0.8513, y: -0.2198, z: -0.4765},
+	{x: 0.5208, y: -0.5129, z: 0.6824},
+	{x: 0.7924, y: -0.4048, z: -0.4563},
+	{x: 0.0445, y: 0.6696, z: -0.7414},
+	{x: 0.7757, y: -0.4992, z: -0.3861},
+	{x: 0.8755, y: -0.4266, z: -0.2268},
+	{x: -0.1600, y: -0.7031, z: 0.6929},
+	{x: 0.8962, y: -0.4305, z: -0.1073},
+	{x: 0.8379, y: -0.5206, z: -0.1639},
+	{x: 0.9033, y: -0.4288, z: 0.0128},
+	{x: 0.3760, y: -0.7087, z: 0.5969},
+	{x: 0.8979, y: -0.4199, z: 0.1319},
+	{x: 0.8503, y: -0.3829, z: 0.3610},
+	{x: 0.8178, y: -0.4883, z: 0.3046},
+	{x: 0.5998, y: 0.0042, z: 0.8001},
+	{x: 0.7826, y: -0.4640, z: 0.4151},
+	{x: 0.7314, y: -0.4393, z: 0.5217},
+	{x: 0.7479, y: -0.3310, z: 0.5753},
+	{x: 0.6734, y: -0.4159, z: 0.6112},
+	{x: 0.6680, y: -0.3180, z: 0.6728},
+	{x: 0.5797, y: -0.3178, z: 0.7503},
+	{x: 0.4998, y: -0.4132, z: 0.7612},
+	{x: -0.5288, y: 0.5726, z: 0.6265},
+	{x: 0.4338, y: -0.0891, z: 0.8966},
+	{x: 0.2458, y: -0.1465, z: 0.9582},
+	{x: 0.0798, y: -0.0428, z: -0.9959},
+	{x: 0.4256, y: -0.1407, z: -0.8939},
+	{x: 0.9894, y: -0.1356, z: -0.0516},
+	{x: 0.3743, y: 0.9271, z: 0.0177},
+	{x: 0.6213, y: -0.1816, z: -0.7622},
+	{x: 0.7071, y: -0.1975, z: -0.6790},
+	{x: 0.7839, y: -0.2094, z: -0.5845},
+	{x: 0.7935, y: -0.3097, z: -0.5239},
+	{x: 0.8974, y: -0.1292, z: -0.4220},
+	{x: 0.9054, y: -0.2280, z: -0.3581},
+	{x: 0.8548, y: -0.3171, z: -0.4108},
+	{x: 0.9433, y: -0.2341, z: -0.2352},
+	{x: 0.9269, y: -0.3341, z: -0.1711},
+	{x: 0.9649, y: -0.2374, z: -0.1122},
+	{x: 0.8805, y: -0.4041, z: 0.2479},
+	{x: 0.9725, y: -0.2328, z: 0.0104},
+	{x: 0.9411, y: -0.3345, z: -0.0494},
+	{x: 0.9899, y: -0.1241, z: 0.0687},
+	{x: 0.9419, y: -0.3281, z: 0.0716},
+	{x: 0.4439, y: 0.0755, z: -0.8929},
+	{x: 0.9302, y: -0.3143, z: 0.1898},
+	{x: -0.2588, y: -0.9654, z: 0.0323},
+	{x: 0.9053, y: -0.2956, z: 0.3051},
+	{x: 0.8057, y: -0.3593, z: 0.4710},
+	{x: 0.8132, y: -0.2509, z: 0.5251},
+	{x: 0.7396, y: -0.2305, z: 0.6324},
+	{x: 0.7213, y: -0.1275, z: 0.6807},
+	{x: 0.6542, y: -0.2159, z: 0.7249},
+	{x: -0.7617, y: 0.0246, z: 0.6475},
+	{x: 0.5081, y: 0.0016, z: 0.8613},
+	{x: 0.9005, y: 0.3921, z: -0.1881},
+	{x: 0.2894, y: -0.0006, z: -0.9572},
+	{x: 0.3935, y: -0.0238, z: -0.9190},
+	{x: 0.4940, y: -0.0464, z: -0.8682},
+	{x: 0.5929, y: -0.0697, z: -0.8023},
+	{x: 0.7363, y: 0.0076, z: -0.6766},
+	{x: 0.7649, y: -0.1030, z: -0.6358},
+	{x: 0.8366, y: -0.1180, z: -0.5349},
+	{x: 0.7713, y: 0.4042, z: -0.4916},
+	{x: 0.8043, y: 0.3558, z: 0.4760},
+	{x: -0.1240, y: -0.9609, z: -0.2477},
+	{x: 0.9440, y: -0.1359, z: -0.3007},
+	{x: 0.9701, y: -0.0408, z: -0.2393},
+	{x: 0.9747, y: -0.1385, z: -0.1756},
+	{x: 0.9928, y: -0.0379, z: -0.1140},
+	{x: 0.9996, y: -0.0261, z: 0.0061},
+	{x: 0.9957, y: 0.0727, z: -0.0575},
+	{x: -0.1601, y: -0.9633, z: 0.2154},
+	{x: 0.9919, y: -0.0126, z: 0.1261},
+	{x: 0.9762, y: -0.1091, z: 0.1874},
+	{x: 0.9473, y: -0.2038, z: 0.2472},
+	{x: 0.9144, y: -0.1837, z: 0.3607},
+	{x: 0.9491, y: -0.0894, z: 0.3019},
+	{x: 0.8665, y: -0.2742, z: 0.4171},
+	{x: 0.8670, y: -0.1637, z: 0.4707},
+	{x: 0.8020, y: -0.1479, z: 0.5787},
+	{x: 0.8877, y: 0.3550, z: -0.2931},
+	{x: 0.6933, y: -0.0221, z: 0.7203},
+	{x: 0.6313, y: -0.1092, z: 0.7678},
+	{x: -0.0455, y: -0.9973, z: 0.0585},
+	{x: 0.3250, y: -0.0616, z: 0.9437},
+	{x: 0.1355, y: -0.1114, z: 0.9845}
+]
 
-var stringify = JSON.stringify;
+kd_tree_points_with_index = kd_tree_sample_points.map((point, idx) => {
+	point.index = idx;
+	return point;
+});
 
-module.exports = function (fn, options) {
-    var wkey;
-    var cacheKeys = Object.keys(cache);
+var utils = require('./utils.js');
+var kdTree = require('./kd-tree-javascript/kdTree.js');
+module.exports.hazeTree = new kdTree.kdTree(
+	kd_tree_points_with_index,
+	utils.euclideanDist,
+	['x', 'y', 'z']
+);
+	
+},{"./kd-tree-javascript/kdTree.js":1,"./utils.js":14}],13:[function(require,module,exports){
+var ndarray = require('ndarray');
+var cwise = require('cwise');
+var hazeTree = require('./sample_1000.js').hazeTree;
 
-    for (var i = 0, l = cacheKeys.length; i < l; i++) {
-        var key = cacheKeys[i];
-        var exp = cache[key].exports;
-        // Using babel as a transpiler to use esmodule, the export will always
-        // be an object with the default export as a property of it. To ensure
-        // the existing api and babel esmodule exports are both supported we
-        // check for both
-        if (exp === fn || exp && exp.default === fn) {
-            wkey = key;
-            break;
-        }
+window.transmittanceMap = function(canvas, airLight) {
+	var context = canvas.getContext('2d');
+	var picWidth = canvas.width,
+		picHeight = canvas.height,
+		pixCount = picWidth*picHeight,
+		picDim = [picHeight, picWidth];
+	var colorArray = ndarray(context.getImageData(0, 0, picWidth, picHeight).data,
+	                 [picHeight, picWidth, 4]);
+	var ballPointCount = window.kd_tree_points_with_index.length;
+	/*var hazeTree = new window.kdTree(
+		window.kd_tree_points_with_index, window.euclideanDist, ['x', 'y', 'z']
+	);*/
+	var nearestQuery = ndarray(new Uint16Array(pixCount), picDim);
+	var furthestDist = ndarray(new Float32Array(ballPointCount), [ballPointCount]);
+	var colorNorm = ndarray(new Float32Array(pixCount), picDim);
+	for(var i = 0; i < picHeight; ++i) {
+		for(var j = 0; j < picWidth; ++j) {
+			var cc = [
+				colorArray.get(i, j, 0)/255 - airLight[0],
+				colorArray.get(i, j, 1)/255 - airLight[1],
+				colorArray.get(i, j, 2)/255 - airLight[2]
+			];
+			var cN = Math.sqrt(cc[0]*cc[0] + cc[1]*cc[1] + cc[2]*cc[2]);
+			colorNorm.set(i, j, cN); 
+			var cND = { x:cc[0]/cN, y:cc[1]/cN, z:cc[2]/cN };
+			var nQ = hazeTree.nearest(cND, 1, 0.1)[0][0].index;
+			nearestQuery.set(i, j, nQ);
+			furthestDist.set(nQ, Math.max(furthestDist.get(nQ), cN));
+		}
+	}
+	var transmittanceRaw = ndarray(new Float32Array(pixCount), picDim);
+	var maxTrans = cwise({
+		args: [{blockIndices: -1}],
+		pre: function() {
+			this.res = [256, 256, 256];
+		},
+		body: function(c) {
+			this.res = [
+				Math.min(this.res[0], c[0]),
+				Math.min(this.res[1], c[1]),
+				Math.min(this.res[2], c[2])
+			];
+		},
+		post: function() {
+			return this.res;
+		}
+	})(colorArray).reduce((a, b, i) => {
+		return Math.min(a, 1 - b/(airLight[i]*255));
+	}, 1.0);
+	var transmittanceRaw = ndarray(new Float32Array(pixCount), picDim);
+	for(var i = 0; i < picHeight; ++i) {
+		for(var j = 0; j < picWidth; ++j) {
+			var t = maxTrans*colorNorm.get(i, j)
+						 /furthestDist.get(nearestQuery.get(i, j));
+			var lbRatio = [
+				colorArray.get(i, j, 0)/255/airLight[0],
+				colorArray.get(i, j, 1)/255/airLight[1],
+				colorArray.get(i, j, 2)/255/airLight[2]
+			].reduce((a, b) => Math.min(a, b));
+			transmittanceRaw.set(i, j, Math.max(t, 1-lbRatio));
+		}
+	}
+	var sum =    ndarray(new Float32Array(ballPointCount), [ballPointCount]),
+			sum2 =   ndarray(new Float32Array(ballPointCount), [ballPointCount]),
+			pCount = ndarray(new Uint32Array(ballPointCount), [ballPointCount]);
+	transmittanceRaw.data.forEach((t, i) => {
+		var p = nearestQuery.data[i];
+		sum.set(p, sum.get(p)+t);
+		sum2.set(p, sum2.get(p)+t*t);
+		pCount.set(p, pCount.get(p)+1);
+	});
+	var one_var = ndarray(new Float32Array(ballPointCount), [ballPointCount]);
+	cwise({
+		args: ['array', 'array', 'array', 'array'],
+		body: function(o, s, s2, c) {
+			var avg = s/c, v = (s2/c - avg*avg);
+			o = (v !== 0)? 1/v: 0;
+		}
+	})(one_var, sum, sum2, pCount);
+	var lambda = 5;
+	var epsilon = 1e-6;
+	var coeffs = ndarray(new Float32Array(pixCount*5), picDim.concat(5));
+	var one_varPix = ndarray(new Float32Array(pixCount), picDim);
+	for(var i = 0; i < picHeight; ++i) {
+		for(var j = 0; j < picWidth; ++j) {
+			var c = one_var.get(nearestQuery.get(i, j));
+			one_varPix.set(i, j, c);
+			coeffs.set(i, j, 4, c);
+		}
+	}
+	function laplacianCoeff(i, j, o) {
+		var cN = [
+			(colorArray.get(i + o[0], j + o[1], 0) - colorArray.get(i, j, 0))/255,
+			(colorArray.get(i + o[0], j + o[1], 1) - colorArray.get(i, j, 1))/255,
+			(colorArray.get(i + o[0], j + o[1], 2) - colorArray.get(i, j, 2))/255,
+		].reduce((a, b) => a + b*b, 0) + epsilon;
+		var coeff = lambda*2/cN;
+		return coeff;
+	}
+	for(var i = 0; i < picHeight; ++i) {
+		for(var j = 0; j < picWidth; ++j) {
+			if(i > 0) {
+				var c = laplacianCoeff(i, j, [-1, 0]);
+				coeffs.set(i, j, 0, -c);
+				coeffs.set(i, j, 4, coeffs.get(i, j, 4)+c);
+			}
+			if(j > 0) {
+				var c = laplacianCoeff(i, j, [0, -1]);
+				coeffs.set(i, j, 1, -c);
+				coeffs.set(i, j, 4, coeffs.get(i, j, 4)+c);
+			}
+			if(j < picWidth - 1) {
+				var c = laplacianCoeff(i, j, [0,1]);
+				coeffs.set(i, j, 2, -c);
+				coeffs.set(i, j, 4, coeffs.get(i, j, 4)+c);
+			}
+			if(i < picHeight-1) {
+				var c = laplacianCoeff(i, j, [1,0]);
+				coeffs.set(i, j, 3, -c);
+				coeffs.set(i, j, 4, coeffs.get(i, j, 4)+c);
+			}
+		}
+	}
+	var RHS = ndarray(new Float32Array(pixCount), picDim);
+	var mprod = cwise({
+		args: ['array', 'array', 'array'],
+		body: function(c, a, b) {c = a*b;}
+	});
+	mprod(RHS, one_varPix, transmittanceRaw);
+	
+	//Conjugate gradients
+	smoothTransmittance(coeffs, RHS, transmittanceRaw, 150);
+	
+	return transmittanceRaw.data;
+}
+
+function smoothTransmittance(A, rhs, x, max_iter) {
+	var M = ndarray(new Float32Array(rhs.data.length), rhs.shape);
+	var mprod = cwise({
+		args: ['array', 'array', 'array'],
+		body: function(c, a, b) {c = a*b;}
+	});
+	var iprod = cwise({
+		args: ['array', 'array'],
+		pre: function(){this.prod = 0;},
+		body: function(a, b) {this.prod += a*b;},
+		post: function(){return this.prod;}
+	});
+	var msub = cwise({
+		args: ['array', 'array', 'array'],
+		body: function(c, a, b) {c = a-b;}
+	});
+	var apply = cwise({
+		args: ['array', 'array', {blockIndices: -1},
+		 {offset:[-1, 0], array: 1},
+		 {offset:[0, -1], array: 1},
+		 {offset:[0, 1], array: 1},
+		 {offset:[1, 0], array: 1}
+		],
+		pre: function() {
+			this.log = true;
+		},
+		body: function(o, x, a, u, l, r, b) {
+			if(u === undefined) u = 0;
+			if(l === undefined) l = 0;
+			if(r === undefined) r = 0;
+			if(b === undefined) b = 0;
+			o = u*a[0] + l*a[1] + r*a[2] + b*a[3] + x*a[4];
+		}
+	});
+	var incVec = cwise({
+		args: ['scalar', 'array', 'scalar', 'array'],
+		body: function(a, am, b, bm) { am = a*am + b*bm; }
+	});
+
+	cwise({
+		args: ['array', {blockIndices: -1}],
+		body: function(m, a) {m = (Math.abs(a[4]) > 1e-5)?1/a[4]:1;}
+	})(M, A);
+
+	var R = ndarray(new Float32Array(rhs.data.length), rhs.shape);
+	var Z = ndarray(new Float32Array(rhs.data.length), rhs.shape);
+	var P = ndarray(new Float32Array(rhs.data.length), rhs.shape);
+	var Ax = ndarray(new Float32Array(rhs.data.length), rhs.shape);
+	var Ap = ndarray(new Float32Array(rhs.data.length), rhs.shape);
+	var zTr = 0, zTrOld = 0;
+	apply(Ax, x, A);
+	msub(R, rhs, Ax);
+	mprod(Z, R, M);
+	P.data = Z.data.slice(0);
+	zTrOld = iprod(Z, R);
+	
+
+	for(var k = 0; k < max_iter; ++k) {
+		apply(Ap, P, A);
+		var alpha = zTr/iprod(Ap, P);
+		incVec(1, x, alpha, P);
+		incVec(1, R, -alpha, Ap);
+		var rmax = R.data.reduce((a, b) => Math.max(Math.abs(b), a));
+		mprod(Z, M, R);
+		zTr = iprod(Z, R);
+		var beta = zTr/zTrOld;
+		incVec(beta, P, 1, Z);
+		zTrOld = zTr;
+	}
+}
+},{"./sample_1000.js":12,"cwise":6,"ndarray":10}],14:[function(require,module,exports){
+function makeColorArray(canvas, normalize = false) {
+	var context = canvas.getContext('2d');
+	var colorArrayFlat = Array.from(context.getImageData(
+			0, 0, canvas.width, canvas.height).data);
+	if(normalize) {
+		colorArrayFlat.map(d => d/255);
+	}
+	var retArray = Array(Math.ceil(colorArrayFlat.length/4)).fill();
+	for(var i = 0; i < retArray.length; ++i) {
+		retArray[i] = [
+			colorArrayFlat[4*i], colorArrayFlat[4*i+1], colorArrayFlat[4*i+2]
+		];
+	}
+	return retArray;
+	/*return Array(Math.ceil(colorArrayFlat.length/4)).fill()
+			.map((_,idx) => colorArrayFlat.slice(idx*4, idx*4 + 4))
+			.map(data => data.slice(0, 3));*/
+}
+
+function arange(start, step, end) {
+	var nnums = Math.floor((end - start) / step) + 1;
+	return Array(nnums).fill().map((_, idx) => start + idx*step);
+}
+
+function linRange(start, elems, end) {
+	var step = (end - start)/(elems-1);
+	return Array(elems).fill().map((_, idx) => start + idx*step);
+}
+
+function cartesian(A, B) {
+	return [].concat(...A.map(d => B.map(e => [d, e])));
+}
+
+function range(size) {
+	return [...Array(size).keys()];
+}
+
+function range(start, end) {
+	var size = end - start;
+	return [...Array(size).keys()].map(d => d + start);
+}
+
+function list2dict3D(array) {
+	var ret = array.map(data => {
+		return { x: data[0], y: data[1], z: data[2] };
+	});
+	return ret;
+}
+
+function dict2list3D(dict) {
+	return dict.map(entry => [entry.x, entry.y, entry.z]);
+}
+
+function euclideanDist(a, b) {
+	var diff = {
+		x: a.x - b.x,
+		y: a.y - b.y,
+		z: a.z - b.z
+	};
+	return Math.sqrt(diff.x*diff.x + diff.y*diff.y + diff.z*diff.z);
+}
+
+function angleDist(a, b) {
+	var innerProd = a.x*b.x + a.y*b.y + a.z*b.z;
+	innerProd = Math.max(-1.0, Math.min(innerProd, 1.0));
+	return Math.acos(innerProd) / Math.PI * 2;
+}
+
+flatten = function(arr, result = []) {
+  for (let i = 0, length = arr.length; i < length; i++) {
+    const value = arr[i];
+    if (Array.isArray(value)) {
+      flatten(value, result);
+    } else {
+      result.push(value);
     }
-
-    if (!wkey) {
-        wkey = Math.floor(Math.pow(16, 8) * Math.random()).toString(16);
-        var wcache = {};
-        for (var i = 0, l = cacheKeys.length; i < l; i++) {
-            var key = cacheKeys[i];
-            wcache[key] = key;
-        }
-        sources[wkey] = [
-            'function(require,module,exports){' + fn + '(self); }',
-            wcache
-        ];
-    }
-    var skey = Math.floor(Math.pow(16, 8) * Math.random()).toString(16);
-
-    var scache = {}; scache[wkey] = wkey;
-    sources[skey] = [
-        'function(require,module,exports){' +
-            // try to call default if defined to also support babel esmodule exports
-            'var f = require(' + stringify(wkey) + ');' +
-            '(f.default ? f.default : f)(self);' +
-        '}',
-        scache
-    ];
-
-    var workerSources = {};
-    resolveSources(skey);
-
-    function resolveSources(key) {
-        workerSources[key] = true;
-
-        for (var depPath in sources[key][1]) {
-            var depKey = sources[key][1][depPath];
-            if (!workerSources[depKey]) {
-                resolveSources(depKey);
-            }
-        }
-    }
-
-    var src = '(' + bundleFn + ')({'
-        + Object.keys(workerSources).map(function (key) {
-            return stringify(key) + ':['
-                + sources[key][0]
-                + ',' + stringify(sources[key][1]) + ']'
-            ;
-        }).join(',')
-        + '},{},[' + stringify(skey) + '])'
-    ;
-
-    var URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
-
-    var blob = new Blob([src], { type: 'text/javascript' });
-    if (options && options.bare) { return blob; }
-    var workerUrl = URL.createObjectURL(blob);
-    var worker = new Worker(workerUrl);
-    worker.objectURL = workerUrl;
-    return worker;
+  }
+  return result;
 };
 
-},{}],22:[function(require,module,exports){
-var QuantKDTree = require('../functions/min-variance-quantization');
-var estimateAirLight = require('../functions/airlight.js');
-var transmittanceMap = require('../functions/transmittance_sci.js');
+function cloneCanvas(oldCanvas) {
+	var newCanvas = document.createElement('canvas');
+	var context = newCanvas.getContext('2d');
 
-module.exports = function(self) {
-	onmessage = function(e) {
-		var data = e.data;
-		var clusters = data.clusters;
-		var imageflat = data.image;
-		var minEst = data.minEst;
-		var maxEst = data.maxEst;
-		var picWidth = data.picWidth;
-		var picHeight = data.picHeight;
+	newCanvas.width = oldCanvas.width;
+	newCanvas.height = oldCanvas.height;
 
-		var startTime = new Date();
-		self.postMessage({signal: "Finding air light…"});
-		var image = Array(Math.ceil(imageflat.length/4)).fill();
-		for(var i = 0; i < image.length; ++i) {
-			image[i] = [
-				imageflat[4*i], imageflat[4*i+1], imageflat[4*i+2]
-			];
-		}
-		var quantStruct = new QuantKDTree(image.slice(0), clusters);
-		var endTime = new Date();
-		console.log("Finished quantization in " + (endTime - startTime)/1000 + " secs.");
-
-		var airLight = estimateAirLight(image, quantStruct, minEst, maxEst);
-		endTime = new Date();
-		console.log("Finished air light in " + (endTime - startTime)/1000 + " secs.");
-
-		self.postMessage({signal: "Finding transmittance map…"});
-		var transmittance = transmittanceMap(imageflat, picWidth, picHeight, airLight);
-		self.postMessage({
-			signal: "finish",
-			airLight: airLight,
-			transmittance:transmittance}, [transmittance.buffer]);
-		self.close();
-	}
+	context.drawImage(oldCanvas, 0, 0);
+	return newCanvas;
 }
-},{"../functions/airlight.js":2,"../functions/min-variance-quantization":6,"../functions/transmittance_sci.js":8}],23:[function(require,module,exports){
-var QuantKDTree = require('../functions/min-variance-quantization');
-var estimateAirLight = require('../functions/airlight.js');
-
-module.exports = function(self) {
-	onmessage = function(e) {
-		var data = e.data;
-		var clusters = data.clusters;
-		var imageflat = data.image;
-		var minEst = data.minEst;
-		var maxEst = data.maxEst;
-
-		var startTime = new Date();
-		var image = Array(Math.ceil(imageflat.length/4)).fill();
-		for(var i = 0; i < image.length; ++i) {
-			image[i] = [
-				imageflat[4*i], imageflat[4*i+1], imageflat[4*i+2]
-			];
-		}
-		var quantStruct = new QuantKDTree(image.slice(0), clusters);
-		var endTime = new Date();
-		console.log("Finished quantization in " + (endTime - startTime)/1000 + " secs.");
-
-		var airLight = estimateAirLight(image, quantStruct, minEst, maxEst);
-		endTime = new Date();
-		console.log("Finished air light in " + (endTime - startTime)/1000 + " secs.");
-		self.postMessage(airLight);
-
-		self.close();
-	}
-}
-},{"../functions/airlight.js":2,"../functions/min-variance-quantization":6}],24:[function(require,module,exports){
-var transmittanceMap = require('../functions/transmittance_sci.js');
-
-module.exports = function(self) {
-	onmessage = function(e) {
-		var data = e.data;
-		var colorArray = data.colorArray,
-				picWidth = data.picWidth,
-				picHeight = data.picHeight,
-				airLight = data.airLight;
-		var transmittance = transmittanceMap(colorArray, picWidth, picHeight, airLight);
-		self.postMessage({signal:"finish", transmittance: transmittance}, [transmittance.buffer]);
-		self.close();
-	}
-}
-},{"../functions/transmittance_sci.js":8}]},{},[10]);
+ module.exports.makeColorArray = makeColorArray;
+ module.exports.arange = arange;
+ module.exports.linRange = linRange;
+ module.exports.cartesian = cartesian;
+ module.exports.range = range;
+ module.exports.list2dict3D = list2dict3D;
+ module.exports.dict2list3D = dict2list3D;
+ module.exports.euclideanDist = euclideanDist;
+ module.exports.angleDist = angleDist;
+ module.exports.flatten = flatten;
+ module.exports.cloneCanvas = cloneCanvas;
+ 
+},{}]},{},[13]);

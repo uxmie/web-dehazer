@@ -1,7 +1,8 @@
-var gui_utils = require('./gui_utils.js');
+var gui_utils = require('./functions/gui_utils.js');
 var processImage = gui_utils.processImage,
     sliderChange = gui_utils.sliderChange,
     changeGamma = gui_utils.changeGamma,
+    dehazePreview = gui_utils.dehazePreview,
     findAirLight = gui_utils.findAirLight,
     findAndDrawResults = gui_utils.findAndDrawResults,
     drawDehazed = gui_utils.drawDehazed,
@@ -20,6 +21,8 @@ window.onload = function() {
 			var reader = new FileReader();
 			reader.readAsDataURL(file);	
 			reader.onload = function(e) {
+				document.getElementById("airLightSection").style.visibility = "visible";
+				document.getElementById("transmittanceDiv").style.visibility = "hidden";
 				fileDisplayArea.innerHTML = "";
 
 				var img = new Image();
@@ -61,14 +64,15 @@ window.onload = function() {
 	});
 	maxAirVal.innerHTML = maxAirSlide.value;
 
-	var airLightButton = document.getElementById('airLightButton');
-	airLightButton.addEventListener('click', function(e){
-		findAirLight();
+	var dehazePreviewButton = document.getElementById('dehazePreviewButton');
+	dehazePreviewButton.addEventListener('click', function(e){
+		//findAirLight();
+		dehazePreview();
 	});
-	var transmittanceButton = document.getElementById('transmittanceButton');
+	/*var transmittanceButton = document.getElementById('transmittanceButton');
 	transmittanceButton.addEventListener('click', function(e){
 		findAndDrawResults();
-	});
+	});*/
 
 	var distSlide = document.getElementById('distSlide'),
 	    distVal = document.getElementById('distVal'),
