@@ -1,9 +1,7 @@
-//var QuantKDTree = require('./min-variance-quantization');
 var Hermite_class = require('./Hermite-resize/dist/hermite.npm.js');
-var transmittanceMap = require('./transmittance_sci.js');
 
 var utils = require('./utils.js');
-var /*makeColorArray = utils.makeColorArray, */cloneCanvas = utils.cloneCanvas;
+var cloneCanvas = utils.cloneCanvas;
 var work = require('webworkify');
 
 function processImage(img) {
@@ -48,9 +46,7 @@ function dehazePreview() {
 	var picHeight = canvas.height;
 
 	//Set loading screen
-	var loading = document.getElementById("loadingScreen");
 	var statusText = document.getElementById("statusUpdate");
-	//loading.style.visibility = "visible";
 	var loadingElems = Array.from(document.getElementsByClassName('loading'));
 	loadingElems.forEach(e => e.style.visibility = 'visible');
 	
@@ -72,7 +68,6 @@ function dehazePreview() {
 			var dehazePreview = document.getElementById('dehazeResult');
 			drawDehazed(canvas, dehazePreview, window.transmittance, window.airLight);
 
-			//loading.style.visibility = "hidden";
 			loadingElems.forEach(e => e.style.visibility = 'hidden');
 			document.getElementById("transmittanceDiv").style.visibility = "visible";
 		} else {
@@ -93,7 +88,6 @@ function findAirLight() {
 	var canvas = document.getElementById('originalPic');
 	var minEst = new Number(document.getElementById('minAirSlide').value);
 	var maxEst = new Number(document.getElementById('maxAirSlide').value);
-	//window.colorArray = makeColorArray(canvas);
 	var context = canvas.getContext('2d');
 	var colorArrayFlat = context.getImageData(
 			0, 0, canvas.width, canvas.height).data.slice(0);
