@@ -4,19 +4,10 @@ var hazeTreeLib = require('./sample_642.js');
 var hazeTree = hazeTreeLib.tree;
 
 transmittanceMap = function(colorArrayFlat, picWidth, picHeight, airLight) {
-	//var context = canvas.getContext('2d');
-	//var picWidth = canvas.width,
-	//	picHeight = canvas.height,
 	var	pixCount = picWidth*picHeight,
 		picDim = [picHeight, picWidth];
-	/*var colorArray = ndarray(context.getImageData(0, 0, picWidth, picHeight).data,
-	                 [picHeight, picWidth, 4]);*/
 	var colorArray = ndarray(colorArrayFlat, [picHeight, picWidth, 4]);
-	//var ballPointCount = window.kd_tree_points_with_index.length;
 	var ballPointCount = hazeTreeLib.length;
-	/*var hazeTree = new window.kdTree(
-		window.kd_tree_points_with_index, window.euclideanDist, ['x', 'y', 'z']
-	);*/
 	var nearestQuery = ndarray(new Uint16Array(pixCount), picDim);
 	var furthestDist = ndarray(new Float32Array(ballPointCount), [ballPointCount]);
 	var colorNorm = ndarray(new Float32Array(pixCount), picDim);
@@ -229,7 +220,6 @@ function smoothTransmittance(A, rhs, x, max_iter) {
 			apply(Ax, x, A);
 			msub(R, Ax, rhs);
 			if(k%50 == 2) {
-			// var rnorm = R.data.reduce((a, b) => Math.max(Math.abs(b), a));
 				var rnorm = Math.sqrt(R.data.reduce((a, b) => a + b*b)/R.data.length);
 				if(rnorm < 1e-5){// || lastError < rnorm) {
 					break;
@@ -240,7 +230,6 @@ function smoothTransmittance(A, rhs, x, max_iter) {
 			if(k%50 == 49) {
 				eta *= 0.9;
 			}
-			//var rnorm = R.data.reduce((a, b) => Math.max(Math.abs(b), a));
 			mdescend(x, R, Mt, Vt, eta);
 		}
 	}
@@ -256,8 +245,6 @@ function smoothTransmittance(A, rhs, x, max_iter) {
 		var alpha = zTr/iprod(Ap, P);
 		incVec(1, x, alpha, P);
 		incVec(1, R, -alpha, Ap);
-		//var rmax = R.data.reduce((a, b) => Math.max(Math.abs(b), a));
-		//console.log(rmax);
 		if(k%50 == 0) {
 			var rnorm = Math.sqrt(R.data.reduce((a, b) => a + b*b)/R.data.length);
 			self.postMessage({signal: "Smoothing with PCG.  Error: " + rnorm});
