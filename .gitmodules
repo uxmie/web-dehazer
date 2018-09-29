@@ -1,0 +1,9 @@
+[submodule "functions/kd-tree-javascript"]
+	path = functions/kd-tree-javascript
+	url = git@github.com:curzonj/kd-tree-javascript.git
+[submodule "functions/Hermite-resize"]
+	path = functions/Hermite-resize
+	url = git@github.com:bryfa/Hermite-resize.git
+[submodule "functions/js-priority-queue"]
+	path = functions/js-priority-queue
+	url = git@github.com:bryfa/Hermite-resize.git
