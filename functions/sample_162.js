@@ -1,3 +1,6 @@
+var utils = require('./utils.js');
+var kdTree = require('./kd-tree-javascript/kdTree.js');
+
 kd_tree_sample_points = [
 {x: 0.000000, y: -1.000000, z: 0.000000},
 {x: 0.723607, y: -0.447220, z: 0.525725},
@@ -167,3 +170,10 @@ kd_tree_points_with_index = kd_tree_sample_points.map((point, idx) => {
 	point.index = idx;
 	return point;
 });
+
+module.exports.length = kd_tree_points_with_index.length;
+module.exports.tree = new kdTree.kdTree(
+	kd_tree_points_with_index,
+	utils.euclideanDist,
+	['x', 'y', 'z']
+);

@@ -1,6 +1,6 @@
-var QuantKDTree = require('../functions/min-variance-quantization');
+var QuantKDTree = require('../functions/min-variance-quantization.js');
 var estimateAirLight = require('../functions/airlight.js');
-var transmittanceMap = require('../functions/transmittance_sci.js');
+var transmittanceMap = require('../functions/transmittance.js');
 
 module.exports = function(self) {
 	onmessage = function(e) {
@@ -14,17 +14,11 @@ module.exports = function(self) {
 
 		var startTime = new Date();
 		self.postMessage({signal: "Finding air light…"});
-		var image = Array(Math.ceil(imageflat.length/4)).fill();
-		for(var i = 0; i < image.length; ++i) {
-			image[i] = [
-				imageflat[4*i], imageflat[4*i+1], imageflat[4*i+2]
-			];
-		}
-		var quantStruct = new QuantKDTree(image.slice(0), clusters);
+		var quantStruct = new QuantKDTree(imageflat.slice(0), clusters);
 		var endTime = new Date();
 		console.log("Finished quantization in " + (endTime - startTime)/1000 + " secs.");
 
-		var airLight = estimateAirLight(image, quantStruct, minEst, maxEst);
+		var airLight = estimateAirLight(imageflat, quantStruct, minEst, maxEst);
 		endTime = new Date();
 		console.log("Finished air light in " + (endTime - startTime)/1000 + " secs.");
 

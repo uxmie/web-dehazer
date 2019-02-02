@@ -23,14 +23,14 @@ function processImage(img) {
 	}
 	var resizer = new Hermite_class();
 	resizer.resample(canvas,
-										Math.round(img.width*ratio),
-										Math.round(img.height*ratio),
-										true,
-										function() { 
-											window.origCanvas = cloneCanvas(canvas);
-											changeGamma(window.origCanvas, canvas, gamma);
-											canvas.style.visibility = "visible";
-										}
+					Math.round(img.width*ratio),
+					Math.round(img.height*ratio),
+					true,
+					function() { 
+						window.origCanvas = cloneCanvas(canvas);
+						changeGamma(window.origCanvas, canvas, gamma);
+						canvas.style.visibility = "visible";
+					}
 	);
 }
 

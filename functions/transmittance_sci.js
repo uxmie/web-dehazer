@@ -212,10 +212,10 @@ function smoothTransmittance(A, rhs, x, max_iter) {
 	if(x.data.length > 1e6) {
 		var eta = 0.003;
 
-		apply(Ax, x, A);
+		/*apply(Ax, x, A);
 		msub(R, Ax, rhs);
 		var lastError = Math.sqrt(R.data.reduce((a, b) => a + b*b)/R.data.length);
-		console.log(lastError);
+		console.log(lastError);*/
 		for(var k = 0; k < max_iter; ++k) {
 			apply(Ax, x, A);
 			msub(R, Ax, rhs);

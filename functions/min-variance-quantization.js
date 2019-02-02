@@ -1,5 +1,7 @@
 var PriorityQueue = require('./js-priority-queue/priority-queue.js');
 
+// Now use the nd_array
+
 function QuantKDTreeNode(colorArray, startIdx, endIdx, minVal, maxVal, parent) {
 	this.minVal = minVal.slice(0);
 	this.maxVal = maxVal.slice(0);
@@ -17,10 +19,13 @@ function QuantKDTreeNode(colorArray, startIdx, endIdx, minVal, maxVal, parent) {
 
 	/* TODO: Find optimal split */
 	for(var i = 0; i < 3; i++) {
-		var histo = Array(256).fill(0);
-		colorArray.slice(this.startIdx, this.endIdx).forEach(element => {
+		var histo = new Uint32Array(256).fill(0);
+		for(var j = this.startIdx; j < this.endIdx; ++j) {
+			histo[colorArray[4*j + i]]++;
+		}
+		/*colorArray.slice(this.startIdx, this.endIdx).forEach(element => {
 			histo[element[i]]++;
-		});
+		});8?
 
 		/* Find split with Otsu's Algorithm */
 		var sumB = 0, wB = 0;
@@ -56,10 +61,11 @@ function QuantKDTree(colorArray, clusters) {
 	});
 
 	pq.queue(new QuantKDTreeNode(
-		colorArray, 0, colorArray.length,
-		[0, 0, 0], [255, 255, 255],
+		colorArray, 0, colorArray.length/4,//colorArray.size[0],
+		[0, 0, 0], [255, 255, 252],
 		-1)
 	);
+	console.log("ha");
 
 	this.kdtree = Array(2*clusters - 1);
 	var idx = 0, currLeaves = 0;
@@ -86,8 +92,28 @@ function QuantKDTree(colorArray, clusters) {
 
 		var sc = front.splitChannel, st = front.splitThreshold;
 
+		var left_idx = front.startIdx-1, right_idx = front.startIdx;
+		for (var right_idx = front.startIdx; right_idx < front.endIdx; ++right_idx) {
+			if(colorArray[4*right_idx + sc] < st) {
+				left_idx++;
+				var left_real = left_idx*4;
+				var right_real = right_idx*4;
+				for(var j = 0; j < 4; ++j) {
+					var t = colorArray[right_real + j];
+					colorArray[right_real + j] = colorArray[left_real + j]
+					colorArray[left_real + j] = t;
+				}
+			}
+		}
+		var pivot = left_idx + 1;
+		if(pivot == front.startIdx || pivot == front.endIdx) {
+			idx++;
+			currLeaves++;
+			continue;
+		}
+		
 		// Split colorArray
-		var colorslice = colorArray.slice(front.startIdx, front.endIdx);
+		/*var colorslice = colorArray.slice(front.startIdx, front.endIdx);
 		var left = colorslice.filter(color => color[sc] < st);
 		var right = colorslice.filter(color => color[sc] >= st);
 		var pivot = front.startIdx + left.length;
@@ -99,7 +125,7 @@ function QuantKDTree(colorArray, clusters) {
 		var partition = left.concat(right);
 		partition.forEach((data, idx) => {
 			colorArray[front.startIdx + idx] = data;
-		});
+		});*/
 
 		var thresh = front.maxVal.slice(0);
 		thresh[sc] = st;
@@ -132,8 +158,29 @@ function QuantKDTree(colorArray, clusters) {
 		idx++;
 	}
 	var leafindex = 0;
-	this.centroids = [];
+	this.centroids = new Uint8ClampedArray(clusters*3);
+	this.n_clusters = clusters;
 	for(var i = 0; i < idx; ++i) {
+		if(this.kdtree[i].isLeaf) {
+			this.kdtree[i].index = leafindex;
+
+			//Calculate centroid
+			var leaf = this.kdtree[i];
+			var colorsum = [0, 0, 0];
+			for(var j = leaf.startIdx*4; j < leaf.endIdx*4; j = j+4) {
+				colorsum[0] += colorArray[j];
+				colorsum[1] += colorArray[j + 1];
+				colorsum[2] += colorArray[j + 2];
+			}
+			var elems = leaf.endIdx - leaf.startIdx;
+			this.centroids[leafindex*3] = Math.round(colorsum[0]/elems);
+			this.centroids[leafindex*3 + 1] = Math.round(colorsum[1]/elems);
+			this.centroids[leafindex*3 + 2] = Math.round(colorsum[2]/elems);
+			leaf.centroid = this.centroids.slice(leafindex*3, leafindex*3 + 3);
+			leafindex++;
+		}
+	}
+	/*for(var i = 0; i < idx; ++i) {
 		if(this.kdtree[i].isLeaf) {
 			this.kdtree[i].index = leafindex;
 			leafindex++;
@@ -146,7 +193,7 @@ function QuantKDTree(colorArray, clusters) {
 																.map(data => Math.round(data/elems));
 			this.centroids.push(leaf.centroid);
 		}
-	}
+	}*/
 }
 
 QuantKDTree.prototype.lookupColor = function(color) {
@@ -171,7 +218,7 @@ QuantKDTree.prototype.lookupID = function(color) {
 	return currNode.index;
 }
 
-QuantKDTree.prototype.quantizeImage = function(canvas, destCanvas) {
+/*QuantKDTree.prototype.quantizeImage = function(canvas, destCanvas) {
 	var colorArray = makeColorArray(canvas);
 
 	var destColorArray = colorArray.map(data => this.lookupColor(data).concat(255));
@@ -183,10 +230,14 @@ QuantKDTree.prototype.quantizeImage = function(canvas, destCanvas) {
 	var imageData = dContext.createImageData(canvas.width, canvas.height);
 	imageData.data.set(destFlat);
 	dContext.putImageData(imageData, 0, 0);
-}
+}*/
 
 QuantKDTree.prototype.quantizeID = function(colorArray) {
-	return colorArray.map(data => this.lookupID(data));
+	var ids = new Uint16Array(colorArray.length / 4);
+	for(i = 0; i < colorArray.length/4; i++) {
+		ids[i] = this.lookupID(colorArray.slice(i*4, i*4+3));
+	}
+	return ids;
 }
 
 module.exports = QuantKDTree;

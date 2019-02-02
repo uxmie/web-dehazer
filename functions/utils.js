@@ -16,12 +16,22 @@ function makeColorArray(canvas, normalize = false) {
 
 function arange(start, step, end) {
 	var nnums = Math.floor((end - start) / step) + 1;
-	return Array(nnums).fill().map((_, idx) => start + idx*step);
+	var ret = new Float32Array(nnums);
+	for(var i = 0; i < nnums; ++i) {
+		ret[i] = start + i*step;
+	}
+	return ret;
+	//return Array(nnums).fill().map((_, idx) => start + idx*step);
 }
 
 function linRange(start, elems, end) {
 	var step = (end - start)/(elems-1);
-	return Array(elems).fill().map((_, idx) => start + idx*step);
+	var ret = new Float32Array(elems);
+	for(var i = 0; i < elems; ++i) {
+		ret[i] = start + i*step;
+	}
+	return ret;
+	//return Array(elems).fill().map((_, idx) => start + idx*step);
 }
 
 function cartesian(A, B) {

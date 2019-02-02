@@ -1,4 +1,4 @@
-var transmittanceMap = require('../functions/transmittance_sci.js');
+var transmittanceMap = require('../functions/transmittance.js');
 
 module.exports = function(self) {
 	onmessage = function(e) {
