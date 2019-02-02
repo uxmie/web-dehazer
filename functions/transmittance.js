@@ -44,7 +44,6 @@ transmittanceMap = function(colorArrayFlat, picWidth, picHeight, airLight) {
 		dists[i*2 + 1] = kdquery[0][1];
 
 	}
-	console.log(ff);
 
 	
 	self.postMessage({signal: "Calculating raw transmittance…"});
@@ -78,8 +77,10 @@ transmittanceMap = function(colorArrayFlat, picWidth, picHeight, airLight) {
 	}
 	if(transmittance.length > 2e6) {
 		var partHeight = Math.floor(3e5 / picWidth);
+		var parts = Math.ceil(picHeight/partHeight);
 		var partPixCount = partHeight * picWidth;
-		for(var o = 0; o < pixCount; o += partPixCount) {
+		for(var o = 0, i = 1; o < pixCount; o += partPixCount, ++i) {
+			self.postMessage({signal: "Dehazing image: block: " + i + " / " + parts});
 			var len = (o + partPixCount < picHeight*picWidth)? partPixCount: picHeight*picWidth - o;
 			var tp = new Float32Array(transmittance.buffer, o*4, len);
 			var cp = new Uint8ClampedArray(colorArray.buffer, o*4, len*4);
@@ -88,12 +89,14 @@ transmittanceMap = function(colorArrayFlat, picWidth, picHeight, airLight) {
 								ballPointCount, len/picWidth, picWidth);
 		}
 	}
+	self.postMessage({signal: "Finalizing transmittance map…"});
     smoothTransmittance(transmittance, colorArray, nearestQuery, ballPointCount, picHeight, picWidth);
 	return transmittance;
 }
 
-function smoothTransmittance(transmittance, colorArray, nearestQuery, ballPointCount, picHeight, picWidth) {
-	self.postMessage({signal: "Smoothing transmittance: initializing…"});
+function smoothTransmittance(
+	transmittance, colorArray, nearestQuery,
+	ballPointCount, picHeight, picWidth) {
 
 	var pixCount = picHeight*picWidth;
 	var sum =    new Float32Array(ballPointCount)
@@ -210,12 +213,29 @@ function solveLinear(A, rhs, x, max_iter, height, width) {
 		x.fill(avg);
 		console.log("PCG", avg);*/
 	//}
-	PCG(A, x, rhs, max_iter, height, width);
+	var ICF = VMICF(A, width);
+	/*if(useAdam) {
+		var Ax = new Float32Array(rhs.length);
+		var R = new Float32Array(rhs.length);
+		var irhs = new Float32Array(rhs.length);
+		var PAx = new Float32Array(rhs.length);
+		apply(Ax, x, A, height, width);
+		ICP(PAx, ICF, Ax, width);
+		ICP(irhs, ICF, rhs, width);
+		msub(R, PAx, irhs);
+		var rnorm = iprod(R, R)/R.length;
+		console.log(rnorm);
+		if(rnorm > 1e-3) {
+			AdaM(A, x, rhs, ICF, 1e-4, max_iter, height, width);
+		}
+		else PCG(A, x, rhs, ICF, max_iter, height, width);
+	}
+	else*/ PCG(A, x, rhs, ICF, max_iter, height, width);
 	/*}*/
 }
 
-function AdaM(A, x, rhs, eta, max_iter, height, width) {
-	var ICF = VMICF(A, width);
+function AdaM(A, x, rhs, ICF, eta, max_iter, height, width) {
+	//var ICF = VMICF(A, width);
 	var irhs = new Float32Array(rhs.length);
 	var R = new Float32Array(rhs.length);
 	var Mt = new Float32Array(rhs.length);
@@ -226,17 +246,18 @@ function AdaM(A, x, rhs, eta, max_iter, height, width) {
 
 	ICP(irhs, ICF, rhs, width);
 
-	console.log("AdaM");
+	var normPrev = 1e9;
 	for(var k = 0; k < max_iter; ++k) {
 		apply(Ax, x, A, height, width);
 		ICP(PAx, ICF, Ax, width);
-		msub(R, Ax, rhs);
+		//msub(R, Ax, rhs);
 		//msub(R, rhs, Ax);
-		//msub(R, irhs, PAx);
-		var rnorm = iprod(R, R);//R.length;
-		
+		msub(R, PAx, irhs);
+		var rnorm = iprod(R, R)/R.length;
+		if(normPrev/rnorm < 0.5) eta /= 10;
+
 		self.postMessage({signal: "Smoothing with AdaM.  Error: " + rnorm});
-		if(rnorm < 1e-10) break;
+		if(rnorm < 2e-4) break;
 		if(k%10 == 49) {
 			eta *= 0.97;
 		}
@@ -259,9 +280,9 @@ function AdaM(A, x, rhs, eta, max_iter, height, width) {
 	}
 }
 
-function PCG(A, x, rhs, max_iter, height, width) {
+function PCG(A, x, rhs, ICF, max_iter, height, width) {
 	//ICF = A.slice(0);
-	var ICF = VMICF(A, width);
+	//var ICF = VMICF(A, width);
 	var R = new Float32Array(rhs.length);
 	var Z = new Float32Array(rhs.length);
 	var P = new Float32Array(rhs.length);
@@ -310,7 +331,6 @@ function PCG(A, x, rhs, max_iter, height, width) {
 		incVec(beta, P, 1, Z);
 		zTrOld = zTr;
 	}
-	console.log(k, R.slice(0, 20))
 }
 
 function VMICF(A, width) {
