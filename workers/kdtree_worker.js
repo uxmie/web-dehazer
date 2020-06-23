@@ -1,4 +1,4 @@
-var QuantKDTree = require('../functions/min-variance-quantization');
+var QuantKDTree = require('../functions/min-variance-quantization.js');
 var estimateAirLight = require('../functions/airlight.js');
 
 module.exports = function(self) {

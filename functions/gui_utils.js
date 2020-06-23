@@ -150,12 +150,18 @@ function drawDehazed(canvas, destCanvas, transmittance, airLight) {
 function hazeArray(canvas, transmittance, airLight, fac) {
 	var colorFlat = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
 	var dehazeFlat = new Uint8ClampedArray(4*transmittance.length).fill(255);
-	transmittance.forEach((t,i) => {
+	for(var i = 0; i < transmittance.length; ++i) {
+		var tp = transmittance[i]*fac;
+		dehazeFlat[4*i] = (colorFlat[4*i] - (1-tp)*airLight[0]*255) / (tp+1e-4);
+		dehazeFlat[4*i + 1] = (colorFlat[4*i + 1] - (1-tp)*airLight[1]*255) / (tp+1e-4);
+		dehazeFlat[4*i + 2] = (colorFlat[4*i + 2] - (1-tp)*airLight[2]*255) / (tp+1e-4);
+	}
+	/*transmittance.forEach((t,i) => {
 		var tp = t*fac;
 		dehazeFlat[4*i] = (colorFlat[4*i] - (1-tp)*airLight[0]*255) / (tp+1e-4);
 		dehazeFlat[4*i + 1] = (colorFlat[4*i + 1] - (1-tp)*airLight[1]*255) / (tp+1e-4);
 		dehazeFlat[4*i + 2] = (colorFlat[4*i + 2] - (1-tp)*airLight[2]*255) / (tp+1e-4);
-	});
+	});*/
 	return dehazeFlat;
 }
 
@@ -181,12 +187,13 @@ function drawTransmittance(canvas, transmittance, width, height) {
 	var context = canvas.getContext('2d');
 
 	var transFlat = new Uint8ClampedArray(transmittance.length*4);
-	transmittance.forEach((d, i) => {
+	for(var i = 0; i < transmittance.length; ++i) {
+		var d = transmittance[i];
 		transFlat[i*4] = d*255;
 		transFlat[i*4 + 1] = d*255;
 		transFlat[i*4 + 2] = d*255;
 		transFlat[i*4 + 3] = 255;
-	});
+	}
 	canvas.width = width;
 	canvas.height = height;
 	var imageData = context.createImageData(canvas.width, canvas.height);
@@ -199,6 +206,7 @@ function sliderChange(slider, target) {
 }
 
 function changeGamma(origCanvas, canvas, gamma) {
+	gamma = 1/gamma;
 	var context = canvas.getContext('2d');
 	var origData = origCanvas.getContext('2d')
 	.getImageData(0, 0, canvas.width, canvas.height).data;
