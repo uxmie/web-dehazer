@@ -6,4 +6,4 @@
 	url = git@github.com:bryfa/Hermite-resize.git
 [submodule "functions/js-priority-queue"]
 	path = functions/js-priority-queue
-	url = git@github.com:bryfa/Hermite-resize.git
+	url = git@github.com:adamhooper/js-priority-queue.git
